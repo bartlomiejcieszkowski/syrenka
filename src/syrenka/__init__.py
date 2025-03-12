@@ -128,3 +128,26 @@ class MermaidClassDiagram(MermaidGeneratorBase):
             self.add_class(cls)
 
 
+
+class MermaidFlowchartDirection(Enum):
+    TopToBottom = "TB"
+    LeftToRight = "LR"
+    BottomToTop = "BT"
+    RightToLeft = "RL"
+
+
+class MermaidFlowchart(MermaidGeneratorBase):
+    def __init__(self, title: str, direction: MermaidFlowchartDirection):
+        super().__init__()
+        self.title = title
+        self.direction = direction
+
+    def to_code(self) -> Iterable[str]:
+        mcode = [
+            "---",
+            f"title: {self.title}",
+            "---",
+            f"flowchart {self.direction.value}",
+        ]
+
+        return mcode
