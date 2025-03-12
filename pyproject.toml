@@ -3,7 +3,7 @@ name = "syrenka"
 version = "0.1.0"
 license = "MIT"
 authors = [
-    {name = "Bartlomiej Cieszkowski, email = "bartlomiej.cieszkowski@gmail.com"},
+    {name = "Bartlomiej Cieszkowski", email = "bartlomiej.cieszkowski@gmail.com"},
 ]
 description = "syrenka is mermaid.js markdown generator"
 readme = "README.md"
