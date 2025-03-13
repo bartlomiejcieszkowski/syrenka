@@ -56,19 +56,30 @@ title: syrenka class diagram
 ---
 classDiagram
     class MermaidClass{
+        -cls
+        -indent
+        -skip_underscores
+        +__init__(self, cls, skip_underscores)
         +to_code(self)
     }
     class MermaidClassDiagram{
+        -title
+        -classes
+        +__init__(self, title)
         +add_class(self, cls)
         +add_classes(self, classes)
         +to_code(self)
     }
     class MermaidFlowchart{
+        -title
+        -direction
+        +__init__(self, title, direction)
         +to_code(self)
     }
     class MermaidFlowchartDirection{
     }
     class MermaidGeneratorBase{
+        +__init__(self)
         +to_code(self)
     }
 ```
