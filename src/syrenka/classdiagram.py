@@ -8,18 +8,18 @@ class MermaidClass(MermaidGeneratorBase):
         self.indent = 4 * " "
         self.skip_underscores = skip_underscores
 
-    def to_code(self):
+    def to_code(self, indent_level: int=0, indent_base: str="    ") -> Iterable[str]:
         ret = []
         t = self.cls
 
         print(f"{t.__name__} builtin? {is_builtin(t)}")
 
-        level, indent = StringHelper.indent(0, 1)
+        indent_level, indent = StringHelper.indent(indent_level, indent_base=indent_base)
 
         # class <name> {
         ret.append(f"{indent}class {t.__name__}{'{'}")
 
-        level, indent = StringHelper.indent(level, 1)
+        indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
 
         methods = []
 
@@ -60,7 +60,7 @@ class MermaidClass(MermaidGeneratorBase):
                     methods.append(f"{indent}+{x}({args_str})")
 
         ret.extend(methods)
-        level, indent = StringHelper.indent(level, -1)
+        indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
 
         ret.append(f"{indent}{'}'}")
 
@@ -74,16 +74,17 @@ class MermaidClassDiagram(MermaidGeneratorBase):
         self.classes : Iterable[MermaidGeneratorBase] = []
         pass
 
-    def to_code(self) -> Iterable[str]:
+    def to_code(self, indent_level: int=0, indent_base: str="    ") -> Iterable[str]:
+        indent_level, indent = StringHelper.indent(indent_level, 0, indent_base)
         mcode = [
-            "---",
-            f"title: {self.title}",
-            "---",
-            "classDiagram",
+            indent + "---",
+            f"{indent}title: {self.title}",
+            indent + "---",
+            indent + "classDiagram",
         ]
 
         for mclass in self.classes:
-            mcode.extend(mclass.to_code())
+            mcode.extend(mclass.to_code(indent_level+1, indent_base))
 
         return mcode
     

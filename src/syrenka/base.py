@@ -6,7 +6,7 @@ import importlib
 
 class StringHelper:
     @staticmethod
-    def indent(level: int, increment: int, indent_base: str = "    ") -> Tuple[int, str]:
+    def indent(level: int, increment: int=0, indent_base: str = "    ") -> Tuple[int, str]:
         level += increment
         return level, indent_base * level
     
@@ -16,7 +16,7 @@ class MermaidGeneratorBase(ABC):
         super().__init__()
 
     @abstractmethod
-    def to_code(self) -> Iterable[str]:
+    def to_code(self, indent_level: int=0, indent_base: str="    ") -> Iterable[str]:
         pass
 
 
