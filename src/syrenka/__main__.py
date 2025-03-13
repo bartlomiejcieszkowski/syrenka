@@ -10,7 +10,7 @@ if __name__ == "__main__":
     mm = syrenka.MermaidClassDiagram()
     
     mm.add_classes(class_list)
-    mm.add_class(str)
+    #mm.add_class(str)
     
     r = mm.to_code()
     for l in r:

@@ -64,8 +64,10 @@ class MermaidClass(MermaidGeneratorBase):
         methods = []
 
         for x in dir(t):
-            if self.skip_underscores and x.startswith("__"):
+            if self.skip_underscores and x.startswith("__") and not x == "__init__":
                 continue
+
+            is_init = x is "__init__"
             attr = getattr(t, x)
             if callable(attr):
                 if not hasattr(attr, "__code__"):
@@ -87,8 +89,13 @@ class MermaidClass(MermaidGeneratorBase):
                         args_text = ""
                     methods.append(f"{indent}+{attr.__name__}({args_text})")
                 else:
+                    if is_init:
+                        for var in attr.__code__.co_names:
+                            if var not in ["super", "__init__"]:
+                                methods.append(f"{indent}-{var}")
+
                     args = attr.__code__.co_varnames[:attr.__code__.co_argcount]
-                    local_variables = attr.__code__.co_varnames[attr.__code__.co_argcount:]
+                    # local_variables = attr.__code__.co_varnames[attr.__code__.co_argcount:]
                     args_str = ', '.join(args)
                     methods.append(f"{indent}+{x}({args_str})")
 
