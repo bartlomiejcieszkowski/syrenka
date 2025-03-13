@@ -1,5 +1,5 @@
 # syrenka
-syrenka is mermaid.js markdown generator
+syrenka is mermaid markdown generator
 
 ## Description
 
