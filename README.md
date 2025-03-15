@@ -13,6 +13,7 @@ The aim of this project is to provide easy to use classes for generating mermaid
 
 Here are current classes with names starting with "Syrenka" in syrenka module:
 
+<!-- EX1_MERMAID_DIAGRAM_BEGIN -->
 ```mermaid
 ---
 title: syrenka class diagram
@@ -44,10 +45,12 @@ classDiagram
     }
 
 ```
+<!-- EX1_MERMAID_DIAGRAM_END -->
 
 So how do we get it?
 This is a code snippet that does it:
 
+<!-- EX1_SYRENKA_CODE_BEGIN -->
 ```python
 import syrenka
 from syrenka.base import generate_class_list_from_module
@@ -58,8 +61,10 @@ class_diagram.add_classes(generate_class_list_from_module(module_name="syrenka",
 for line in class_diagram.to_code():
     print(line)
 ```
+<!-- EX1_SYRENKA_CODE_END -->
 
 and the output:
+<!-- EX1_MERMAID_DIAGRAM_RAW_BEGIN -->
 ```cmd
 ---
 title: syrenka class diagram
@@ -91,6 +96,7 @@ classDiagram
     }
 
 ```
+<!-- EX1_MERMAID_DIAGRAM_RAW_END -->
 
 ready to use mermaid markdown
 
