@@ -11,29 +11,38 @@ The aim of this project is to provide easy to use classes for generating mermaid
 
 ## Example
 
-Here are current classes with names starting with "Mermaid" in syrenka module:
+Here are current classes with names starting with "Syrenka" in syrenka module:
 
 ```mermaid
 ---
 title: syrenka class diagram
 ---
 classDiagram
-    class MermaidClass{
-        +to_code(self)
+    class SyrenkaClass{
+        -cls
+        -indent
+        -skip_underscores
+        +__init__(self, cls, skip_underscores)
+        +to_code(self, indent_level, indent_base)
     }
-    class MermaidClassDiagram{
+    class SyrenkaClassDiagram{
+        -title
+        -classes
+        +__init__(self, title)
         +add_class(self, cls)
         +add_classes(self, classes)
-        +to_code(self)
+        +to_code(self, indent_level, indent_base)
     }
-    class MermaidFlowchart{
-        +to_code(self)
+    class SyrenkaFlowchart{
+        +__init__(self, title, direction, nodes)
+        +add(self, node)
+        +connect(self, source, target, edge_type)
+        +connect_by_id(self, source_id, target_id, edge_type)
+        +get_node_by_id(self, id)
+        +remove(self, node, exception_if_not_exists)
+        +to_code(self, indent_level, indent_base)
     }
-    class MermaidFlowchartDirection{
-    }
-    class MermaidGeneratorBase{
-        +to_code(self)
-    }
+
 ```
 
 So how do we get it?
@@ -41,9 +50,10 @@ This is a code snippet that does it:
 
 ```python
 import syrenka
+from syrenka.base import generate_class_list_from_module
 
-class_diagram  = syrenka.MermaidClassDiagram("syrenka class diagram")
-class_diagram.add_classes(syrenka.generate_class_list_from_module(module_name="syrenka", starts_with="Mermaid")
+class_diagram  = syrenka.SyrenkaClassDiagram("syrenka class diagram")
+class_diagram.add_classes(generate_class_list_from_module(module_name="syrenka", starts_with="Syrenka"))
 
 for line in class_diagram.to_code():
     print(line)
@@ -55,33 +65,31 @@ and the output:
 title: syrenka class diagram
 ---
 classDiagram
-    class MermaidClass{
+    class SyrenkaClass{
         -cls
         -indent
         -skip_underscores
         +__init__(self, cls, skip_underscores)
-        +to_code(self)
+        +to_code(self, indent_level, indent_base)
     }
-    class MermaidClassDiagram{
+    class SyrenkaClassDiagram{
         -title
         -classes
         +__init__(self, title)
         +add_class(self, cls)
         +add_classes(self, classes)
-        +to_code(self)
+        +to_code(self, indent_level, indent_base)
     }
-    class MermaidFlowchart{
-        -title
-        -direction
-        +__init__(self, title, direction)
-        +to_code(self)
+    class SyrenkaFlowchart{
+        +__init__(self, title, direction, nodes)
+        +add(self, node)
+        +connect(self, source, target, edge_type)
+        +connect_by_id(self, source_id, target_id, edge_type)
+        +get_node_by_id(self, id)
+        +remove(self, node, exception_if_not_exists)
+        +to_code(self, indent_level, indent_base)
     }
-    class MermaidFlowchartDirection{
-    }
-    class MermaidGeneratorBase{
-        +__init__(self)
-        +to_code(self)
-    }
+
 ```
 
 ready to use mermaid markdown
