@@ -1,7 +1,7 @@
-from .classdiagram import MermaidClass, MermaidClassDiagram
+from .classdiagram import SyrenkaClass, SyrenkaClassDiagram
 
 __all__ = [
     # classdiagram
-    'MermaidClass',
-    'MermaidClassDiagram',
+    'SyrenkaClass',
+    'SyrenkaClassDiagram',
     ]

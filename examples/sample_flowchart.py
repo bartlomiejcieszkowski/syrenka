@@ -18,12 +18,11 @@ import syrenka.flowchart as sf
 
 # TODO: Edges
 
-flowchart = sf.MermaidFlowchart("", sf.MermaidFlowchartDirection.TopToBottom,
+flowchart = sf.SyrenkaFlowchart("", sf.FlowchartDirection.TopToBottom,
     nodes=[
-        sf.Node("c1"),
-        sf.Node("a2"),
         sf.Subgraph("one", nodes=[
-            sf.Node("a1")
+            sf.Node("a1"),
+            sf.Node("a2"),
         ]),
         sf.Subgraph("two", nodes=[
             sf.Node("b1"),
@@ -36,5 +35,13 @@ flowchart = sf.MermaidFlowchart("", sf.MermaidFlowchartDirection.TopToBottom,
     ]
     )
 
-for line in flowchart.to_code():
+flowchart.connect_by_id("c1", "a2").connect_by_id("a1", "a2")
+flowchart.connect_by_id("b1", "b2").connect_by_id("c1", "c2")
+flowchart.connect_by_id("one", "two").connect_by_id("three", "two").connect_by_id("two", "c2")
+
+# oh great, if i declare edge c1 --> a2 before and after subgraphs, it gets drawn totally different
+mcode_lines = flowchart.to_code()
+
+for line in mcode_lines:
     print(line)
+

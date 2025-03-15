@@ -11,7 +11,7 @@ class StringHelper:
         return level, indent_base * level
     
 
-class MermaidGeneratorBase(ABC):
+class SyrenkaGeneratorBase(ABC):
     def __init__(self):
         super().__init__()
 

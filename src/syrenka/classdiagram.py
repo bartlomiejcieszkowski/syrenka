@@ -1,7 +1,7 @@
-from .base import MermaidGeneratorBase, StringHelper, is_builtin
+from .base import SyrenkaGeneratorBase, StringHelper, is_builtin
 from typing import Iterable
 
-class MermaidClass(MermaidGeneratorBase):
+class SyrenkaClass(SyrenkaGeneratorBase):
     def __init__(self, cls, skip_underscores: bool=True):
         super().__init__()
         self.cls = cls
@@ -67,11 +67,11 @@ class MermaidClass(MermaidGeneratorBase):
         return ret
 
 
-class MermaidClassDiagram(MermaidGeneratorBase):
+class SyrenkaClassDiagram(SyrenkaGeneratorBase):
     def __init__(self, title: str=""):
         super().__init__()
         self.title = title
-        self.classes : Iterable[MermaidGeneratorBase] = []
+        self.classes : Iterable[SyrenkaGeneratorBase] = []
         pass
 
     def to_code(self, indent_level: int=0, indent_base: str="    ") -> Iterable[str]:
@@ -89,7 +89,7 @@ class MermaidClassDiagram(MermaidGeneratorBase):
         return mcode
     
     def add_class(self, cls):
-        self.classes.append(MermaidClass(cls))
+        self.classes.append(SyrenkaClass(cls))
 
     def add_classes(self, classes):
         for cls in classes:
