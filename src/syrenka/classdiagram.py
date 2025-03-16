@@ -12,8 +12,6 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         ret = []
         t = self.cls
 
-        print(f"{t.__name__} builtin? {is_builtin(t)}")
-
         indent_level, indent = StringHelper.indent(indent_level, indent_base=indent_base)
 
         # class <name> {
@@ -42,8 +40,9 @@ class SyrenkaClass(SyrenkaGeneratorBase):
                             # this is naive
                             # str.center.__doc__
                             # 'Return a centered string of length width.\n\nPadding is done using the specified fill character (default is a space).'
-                        except ValueError:
+                        except (ValueError, AttributeError):
                             # substring not found
+                            # index found nothing
                             args_text = ""    
                     else:
                         args_text = ""
@@ -71,6 +70,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
     def __init__(self, title: str=""):
         super().__init__()
         self.title = title
+        self.unique_classes = {}
         self.classes : Iterable[SyrenkaGeneratorBase] = []
         pass
 
@@ -84,12 +84,15 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         ]
 
         for mclass in self.classes:
+            print(mclass.cls)
             mcode.extend(mclass.to_code(indent_level+1, indent_base))
 
         return mcode
     
     def add_class(self, cls):
-        self.classes.append(SyrenkaClass(cls))
+        if cls not in self.unique_classes:
+            self.classes.append(SyrenkaClass(cls))
+            self.unique_classes[cls] = None
 
     def add_classes(self, classes):
         for cls in classes:
