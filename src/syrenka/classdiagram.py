@@ -1,4 +1,4 @@
-from .base import SyrenkaGeneratorBase, StringHelper, is_builtin, dunder_name
+from .base import SyrenkaGeneratorBase, StringHelper, is_builtin, dunder_name, under_name, neutralize_under
 from inspect import isclass
 from typing import Iterable
 
@@ -54,16 +54,22 @@ class SyrenkaClass(SyrenkaGeneratorBase):
                             args_text = ""    
                     else:
                         args_text = ""
-                    methods.append(f"{indent}+{attr.__name__}({args_text})")
+                    if under_name(x):
+                        x = neutralize_under(x)
+                    methods.append(f"{indent}+{x}({args_text})")
                 else:
                     if is_init:
                         for var in attr.__code__.co_names:
                             if var not in ["super", "__init__"]:
-                                methods.append(f"{indent}-{var}")
+                                v = var
+                                v = neutralize_under(var) if under_name(var) else var
+                                methods.append(f"{indent}-{v}")
 
                     args = attr.__code__.co_varnames[:attr.__code__.co_argcount]
                     # local_variables = attr.__code__.co_varnames[attr.__code__.co_argcount:]
                     args_str = ', '.join(args)
+                    if under_name(x):
+                        x = neutralize_under(x)
                     methods.append(f"{indent}+{x}({args_str})")
 
         ret.extend(methods)
