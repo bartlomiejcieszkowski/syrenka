@@ -3,6 +3,7 @@ from typing import Iterable, Tuple
 from types import MethodType, ModuleType, FunctionType
 import builtins
 import importlib
+from inspect import isclass, ismodule
 
 
 class StringHelper:
@@ -34,6 +35,11 @@ def is_builtin(t):
 def dunder_name(s: str) -> bool:
     return s.startswith("__") and s.endswith("__")
 
+def under_name(s: str) -> bool:
+    return s.startswith("_") and s.endswith("_")
+
+def neutralize_under(s: str) -> str:
+    return s.replace("_", "\\_")
 
 def _classes_in_module(module: ModuleType, nested: bool=True):
     classes = []
@@ -41,22 +47,20 @@ def _classes_in_module(module: ModuleType, nested: bool=True):
 
     while len(stash):
         m = stash.pop()
-        print(m)
+        # print(m)
         for name in dir(m):
             if dunder_name(name):
                 continue
 
             attr = getattr(m, name)
-            if isinstance(attr, ModuleType) and nested:
-                if attr.__name__.startswith(module.__name__):
+            if ismodule(attr):
+                if nested and attr.__name__.startswith(module.__name__):
                     stash.append(attr)
                 continue
 
-            if isinstance(attr, FunctionType):
-                print(f"SKIP - {attr}")
+            if not isclass(attr):
                 continue
 
-            print(attr)
             classes.append(attr)
 
     return classes
@@ -75,6 +79,8 @@ def generate_class_list_from_module(module_name, starts_with=""):
             continue
         print(f"\t{name}")
         if name.startswith(starts_with):
-            classes.append(getattr(module, name))
+            attr = getattr(module, name)
+            if isclass(attr):
+                classes.append()
 
     return classes

@@ -1,5 +1,8 @@
-from .base import SyrenkaGeneratorBase, StringHelper, is_builtin
+from .base import SyrenkaGeneratorBase, StringHelper, is_builtin, dunder_name
+from inspect import isclass
 from typing import Iterable
+
+SKIP_OBJECT = True
 
 class SyrenkaClass(SyrenkaGeneratorBase):
     def __init__(self, cls, skip_underscores: bool=True):
@@ -11,6 +14,9 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     def to_code(self, indent_level: int=0, indent_base: str="    ") -> Iterable[str]:
         ret = []
         t = self.cls
+        #if not callable(t):
+        if not isclass(t):
+            return ret
 
         indent_level, indent = StringHelper.indent(indent_level, indent_base=indent_base)
 
@@ -22,10 +28,12 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         methods = []
 
         for x in dir(t):
-            if self.skip_underscores and x.startswith("__") and not x == "__init__":
-                continue
+            is_init = False
+            if self.skip_underscores and dunder_name(x):
+                is_init = x == "__init__"
+                if not is_init:
+                    continue
 
-            is_init = x is "__init__"
             attr = getattr(t, x)
             if callable(attr):
                 if not hasattr(attr, "__code__"):
@@ -63,6 +71,15 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
         ret.append(f"{indent}{'}'}")
 
+        # inheritence
+        bases = getattr(t, "__bases__", None)
+        if bases:
+            for base in bases:
+                if SKIP_OBJECT and base.__name__ == "object":
+                    continue
+                ret.append(f"{indent}{base.__name__} <|-- {t.__name__}")
+                #print(f"{t.__name__} base: {base.__name__}")
+
         return ret
 
 
@@ -84,7 +101,6 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         ]
 
         for mclass in self.classes:
-            print(mclass.cls)
             mcode.extend(mclass.to_code(indent_level+1, indent_base))
 
         return mcode
