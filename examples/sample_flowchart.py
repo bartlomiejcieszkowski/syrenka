@@ -45,3 +45,6 @@ mcode_lines = flowchart.to_code()
 for line in mcode_lines:
     print(line)
 
+from pathlib import Path
+from syrenka.generate import generate_from_lines
+generate_from_lines(mcode_lines, Path("out.svg"), overwrite=True)
