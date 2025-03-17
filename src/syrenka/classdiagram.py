@@ -1,5 +1,5 @@
 from .base import SyrenkaGeneratorBase, StringHelper, dunder_name, under_name, neutralize_under
-from inspect import isclass
+from inspect import isclass, getfullargspec, isbuiltin, ismethoddescriptor
 from typing import Iterable
 
 SKIP_OBJECT = True
@@ -36,41 +36,46 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
             attr = getattr(t, x)
             if callable(attr):
-                if not hasattr(attr, "__code__"):
-                    # case of <class 'method_descriptor'>, built-in methods
-                    # __code__ approach can't be used for them
-                    # heuristic with doc string..
-                    if hasattr(attr, "__doc__"):
-                        d = attr.__doc__
-                        # print(f"{attr.__name__} ", d)
-                        try:
-                            args_text = d[d.index('(')+1:d.index(')')]
-                            # this is naive
-                            # str.center.__doc__
-                            # 'Return a centered string of length width.\n\nPadding is done using the specified fill character (default is a space).'
-                        except (ValueError, AttributeError):
-                            # substring not found
-                            # index found nothing
-                            args_text = ""    
-                    else:
-                        args_text = ""
-                    if under_name(x):
-                        x = neutralize_under(x)
-                    methods.append(f"{indent}+{x}({args_text})")
-                else:
-                    if is_init:
-                        for var in attr.__code__.co_names:
-                            if var not in ["super", "__init__"]:
-                                v = var
-                                v = neutralize_under(var) if under_name(var) else var
-                                methods.append(f"{indent}-{v}")
+                fullarg = None
 
-                    args = attr.__code__.co_varnames[:attr.__code__.co_argcount]
-                    # local_variables = attr.__code__.co_varnames[attr.__code__.co_argcount:]
-                    args_str = ', '.join(args)
-                    if under_name(x):
-                        x = neutralize_under(x)
-                    methods.append(f"{indent}+{x}({args_str})")
+                if isbuiltin(attr):
+                    #print(f"builtin: {t.__name__}.{x} - skip - fails getfullargspec")
+                    continue
+
+                if ismethoddescriptor(attr):
+                    #print(f"methoddescriptor: {t.__name__}.{x} - skip - fails getfullargspec")
+                    f = getattr(attr, "__func__", None)
+                    #print(f)
+                    #print(attr)
+                    #print(dir(attr))
+                    if f is None:
+                        # <slot wrapper '__init__' of 'object' objects>
+                        continue
+
+                    # <bound method _SpecialGenericAlias.__init__ of typing.MutableSequence>
+                    fullarg = getfullargspec(f)
+                    print(f"bound fun {f.__name__}: {fullarg}")
+
+                if fullarg is None:
+                    fullarg = getfullargspec(attr)
+                args_text = "("
+                arg_text_list = []
+                for arg in fullarg.args:
+                    arg_text = arg
+
+                    if arg in fullarg.annotations:
+                        type_hint = fullarg.annotations.get(arg)
+                        if hasattr(type_hint, "__qualname__"):
+                            arg_text = type_hint.__qualname__ + " " + arg_text
+                        else:
+                            #print(f"no __qualname__ - {type_hint} - type: {type(type_hint)}")
+                            pass
+                        # extract type hint
+
+                    arg_text_list.append(arg_text)
+
+                args_text = ', '.join(arg_text_list)
+                methods.append(f"{indent}+{neutralize_under(x) if under_name(x) else x}({args_text})")
 
         ret.extend(methods)
         indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
