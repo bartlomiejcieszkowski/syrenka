@@ -55,4 +55,13 @@ flowchart.connect_by_id("one", "two").connect_by_id("three", "two").connect_by_i
 
 # beware, it looks like in mermaid order of the edge changes how its rendered
 # if i declare edge c1 --> a2 before and after subgraphs, it gets drawn totally different
-flowchart.to_code(file=sys.stdout)
+
+from io import StringIO
+out = StringIO()
+flowchart.to_code(file=out)
+
+print(out.getvalue())
+
+from pathlib import Path
+from syrenka.generate import generate_from_lines
+generate_from_lines(out.getvalue(), Path("out.svg"), overwrite=True)
