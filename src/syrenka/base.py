@@ -22,16 +22,6 @@ class SyrenkaGeneratorBase(ABC):
         pass
 
 
-# type(s).__name__ in dir(builtins)
-def is_builtin(t):
-    builtin = getattr(builtins, t.__name__, None)
-
-    # This one is only needed if we want to safeguard against typee = None
-    if not builtin:
-        return False
-    
-    return builtin is t
-
 def dunder_name(s: str) -> bool:
     return s.startswith("__") and s.endswith("__")
 

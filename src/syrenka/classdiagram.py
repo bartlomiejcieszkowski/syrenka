@@ -1,4 +1,4 @@
-from .base import SyrenkaGeneratorBase, StringHelper, is_builtin, dunder_name, under_name, neutralize_under
+from .base import SyrenkaGeneratorBase, StringHelper, dunder_name, under_name, neutralize_under
 from inspect import isclass
 from typing import Iterable
 
