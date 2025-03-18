@@ -3,8 +3,8 @@ from .flowchart import SyrenkaFlowchart
 
 __all__ = [
     # .classdiagram
-    'SyrenkaClass',
-    'SyrenkaClassDiagram',
+    "SyrenkaClass",
+    "SyrenkaClassDiagram",
     # .flowchart
-    'SyrenkaFlowchart',
-    ]
+    "SyrenkaFlowchart",
+]

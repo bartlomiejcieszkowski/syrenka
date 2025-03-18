@@ -2,7 +2,8 @@ import argparse
 import sys
 from pathlib import Path
 
-def replace(file_path: Path,  tag_start: str, tag_end: str, replace_file_path: Path):
+
+def replace(file_path: Path, tag_start: str, tag_end: str, replace_file_path: Path):
     with file_path.open("r") as f:
         file_text = f.readlines()
 
@@ -44,10 +45,16 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if not replace_file_path.exists():
-        print(f"--replace-file is invalid - {args.replace_file} doesn't exist", file=sys.stderr)
+        print(
+            f"--replace-file is invalid - {args.replace_file} doesn't exist",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    replace(file_path=file_path, tag_start=args.start, tag_end=args.end, replace_file_path=replace_file_path)
+    replace(
+        file_path=file_path,
+        tag_start=args.start,
+        tag_end=args.end,
+        replace_file_path=replace_file_path,
+    )
     sys.exit(0)
-
-

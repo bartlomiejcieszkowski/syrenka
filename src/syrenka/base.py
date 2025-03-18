@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, Tuple
-from types import MethodType, ModuleType, FunctionType
-import builtins
+from types import ModuleType
 import importlib
 from inspect import isclass, ismodule
 import sys
@@ -9,32 +8,41 @@ import sys
 
 class StringHelper:
     @staticmethod
-    def indent(level: int, increment: int=0, indent_base: str = "    ") -> Tuple[int, str]:
+    def indent(
+        level: int, increment: int = 0, indent_base: str = "    "
+    ) -> Tuple[int, str]:
         level += increment
         return level, indent_base * level
-    
+
 
 class SyrenkaGeneratorBase(ABC):
     def __init__(self):
         super().__init__()
 
     @abstractmethod
-    def to_code(self, indent_level: int=0, indent_base: str="    ") -> Iterable[str]:
+    def to_code(
+        self, indent_level: int = 0, indent_base: str = "    "
+    ) -> Iterable[str]:
         pass
+
 
 def isbuiltin_module(module: ModuleType) -> bool:
     return module.__name__ in sys.builtin_module_names
 
+
 def dunder_name(s: str) -> bool:
     return s.startswith("__") and s.endswith("__")
+
 
 def under_name(s: str) -> bool:
     return s.startswith("_") and s.endswith("_")
 
+
 def neutralize_under(s: str) -> str:
     return s.replace("_", "\\_")
 
-def _classes_in_module(module: ModuleType, nested: bool=True):
+
+def _classes_in_module(module: ModuleType, nested: bool = True):
     classes = []
     stash = [module]
 
@@ -59,10 +67,10 @@ def _classes_in_module(module: ModuleType, nested: bool=True):
     return classes
 
 
-
-def classes_in_module(module_name, nested: bool=True):
+def classes_in_module(module_name, nested: bool = True):
     module = importlib.import_module(module_name)
     return _classes_in_module(module, nested)
+
 
 def generate_class_list_from_module(module_name, starts_with=""):
     module = importlib.import_module(module_name)
