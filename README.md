@@ -48,13 +48,28 @@ classDiagram
     }
     SyrenkaGeneratorBase <|-- Edge
     class EdgeType{
+        <<enumeration>>
+        ArrowEdge
+        CircleEdge
+        CrossEdge
+        DottedLink
+        InvisibleLink
+        MultiArrowEdge
+        MultiCircleEdge
+        MultiCrossEdge
+        OpenLink
+        ThickLink
     }
-    Enum <|-- EdgeType
     class Enum{
+        <<enumeration>>
     }
     class FlowchartDirection{
+        <<enumeration>>
+        BottomToTop
+        LeftToRight
+        RightToLeft
+        TopToBottom
     }
-    Enum <|-- FlowchartDirection
     class MutableSequence{
         +append(self, value)
         +clear(self)
@@ -73,8 +88,21 @@ classDiagram
     }
     SyrenkaGeneratorBase <|-- Node
     class NodeShape{
+        <<enumeration>>
+        AssymetricShape
+        Circle
+        CylindricalShape
+        Default
+        DoubleCircle
+        HexagonNode
+        Parallelogram
+        Rhombus
+        RoundEdges
+        StadiumShapedNode
+        SubroutineShape
+        Trapezoid
+        TrapezoidAlt
     }
-    Enum <|-- NodeShape
     class OrderedDict{
     }
     dict <|-- OrderedDict
@@ -94,11 +122,12 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     ABC <|-- SyrenkaGeneratorBase
+    class SyrenkaEnum{
+        +\_\_init\_\_(self, cls, bool skip_underscores)
+        +to_code(self, int indent_level, str indent_base)
+    }
+    SyrenkaGeneratorBase <|-- SyrenkaEnum
     class ABC{
-    }
-    class function{
-    }
-    class method{
     }
     class module{
     }
@@ -111,14 +140,15 @@ This is a code snippet that does it:
 <!-- EX1_SYRENKA_CODE_BEGIN -->
 ```python
 import syrenka
-from syrenka.base import generate_class_list_from_module, classes_in_module
+from syrenka.base import classes_in_module
 
-class_diagram  = syrenka.SyrenkaClassDiagram("syrenka class diagram")
-#class_diagram.add_classes(generate_class_list_from_module(module_name="syrenka", starts_with="Syrenka"))
+class_diagram = syrenka.SyrenkaClassDiagram("syrenka class diagram")
+# class_diagram.add_classes(generate_class_list_from_module(module_name="syrenka", starts_with="Syrenka"))
 class_diagram.add_classes(classes_in_module(module_name="syrenka", nested=True))
 
 for line in class_diagram.to_code():
-    print(line) 
+    print(line)
+
 ```
 <!-- EX1_SYRENKA_CODE_END -->
 
@@ -158,13 +188,28 @@ classDiagram
     }
     SyrenkaGeneratorBase <|-- Edge
     class EdgeType{
+        <<enumeration>>
+        ArrowEdge
+        CircleEdge
+        CrossEdge
+        DottedLink
+        InvisibleLink
+        MultiArrowEdge
+        MultiCircleEdge
+        MultiCrossEdge
+        OpenLink
+        ThickLink
     }
-    Enum <|-- EdgeType
     class Enum{
+        <<enumeration>>
     }
     class FlowchartDirection{
+        <<enumeration>>
+        BottomToTop
+        LeftToRight
+        RightToLeft
+        TopToBottom
     }
-    Enum <|-- FlowchartDirection
     class MutableSequence{
         +append(self, value)
         +clear(self)
@@ -183,8 +228,21 @@ classDiagram
     }
     SyrenkaGeneratorBase <|-- Node
     class NodeShape{
+        <<enumeration>>
+        AssymetricShape
+        Circle
+        CylindricalShape
+        Default
+        DoubleCircle
+        HexagonNode
+        Parallelogram
+        Rhombus
+        RoundEdges
+        StadiumShapedNode
+        SubroutineShape
+        Trapezoid
+        TrapezoidAlt
     }
-    Enum <|-- NodeShape
     class OrderedDict{
     }
     dict <|-- OrderedDict
@@ -204,11 +262,12 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     ABC <|-- SyrenkaGeneratorBase
+    class SyrenkaEnum{
+        +\_\_init\_\_(self, cls, bool skip_underscores)
+        +to_code(self, int indent_level, str indent_base)
+    }
+    SyrenkaGeneratorBase <|-- SyrenkaEnum
     class ABC{
-    }
-    class function{
-    }
-    class method{
     }
     class module{
     }
@@ -216,4 +275,3 @@ classDiagram
 <!-- EX1_MERMAID_DIAGRAM_RAW_END -->
 
 ready to use mermaid markdown
-
