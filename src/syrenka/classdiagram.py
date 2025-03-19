@@ -5,10 +5,50 @@ from .base import (
     under_name,
     neutralize_under,
 )
+from enum import Enum
 from inspect import isclass, getfullargspec, isbuiltin, ismethoddescriptor
 from typing import Iterable
 
 SKIP_OBJECT = True
+
+
+class SyrenkaEnum(SyrenkaGeneratorBase):
+    def __init__(self, cls, skip_underscores: bool = True):
+        super().__init__()
+        self.cls = cls
+        self.indent = 4 * " "
+        self.skip_underscores = skip_underscores
+
+    def to_code(
+        self, indent_level: int = 0, indent_base: str = "    "
+    ) -> Iterable[str]:
+        ret = []
+        t = self.cls
+
+        indent_level, indent = StringHelper.indent(
+            indent_level, indent_base=indent_base
+        )
+
+        # class <name> {
+        ret.append(f"{indent}class {t.__name__}{'{'}")
+        indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
+
+        ret.append(indent + "<<enumeration>>")
+
+        for x in dir(t):
+            if dunder_name(x):
+                continue
+
+            attr = getattr(t, x)
+            if type(attr) is t:
+                # enum values are instances of this enum
+                ret.append(indent + x)
+
+        # TODO: what about methods in enum?
+        indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
+        ret.append(f"{indent}{'}'}")
+
+        return ret
 
 
 class SyrenkaClass(SyrenkaGeneratorBase):
@@ -23,9 +63,6 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     ) -> Iterable[str]:
         ret = []
         t = self.cls
-        # if not callable(t):
-        if not isclass(t):
-            return ret
 
         indent_level, indent = StringHelper.indent(
             indent_level, indent_base=indent_base
@@ -107,6 +144,16 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         return ret
 
 
+def get_syrenka_cls(cls):
+    if not isclass(cls):
+        return None
+
+    if issubclass(cls, Enum):
+        return SyrenkaEnum
+
+    return SyrenkaClass
+
+
 class SyrenkaClassDiagram(SyrenkaGeneratorBase):
     def __init__(self, title: str = ""):
         super().__init__()
@@ -131,9 +178,12 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
 
         return mcode
 
+    # TODO: check cls file origin
     def add_class(self, cls):
         if cls not in self.unique_classes:
-            self.classes.append(SyrenkaClass(cls))
+            syrenka_cls = get_syrenka_cls(cls)
+            if syrenka_cls:
+                self.classes.append(syrenka_cls(cls=cls))
             self.unique_classes[cls] = None
 
     def add_classes(self, classes):
