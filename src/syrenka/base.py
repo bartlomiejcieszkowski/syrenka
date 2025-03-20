@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Iterable, Tuple
 from types import ModuleType
 import importlib
@@ -43,11 +44,16 @@ def neutralize_under(s: str) -> str:
 
 
 def _classes_in_module(module: ModuleType, nested: bool = True):
+    module_path = Path(module.__file__).parent
+
     classes = []
+    module_names = []
     stash = [module]
 
     while len(stash):
         m = stash.pop()
+        module_names.append(m.__name__)
+
         # print(m)
         for name in dir(m):
             if dunder_name(name):
@@ -55,14 +61,24 @@ def _classes_in_module(module: ModuleType, nested: bool = True):
 
             attr = getattr(m, name)
             if ismodule(attr):
-                if nested and attr.__name__.startswith(module.__name__):
-                    stash.append(attr)
-                continue
+                if not nested:
+                    continue
+
+                if not hasattr(attr, "__file__"):
+                    # eg. sys
+                    continue
+
+                if module_path not in Path(attr.__file__).parents:
+                    continue
+
+                stash.append(attr)
 
             if not isclass(attr):
                 continue
 
             classes.append(attr)
+
+    classes[:] = [classe for classe in classes if classe.__module__ in module_names]
 
     return classes
 
