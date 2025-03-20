@@ -60,9 +60,6 @@ classDiagram
         OpenLink
         ThickLink
     }
-    class Enum{
-        <<enumeration>>
-    }
     class FlowchartDirection{
         <<enumeration>>
         BottomToTop
@@ -70,18 +67,6 @@ classDiagram
         RightToLeft
         TopToBottom
     }
-    class MutableSequence{
-        +append(self, value)
-        +clear(self)
-        +count(self, value)
-        +extend(self, values)
-        +index(self, value, start, stop)
-        +insert(self, index, value)
-        +pop(self, index)
-        +remove(self, value)
-        +reverse(self)
-    }
-    Sequence <|-- MutableSequence
     class Node{
         +\_\_init\_\_(self, str id, Optional text, NodeShape shape)
         +to_code(self, int indent_level, str indent_base)
@@ -103,9 +88,6 @@ classDiagram
         Trapezoid
         TrapezoidAlt
     }
-    class OrderedDict{
-    }
-    dict <|-- OrderedDict
     class StringHelper{
         +indent(int level, int increment, str indent_base)
     }
@@ -127,10 +109,6 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     SyrenkaGeneratorBase <|-- SyrenkaEnum
-    class ABC{
-    }
-    class module{
-    }
 ```
 <!-- EX1_MERMAID_DIAGRAM_END -->
 
@@ -143,7 +121,6 @@ import syrenka
 from syrenka.base import classes_in_module
 
 class_diagram = syrenka.SyrenkaClassDiagram("syrenka class diagram")
-# class_diagram.add_classes(generate_class_list_from_module(module_name="syrenka", starts_with="Syrenka"))
 class_diagram.add_classes(classes_in_module(module_name="syrenka", nested=True))
 
 for line in class_diagram.to_code():
@@ -200,9 +177,6 @@ classDiagram
         OpenLink
         ThickLink
     }
-    class Enum{
-        <<enumeration>>
-    }
     class FlowchartDirection{
         <<enumeration>>
         BottomToTop
@@ -210,18 +184,6 @@ classDiagram
         RightToLeft
         TopToBottom
     }
-    class MutableSequence{
-        +append(self, value)
-        +clear(self)
-        +count(self, value)
-        +extend(self, values)
-        +index(self, value, start, stop)
-        +insert(self, index, value)
-        +pop(self, index)
-        +remove(self, value)
-        +reverse(self)
-    }
-    Sequence <|-- MutableSequence
     class Node{
         +\_\_init\_\_(self, str id, Optional text, NodeShape shape)
         +to_code(self, int indent_level, str indent_base)
@@ -243,9 +205,6 @@ classDiagram
         Trapezoid
         TrapezoidAlt
     }
-    class OrderedDict{
-    }
-    dict <|-- OrderedDict
     class StringHelper{
         +indent(int level, int increment, str indent_base)
     }
@@ -267,10 +226,6 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     SyrenkaGeneratorBase <|-- SyrenkaEnum
-    class ABC{
-    }
-    class module{
-    }
 ```
 <!-- EX1_MERMAID_DIAGRAM_RAW_END -->
 
