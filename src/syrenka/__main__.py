@@ -2,11 +2,11 @@ import os
 import sys
 import argparse
 import syrenka
-from syrenka.base import classes_in_module
+from syrenka.lang.python import ModuleAnalysis
 
 
 def _class_diagram(args):
-    classes = classes_in_module(args.module, args.nested)
+    classes = ModuleAnalysis.classes_in_module(args.module, args.nested)
 
     class_diagram = syrenka.SyrenkaClassDiagram()
     class_diagram.add_classes(classes)
