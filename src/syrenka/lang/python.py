@@ -40,8 +40,10 @@ class ModuleAnalysis(ABC):
                         # eg. sys
                         continue
 
-                    if module_path not in Path(attr.__file__).parents:
-                        continue
+                    if attr.__file__:
+                        # namespace might have None for file, eg folder without __init__.py
+                        if module_path not in Path(attr.__file__).parents:
+                            continue
 
                     stash.append(attr)
 
