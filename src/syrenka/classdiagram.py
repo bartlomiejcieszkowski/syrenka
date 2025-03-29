@@ -6,8 +6,10 @@ from .base import (
     neutralize_under,
 )
 from enum import Enum
-from inspect import isclass, getfullargspec, isbuiltin, ismethoddescriptor
+from inspect import isclass
 from typing import Iterable
+
+from syrenka.lang.python import PythonClass
 
 SKIP_OBJECT = True
 
@@ -63,7 +65,7 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
 class SyrenkaClass(SyrenkaGeneratorBase):
     def __init__(self, cls, skip_underscores: bool = True):
         super().__init__()
-        self.cls = cls
+        self.lang_class = PythonClass(cls)
         self.indent = 4 * " "
         self.skip_underscores = skip_underscores
 
@@ -71,83 +73,37 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         self, indent_level: int = 0, indent_base: str = "    "
     ) -> Iterable[str]:
         ret = []
-        t = self.cls
 
         indent_level, indent = StringHelper.indent(
             indent_level, indent_base=indent_base
         )
 
         # class <name> {
-        ret.append(f"{indent}class {t.__name__}{'{'}")
+        ret.append(f"{indent}class {self.lang_class.name()}{'{'}")
 
         indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
 
-        methods = []
+        for function, args in self.lang_class.functions():
+            args_text = ""
+            if args:
+                args_text = ", ".join(args)
 
-        for x in dir(t):
-            is_init = False
-            if self.skip_underscores and dunder_name(x):
-                is_init = x == "__init__"
-                if not is_init:
-                    continue
+            function_sanitized = (
+                neutralize_under(function) if under_name(function) else function
+            )
+            ret.append(f"{indent}+{function_sanitized}({args_text})")
 
-            attr = getattr(t, x)
-            if callable(attr):
-                fullarg = None
-
-                if isbuiltin(attr):
-                    # print(f"builtin: {t.__name__}.{x} - skip - fails getfullargspec")
-                    continue
-
-                if ismethoddescriptor(attr):
-                    # print(f"methoddescriptor: {t.__name__}.{x} - skip - fails getfullargspec")
-                    f = getattr(attr, "__func__", None)
-                    # print(f)
-                    # print(attr)
-                    # print(dir(attr))
-                    if f is None:
-                        # <slot wrapper '__init__' of 'object' objects>
-                        continue
-
-                    # <bound method _SpecialGenericAlias.__init__ of typing.MutableSequence>
-                    fullarg = getfullargspec(f)
-                    print(f"bound fun {f.__name__}: {fullarg}")
-
-                if fullarg is None:
-                    fullarg = getfullargspec(attr)
-                args_text = "("
-                arg_text_list = []
-                for arg in fullarg.args:
-                    arg_text = arg
-
-                    if arg in fullarg.annotations:
-                        type_hint = fullarg.annotations.get(arg)
-                        if hasattr(type_hint, "__qualname__"):
-                            arg_text = type_hint.__qualname__ + " " + arg_text
-                        else:
-                            # print(f"no __qualname__ - {type_hint} - type: {type(type_hint)}")
-                            pass
-                        # extract type hint
-
-                    arg_text_list.append(arg_text)
-
-                args_text = ", ".join(arg_text_list)
-                methods.append(
-                    f"{indent}+{neutralize_under(x) if under_name(x) else x}({args_text})"
-                )
-
-        ret.extend(methods)
         indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
 
         ret.append(f"{indent}{'}'}")
 
         # inheritence
-        bases = getattr(t, "__bases__", None)
+        bases = getattr(self.lang_class.cls, "__bases__", None)
         if bases:
             for base in bases:
                 if SKIP_OBJECT and base.__name__ == "object":
                     continue
-                ret.append(f"{indent}{base.__name__} <|-- {t.__name__}")
+                ret.append(f"{indent}{base.__name__} <|-- {self.lang_class.name()}")
                 # print(f"{t.__name__} base: {base.__name__}")
 
         return ret

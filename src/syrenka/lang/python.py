@@ -5,8 +5,95 @@ from types import ModuleType
 import importlib
 
 import sys
+from inspect import getfullargspec, isbuiltin, ismethoddescriptor
 
 from syrenka.base import dunder_name
+
+from syrenka.lang.base import LangClass
+
+
+class PythonClass(LangClass):
+    def __init__(self, cls):
+        super().__init__()
+        self.cls = cls
+        self.parsed = False
+        self.info = {}
+        self.skip_underscores = True
+
+    def _parse(self, force: bool = False):
+        if self.parsed and not force:
+            return
+
+        self.info.clear()
+
+        functions = []
+        attributes = []
+
+        for x in dir(self.cls):
+            is_init = False
+            if self.skip_underscores and dunder_name(x):
+                is_init = x == "__init__"
+                if not is_init:
+                    continue
+
+            attr = getattr(self.cls, x)
+            if callable(attr):
+                fullarg = None
+
+                if isbuiltin(attr):
+                    # print(f"builtin: {t.__name__}.{x} - skip - fails getfullargspec")
+                    continue
+
+                if ismethoddescriptor(attr):
+                    # print(f"methoddescriptor: {t.__name__}.{x} - skip - fails getfullargspec")
+                    f = getattr(attr, "__func__", None)
+                    # print(f)
+                    # print(attr)
+                    # print(dir(attr))
+                    if f is None:
+                        # <slot wrapper '__init__' of 'object' objects>
+                        continue
+
+                    # <bound method _SpecialGenericAlias.__init__ of typing.MutableSequence>
+                    fullarg = getfullargspec(f)
+                    # print(f"bound fun {f.__name__}: {fullarg}")
+
+                if fullarg is None:
+                    fullarg = getfullargspec(attr)
+
+                arg_text_list = None
+                if fullarg.args:
+                    arg_text_list = []
+                    for arg in fullarg.args:
+                        arg_text = arg
+
+                        if arg in fullarg.annotations:
+                            type_hint = fullarg.annotations.get(arg)
+                            if hasattr(type_hint, "__qualname__"):
+                                arg_text = type_hint.__qualname__ + " " + arg_text
+                            else:
+                                # print(f"no __qualname__ - {type_hint} - type: {type(type_hint)}")
+                                pass
+                            # extract type hint
+
+                        arg_text_list.append(arg_text)
+
+                functions.append((x, arg_text_list))
+
+        self.info["functions"] = functions
+        self.info["attributes"] = attributes
+        self.parsed = True
+
+    def name(self):
+        return self.cls.__name__
+
+    def functions(self):
+        self._parse()
+        return self.info["functions"]
+
+    def attributes(self):
+        self._parse()
+        return self.info["attributes"]
 
 
 class ModuleAnalysis(ABC):

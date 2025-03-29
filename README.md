@@ -41,6 +41,10 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     Subgraph <|-- SyrenkaFlowchart
+    class LangClass{
+        +\_\_init\_\_(self)
+    }
+    ABC <|-- LangClass
     class ModuleAnalysis{
         +_classes_in_module(module module, bool nested)
         +classes_in_module(module_name, bool nested)
@@ -48,6 +52,14 @@ classDiagram
         +isbuiltin_module(module module)
     }
     ABC <|-- ModuleAnalysis
+    class PythonClass{
+        +\_\_init\_\_(self, cls)
+        +_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+        +name(self)
+    }
+    LangClass <|-- PythonClass
     class Edge{
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
@@ -166,6 +178,10 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     Subgraph <|-- SyrenkaFlowchart
+    class LangClass{
+        +\_\_init\_\_(self)
+    }
+    ABC <|-- LangClass
     class ModuleAnalysis{
         +_classes_in_module(module module, bool nested)
         +classes_in_module(module_name, bool nested)
@@ -173,6 +189,14 @@ classDiagram
         +isbuiltin_module(module module)
     }
     ABC <|-- ModuleAnalysis
+    class PythonClass{
+        +\_\_init\_\_(self, cls)
+        +_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+        +name(self)
+    }
+    LangClass <|-- PythonClass
     class Edge{
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
