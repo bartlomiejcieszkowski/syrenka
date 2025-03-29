@@ -41,6 +41,13 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     Subgraph <|-- SyrenkaFlowchart
+    class ModuleAnalysis{
+        +_classes_in_module(module module, bool nested)
+        +classes_in_module(module_name, bool nested)
+        +generate_class_list_from_module(module_name, starts_with)
+        +isbuiltin_module(module module)
+    }
+    ABC <|-- ModuleAnalysis
     class Edge{
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
@@ -118,14 +125,15 @@ This is a code snippet that does it:
 <!-- EX1_SYRENKA_CODE_BEGIN -->
 ```python
 import syrenka
-from syrenka.base import classes_in_module
+from syrenka.lang.python import ModuleAnalysis
 
 class_diagram = syrenka.SyrenkaClassDiagram("syrenka class diagram")
-class_diagram.add_classes(classes_in_module(module_name="syrenka", nested=True))
+class_diagram.add_classes(
+    ModuleAnalysis.classes_in_module(module_name="syrenka", nested=True)
+)
 
 for line in class_diagram.to_code():
     print(line)
-
 ```
 <!-- EX1_SYRENKA_CODE_END -->
 
@@ -158,6 +166,13 @@ classDiagram
         +to_code(self, int indent_level, str indent_base)
     }
     Subgraph <|-- SyrenkaFlowchart
+    class ModuleAnalysis{
+        +_classes_in_module(module module, bool nested)
+        +classes_in_module(module_name, bool nested)
+        +generate_class_list_from_module(module_name, starts_with)
+        +isbuiltin_module(module module)
+    }
+    ABC <|-- ModuleAnalysis
     class Edge{
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
