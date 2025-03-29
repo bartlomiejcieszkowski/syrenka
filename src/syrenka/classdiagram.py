@@ -79,7 +79,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         )
 
         # class <name> {
-        ret.append(f"{indent}class {self.lang_class.name()}{'{'}")
+        ret.append(f"{indent}class {self.lang_class.name}{'{'}")
 
         indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
 
@@ -103,7 +103,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
             for base in bases:
                 if SKIP_OBJECT and base.__name__ == "object":
                     continue
-                ret.append(f"{indent}{base.__name__} <|-- {self.lang_class.name()}")
+                ret.append(f"{indent}{base.__name__} <|-- {self.lang_class.name}")
                 # print(f"{t.__name__} base: {base.__name__}")
 
         return ret

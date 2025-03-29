@@ -84,6 +84,7 @@ class PythonClass(LangClass):
         self.info["attributes"] = attributes
         self.parsed = True
 
+    @property
     def name(self):
         return self.cls.__name__
 
