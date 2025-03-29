@@ -43,23 +43,32 @@ classDiagram
     Subgraph <|-- SyrenkaFlowchart
     class LangClass{
         +\_\_init\_\_(self)
-    }
-    ABC <|-- LangClass
-    class ModuleAnalysis{
-        +_classes_in_module(module module, bool nested)
-        +classes_in_module(module_name, bool nested)
-        +generate_class_list_from_module(module_name, starts_with)
-        +isbuiltin_module(module module)
-    }
-    ABC <|-- ModuleAnalysis
-    class PythonClass{
-        +\_\_init\_\_(self, cls)
         +_parse(self, bool force)
         +attributes(self)
         +functions(self)
         +name(self)
     }
+    ABC <|-- LangClass
+    class LangFunction{
+        +\_\_init\_\_(self, LangVar ident, list args)
+    }
+    class LangVar{
+        +\_\_init\_\_(self, str name, str typee)
+    }
+    class PythonClass{
+        +\_\_init\_\_(self, cls)
+        +_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+    }
     LangClass <|-- PythonClass
+    class PythonModuleAnalysis{
+        +_classes_in_module(module module, bool nested)
+        +classes_in_module(module_name, bool nested)
+        +generate_class_list_from_module(module_name, starts_with)
+        +isbuiltin_module(module module)
+    }
+    ABC <|-- PythonModuleAnalysis
     class Edge{
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
@@ -137,11 +146,11 @@ This is a code snippet that does it:
 <!-- EX1_SYRENKA_CODE_BEGIN -->
 ```python
 import syrenka
-from syrenka.lang.python import ModuleAnalysis
+from syrenka.lang.python import PythonModuleAnalysis
 
 class_diagram = syrenka.SyrenkaClassDiagram("syrenka class diagram")
 class_diagram.add_classes(
-    ModuleAnalysis.classes_in_module(module_name="syrenka", nested=True)
+    PythonModuleAnalysis.classes_in_module(module_name="syrenka", nested=True)
 )
 
 for line in class_diagram.to_code():
@@ -180,23 +189,32 @@ classDiagram
     Subgraph <|-- SyrenkaFlowchart
     class LangClass{
         +\_\_init\_\_(self)
-    }
-    ABC <|-- LangClass
-    class ModuleAnalysis{
-        +_classes_in_module(module module, bool nested)
-        +classes_in_module(module_name, bool nested)
-        +generate_class_list_from_module(module_name, starts_with)
-        +isbuiltin_module(module module)
-    }
-    ABC <|-- ModuleAnalysis
-    class PythonClass{
-        +\_\_init\_\_(self, cls)
         +_parse(self, bool force)
         +attributes(self)
         +functions(self)
         +name(self)
     }
+    ABC <|-- LangClass
+    class LangFunction{
+        +\_\_init\_\_(self, LangVar ident, list args)
+    }
+    class LangVar{
+        +\_\_init\_\_(self, str name, str typee)
+    }
+    class PythonClass{
+        +\_\_init\_\_(self, cls)
+        +_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+    }
     LangClass <|-- PythonClass
+    class PythonModuleAnalysis{
+        +_classes_in_module(module module, bool nested)
+        +classes_in_module(module_name, bool nested)
+        +generate_class_list_from_module(module_name, starts_with)
+        +isbuiltin_module(module module)
+    }
+    ABC <|-- PythonModuleAnalysis
     class Edge{
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
