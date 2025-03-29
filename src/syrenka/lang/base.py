@@ -1,5 +1,22 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from typing import Iterable
+
+
+@dataclass
+class LangVar:
+    """Variable identifier and type"""
+
+    name: str
+    typee: str = None
+
+
+@dataclass
+class LangFunction:
+    """Function entry"""
+
+    ident: LangVar
+    args: list[LangVar] = field(default_factory=list)
 
 
 class LangClass(ABC):
@@ -15,9 +32,9 @@ class LangClass(ABC):
         pass
 
     @abstractmethod
-    def functions(self) -> Iterable[tuple[str, Iterable[str]]]:
+    def functions(self) -> Iterable[LangFunction]:
         pass
 
     @abstractmethod
-    def attributes(self):
+    def attributes(self) -> Iterable[LangVar]:
         pass

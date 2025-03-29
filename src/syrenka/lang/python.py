@@ -9,7 +9,7 @@ from inspect import getfullargspec, isbuiltin, ismethoddescriptor
 
 from syrenka.base import dunder_name
 
-from syrenka.lang.base import LangClass
+from syrenka.lang.base import LangClass, LangVar, LangFunction
 
 
 class PythonClass(LangClass):
@@ -61,24 +61,21 @@ class PythonClass(LangClass):
                 if fullarg is None:
                     fullarg = getfullargspec(attr)
 
-                arg_text_list = None
+                args_list = None
                 if fullarg.args:
-                    arg_text_list = []
+                    args_list = []
                     for arg in fullarg.args:
-                        arg_text = arg
+                        arg_type = None
 
                         if arg in fullarg.annotations:
                             type_hint = fullarg.annotations.get(arg)
                             if hasattr(type_hint, "__qualname__"):
-                                arg_text = type_hint.__qualname__ + " " + arg_text
-                            else:
-                                # print(f"no __qualname__ - {type_hint} - type: {type(type_hint)}")
-                                pass
-                            # extract type hint
+                                arg_type = type_hint.__qualname__
 
-                        arg_text_list.append(arg_text)
+                        args_list.append(LangVar(arg, arg_type))
 
-                functions.append((x, arg_text_list))
+                # TODO: type hint for return type???
+                functions.append(LangFunction(LangVar(x), args_list))
 
         self.info["functions"] = functions
         self.info["attributes"] = attributes
@@ -97,7 +94,7 @@ class PythonClass(LangClass):
         return self.info["attributes"]
 
 
-class ModuleAnalysis(ABC):
+class PythonModuleAnalysis(ABC):
     @staticmethod
     def isbuiltin_module(module: ModuleType) -> bool:
         return module.__name__ in sys.builtin_module_names
@@ -147,7 +144,7 @@ class ModuleAnalysis(ABC):
     @staticmethod
     def classes_in_module(module_name, nested: bool = True):
         module = importlib.import_module(module_name)
-        return ModuleAnalysis._classes_in_module(module, nested)
+        return PythonModuleAnalysis._classes_in_module(module, nested)
 
     @staticmethod
     def generate_class_list_from_module(module_name, starts_with=""):
