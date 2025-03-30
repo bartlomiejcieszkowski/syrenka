@@ -83,6 +83,10 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
         indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
 
+        for attr, typee in self.lang_class.attributes().items():
+            typee_str = f"{typee} " if typee else ""
+            ret.append(f"{indent}+{typee_str}{attr}")
+
         for lang_fun in self.lang_class.functions():
             args_text = ""
             if lang_fun.args:

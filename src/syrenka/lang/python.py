@@ -3,6 +3,7 @@ from inspect import isclass, ismodule
 from pathlib import Path
 from types import ModuleType
 import importlib
+import ast
 
 import sys
 from inspect import getfullargspec, isbuiltin, ismethoddescriptor
@@ -27,7 +28,7 @@ class PythonClass(LangClass):
         self.info.clear()
 
         functions = []
-        attributes = []
+        attributes = {}
 
         for x in dir(self.cls):
             is_init = False
@@ -74,6 +75,16 @@ class PythonClass(LangClass):
 
                         args_list.append(LangVar(arg, arg_type))
 
+                if is_init:
+                    function_body = PythonModuleAnalysis.get_ast_function(
+                        attr.__code__.co_filename, attr.__code__.co_firstlineno
+                    )
+                    if function_body:
+                        # TODO get self
+                        attributes = PythonModuleAnalysis.get_assign_attributes(
+                            function_body
+                        )
+
                 # TODO: type hint for return type???
                 functions.append(LangFunction(LangVar(x), args_list))
 
@@ -95,6 +106,8 @@ class PythonClass(LangClass):
 
 
 class PythonModuleAnalysis(ABC):
+    ast_cache: dict[Path, ast.Module] = {}
+
     @staticmethod
     def isbuiltin_module(module: ModuleType) -> bool:
         return module.__name__ in sys.builtin_module_names
@@ -160,3 +173,54 @@ class PythonModuleAnalysis(ABC):
                     classes.append()
 
         return classes
+
+    @staticmethod
+    def get_ast(filename: Path | str):
+        if type(filename) is str:
+            filename = Path(filename)
+
+        if not filename.exists():
+            return None
+
+        ast_module = PythonModuleAnalysis.ast_cache.get(filename, None)
+        if ast_module is None:
+            with filename.open("r", encoding="utf-8") as f:
+                ast_module = ast.parse(f.read(), str(filename.name))
+            PythonModuleAnalysis.ast_cache[filename] = ast_module
+
+        return ast_module
+
+    @staticmethod
+    def get_ast_node(filename: Path | str, firstlineno, ast_type):
+        ast_module = PythonModuleAnalysis.get_ast(filename)
+
+        ast_nodes = [ast_module]
+        while ast_node := ast_nodes.pop():
+            if type(ast_node) is ast_type and ast_node.lineno == firstlineno:
+                break
+
+            for child in ast_node.body:
+                if child.lineno <= firstlineno and child.end_lineno >= firstlineno:
+                    ast_nodes.append(child)
+                    break
+
+        return ast_node
+
+    @staticmethod
+    def get_ast_function(filename: Path | str, firstlineno):
+        return PythonModuleAnalysis.get_ast_node(filename, firstlineno, ast.FunctionDef)
+
+    @staticmethod
+    def get_assign_attributes(ast_function: ast.FunctionDef):
+        attributes = {}
+        for entry in ast_function.body:
+            if type(entry) is not ast.Assign:
+                continue
+
+            for target in entry.targets:
+                if type(target) is not ast.Attribute:
+                    # TODO: is this possible?
+                    continue
+                attributes[target.attr] = None
+
+        return attributes
