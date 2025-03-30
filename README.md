@@ -20,11 +20,16 @@ title: syrenka class diagram
 ---
 classDiagram
     class SyrenkaClass{
+        +lang_class
+        +indent
+        +skip_underscores
         +\_\_init\_\_(self, cls, bool skip_underscores)
         +to_code(self, int indent_level, str indent_base)
     }
     SyrenkaGeneratorBase <|-- SyrenkaClass
     class SyrenkaClassDiagram{
+        +title
+        +unique_classes
         +\_\_init\_\_(self, str title)
         +add_class(self, cls)
         +add_classes(self, classes)
@@ -56,6 +61,10 @@ classDiagram
         +\_\_init\_\_(self, str name, str typee)
     }
     class PythonClass{
+        +cls
+        +parsed
+        +info
+        +skip_underscores
         +\_\_init\_\_(self, cls)
         +_parse(self, bool force)
         +attributes(self)
@@ -66,10 +75,19 @@ classDiagram
         +_classes_in_module(module module, bool nested)
         +classes_in_module(module_name, bool nested)
         +generate_class_list_from_module(module_name, starts_with)
+        +get_assign_attributes(FunctionDef ast_function)
+        +get_ast(filename)
+        +get_ast_function(filename, firstlineno)
+        +get_ast_node(filename, firstlineno, ast_type)
         +isbuiltin_module(module module)
     }
     ABC <|-- PythonModuleAnalysis
     class Edge{
+        +id
+        +edge_type
+        +text
+        +source
+        +target
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
         +valid(self)
@@ -96,6 +114,9 @@ classDiagram
         TopToBottom
     }
     class Node{
+        +id
+        +text
+        +shape
         +\_\_init\_\_(self, str id, Optional text, NodeShape shape)
         +to_code(self, int indent_level, str indent_base)
     }
@@ -120,6 +141,10 @@ classDiagram
         +indent(int level, int increment, str indent_base)
     }
     class Subgraph{
+        +edges
+        +direction
+        +nodes_dict
+        +subgraphs_dict
         +\_\_init\_\_(self, str id, text, FlowchartDirection direction, MutableSequence nodes)
         +add(self, Node node)
         +get_node_by_id(self, str id)
@@ -133,6 +158,9 @@ classDiagram
     }
     ABC <|-- SyrenkaGeneratorBase
     class SyrenkaEnum{
+        +cls
+        +indent
+        +skip_underscores
         +\_\_init\_\_(self, cls, bool skip_underscores)
         +to_code(self, int indent_level, str indent_base)
     }
@@ -166,11 +194,16 @@ title: syrenka class diagram
 ---
 classDiagram
     class SyrenkaClass{
+        +lang_class
+        +indent
+        +skip_underscores
         +\_\_init\_\_(self, cls, bool skip_underscores)
         +to_code(self, int indent_level, str indent_base)
     }
     SyrenkaGeneratorBase <|-- SyrenkaClass
     class SyrenkaClassDiagram{
+        +title
+        +unique_classes
         +\_\_init\_\_(self, str title)
         +add_class(self, cls)
         +add_classes(self, classes)
@@ -202,6 +235,10 @@ classDiagram
         +\_\_init\_\_(self, str name, str typee)
     }
     class PythonClass{
+        +cls
+        +parsed
+        +info
+        +skip_underscores
         +\_\_init\_\_(self, cls)
         +_parse(self, bool force)
         +attributes(self)
@@ -212,10 +249,19 @@ classDiagram
         +_classes_in_module(module module, bool nested)
         +classes_in_module(module_name, bool nested)
         +generate_class_list_from_module(module_name, starts_with)
+        +get_assign_attributes(FunctionDef ast_function)
+        +get_ast(filename)
+        +get_ast_function(filename, firstlineno)
+        +get_ast_node(filename, firstlineno, ast_type)
         +isbuiltin_module(module module)
     }
     ABC <|-- PythonModuleAnalysis
     class Edge{
+        +id
+        +edge_type
+        +text
+        +source
+        +target
         +\_\_init\_\_(self, EdgeType edge_type, text, source, target)
         +to_code(self, indent_level, indent_base)
         +valid(self)
@@ -242,6 +288,9 @@ classDiagram
         TopToBottom
     }
     class Node{
+        +id
+        +text
+        +shape
         +\_\_init\_\_(self, str id, Optional text, NodeShape shape)
         +to_code(self, int indent_level, str indent_base)
     }
@@ -266,6 +315,10 @@ classDiagram
         +indent(int level, int increment, str indent_base)
     }
     class Subgraph{
+        +edges
+        +direction
+        +nodes_dict
+        +subgraphs_dict
         +\_\_init\_\_(self, str id, text, FlowchartDirection direction, MutableSequence nodes)
         +add(self, Node node)
         +get_node_by_id(self, str id)
@@ -279,6 +332,9 @@ classDiagram
     }
     ABC <|-- SyrenkaGeneratorBase
     class SyrenkaEnum{
+        +cls
+        +indent
+        +skip_underscores
         +\_\_init\_\_(self, cls, bool skip_underscores)
         +to_code(self, int indent_level, str indent_base)
     }
