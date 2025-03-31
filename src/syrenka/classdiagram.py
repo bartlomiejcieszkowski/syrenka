@@ -11,7 +11,8 @@ from collections.abc import Iterable
 
 from syrenka.lang.python import PythonClass
 
-SKIP_OBJECT = True
+SKIP_BASES = True
+SKIP_BASES_LIST = ["object", "ABC"]
 
 
 class SyrenkaEnum(SyrenkaGeneratorBase):
@@ -141,7 +142,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         bases = getattr(self.lang_class.cls, "__bases__", None)
         if bases:
             for base in bases:
-                if SKIP_OBJECT and base.__name__ == "object":
+                if SKIP_BASES and base.__name__ in SKIP_BASES_LIST:
                     continue
                 ret.append(f"{indent}{base.__name__} <|-- {self.lang_class.name}")
         return ret
