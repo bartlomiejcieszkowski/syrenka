@@ -83,9 +83,9 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
         indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
 
-        for attr, typee in self.lang_class.attributes().items():
-            typee_str = f"{typee} " if typee else ""
-            ret.append(f"{indent}+{typee_str}{attr}")
+        for attr in self.lang_class.attributes():
+            typee_str = f"{attr.typee} " if attr.typee else ""
+            ret.append(f"{indent}{attr.access}{typee_str}{attr.name}")
 
         for lang_fun in self.lang_class.functions():
             args_text = ""
@@ -103,7 +103,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
             if under_name(function_sanitized):
                 function_sanitized = neutralize_under(function_sanitized)
 
-            ret.append(f"{indent}+{function_sanitized}({args_text})")
+            ret.append(f"{indent}{lang_fun.access}{function_sanitized}({args_text})")
 
         indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
 

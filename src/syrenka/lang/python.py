@@ -1,4 +1,5 @@
 from abc import ABC
+from collections.abc import Iterable
 from inspect import isclass, ismodule
 from pathlib import Path
 from types import ModuleType
@@ -10,7 +11,7 @@ from inspect import getfullargspec, isbuiltin, ismethoddescriptor
 
 from syrenka.base import dunder_name
 
-from syrenka.lang.base import LangClass, LangVar, LangFunction
+from syrenka.lang.base import LangAccess, LangAttr, LangClass, LangVar, LangFunction
 
 
 class PythonClass(LangClass):
@@ -86,7 +87,13 @@ class PythonClass(LangClass):
                         )
 
                 # TODO: type hint for return type???
-                functions.append(LangFunction(LangVar(x), args_list))
+                functions.append(
+                    LangFunction(
+                        LangVar(x),
+                        args_list,
+                        PythonModuleAnalysis.get_access_from_name(x),
+                    )
+                )
 
         self.info["functions"] = functions
         self.info["attributes"] = attributes
@@ -211,7 +218,15 @@ class PythonModuleAnalysis(ABC):
         return PythonModuleAnalysis.get_ast_node(filename, firstlineno, ast.FunctionDef)
 
     @staticmethod
-    def get_assign_attributes(ast_function: ast.FunctionDef):
+    def get_access_from_name(name):
+        if name[0] == "_":
+            if not dunder_name(name):
+                return LangAccess.Private
+
+        return LangAccess.Public
+
+    @staticmethod
+    def get_assign_attributes(ast_function: ast.FunctionDef) -> Iterable[LangAttr]:
         attributes = {}
         for entry in ast_function.body:
             if type(entry) is not ast.Assign:
@@ -221,6 +236,11 @@ class PythonModuleAnalysis(ABC):
                 if type(target) is not ast.Attribute:
                     # TODO: is this possible?
                     continue
-                attributes[target.attr] = None
 
-        return attributes
+            attributes[target.attr] = LangAttr(
+                name=target.attr,
+                typee=None,
+                access=PythonModuleAnalysis.get_access_from_name(target.attr),
+            )
+
+        return attributes.values()
