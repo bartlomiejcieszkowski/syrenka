@@ -17,25 +17,39 @@ Here are current classes in syrenka module:
 ```mermaid
 ---
 title: syrenka class diagram
+config:
+  class:
+    hideEmptyMembersBox: true
 ---
 classDiagram
+namespace syrenka.classdiagram{
     class SyrenkaClass{
         +lang_class
         +indent
         +skip_underscores
         +\_\_init\_\_(self, cls, bool skip_underscores)
         +to_code(self, int indent_level, str indent_base)
+        +to_code_inheritance(self, int indent_level, str indent_base)
     }
-    SyrenkaGeneratorBase <|-- SyrenkaClass
     class SyrenkaClassDiagram{
         +title
         +unique_classes
-        +\_\_init\_\_(self, str title)
+        +config
+        +\_\_init\_\_(self, str title, bool hide_empty_box)
         +add_class(self, cls)
         +add_classes(self, classes)
         +to_code(self, int indent_level, str indent_base)
     }
-    SyrenkaGeneratorBase <|-- SyrenkaClassDiagram
+    class SyrenkaEnum{
+        +cls
+        +indent
+        +skip_underscores
+        +\_\_init\_\_(self, cls, bool skip_underscores)
+        +to_code(self, int indent_level, str indent_base)
+        +to_code_inheritance(self, int indent_level, str indent_base)
+    }
+}
+namespace syrenka.flowchart{
     class SyrenkaFlowchart{
         +\_\_init\_\_(self, str title, FlowchartDirection direction, MutableSequence nodes)
         +add(self, Node node)
@@ -45,43 +59,6 @@ classDiagram
         +remove(self, Node node, bool exception_if_not_exists)
         +to_code(self, int indent_level, str indent_base)
     }
-    Subgraph <|-- SyrenkaFlowchart
-    class LangClass{
-        +\_\_init\_\_(self)
-        +_parse(self, bool force)
-        +attributes(self)
-        +functions(self)
-        +name(self)
-    }
-    ABC <|-- LangClass
-    class LangFunction{
-        +\_\_init\_\_(self, LangVar ident, list args)
-    }
-    class LangVar{
-        +\_\_init\_\_(self, str name, str typee)
-    }
-    class PythonClass{
-        +cls
-        +parsed
-        +info
-        +skip_underscores
-        +\_\_init\_\_(self, cls)
-        +_parse(self, bool force)
-        +attributes(self)
-        +functions(self)
-    }
-    LangClass <|-- PythonClass
-    class PythonModuleAnalysis{
-        +_classes_in_module(module module, bool nested)
-        +classes_in_module(module_name, bool nested)
-        +generate_class_list_from_module(module_name, starts_with)
-        +get_assign_attributes(FunctionDef ast_function)
-        +get_ast(filename)
-        +get_ast_function(filename, firstlineno)
-        +get_ast_node(filename, firstlineno, ast_type)
-        +isbuiltin_module(module module)
-    }
-    ABC <|-- PythonModuleAnalysis
     class Edge{
         +id
         +edge_type
@@ -92,7 +69,6 @@ classDiagram
         +to_code(self, indent_level, indent_base)
         +valid(self)
     }
-    SyrenkaGeneratorBase <|-- Edge
     class EdgeType{
         <<enumeration>>
         ArrowEdge
@@ -120,7 +96,6 @@ classDiagram
         +\_\_init\_\_(self, str id, Optional text, NodeShape shape)
         +to_code(self, int indent_level, str indent_base)
     }
-    SyrenkaGeneratorBase <|-- Node
     class NodeShape{
         <<enumeration>>
         AssymetricShape
@@ -137,9 +112,6 @@ classDiagram
         Trapezoid
         TrapezoidAlt
     }
-    class StringHelper{
-        +indent(int level, int increment, str indent_base)
-    }
     class Subgraph{
         +edges
         +direction
@@ -151,20 +123,72 @@ classDiagram
         +remove(self, Node node, bool exception_if_not_exists)
         +to_code(self, int indent_level, str indent_base)
     }
-    Node <|-- Subgraph
+}
+namespace syrenka.lang.base{
+    class LangAccess{
+        <<enumeration>>
+        Private
+        Protected
+        Public
+    }
+    class LangAttr{
+        +\_\_init\_\_(self, str name, str typee, LangAccess access)
+    }
+    class LangClass{
+        +\_\_init\_\_(self)
+        -_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+        +namespace(self)
+    }
+    class LangFunction{
+        +\_\_init\_\_(self, LangVar ident, list args, LangAccess access)
+    }
+    class LangVar{
+        +\_\_init\_\_(self, str name, str typee)
+    }
+}
+namespace syrenka.lang.python{
+    class PythonClass{
+        +cls
+        +parsed
+        +info
+        +skip_underscores
+        +\_\_init\_\_(self, cls)
+        -_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+    }
+    class PythonModuleAnalysis{
+        -_classes_in_module(module module, bool nested)
+        +classes_in_module(module_name, bool nested)
+        +generate_class_list_from_module(module_name, starts_with)
+        +get_access_from_name(name)
+        +get_assign_attributes(FunctionDef ast_function)
+        +get_ast(filename)
+        +get_ast_function(filename, firstlineno)
+        +get_ast_node(filename, firstlineno, ast_type)
+        +isbuiltin_module(module module)
+    }
+}
+namespace syrenka.base{
+    class StringHelper{
+        +indent(int level, int increment, str indent_base)
+    }
     class SyrenkaGeneratorBase{
         +\_\_init\_\_(self)
         +to_code(self, int indent_level, str indent_base)
     }
-    ABC <|-- SyrenkaGeneratorBase
-    class SyrenkaEnum{
-        +cls
-        +indent
-        +skip_underscores
-        +\_\_init\_\_(self, cls, bool skip_underscores)
-        +to_code(self, int indent_level, str indent_base)
-    }
-    SyrenkaGeneratorBase <|-- SyrenkaEnum
+}
+%% inheritance
+SyrenkaGeneratorBase <|-- SyrenkaClass
+SyrenkaGeneratorBase <|-- SyrenkaClassDiagram
+SyrenkaGeneratorBase <|-- SyrenkaEnum
+Subgraph <|-- SyrenkaFlowchart
+SyrenkaGeneratorBase <|-- Edge
+SyrenkaGeneratorBase <|-- Node
+Node <|-- Subgraph
+LangClass <|-- PythonClass
 ```
 <!-- EX1_MERMAID_DIAGRAM_END -->
 
@@ -191,25 +215,39 @@ and the output:
 ```cmd
 ---
 title: syrenka class diagram
+config:
+  class:
+    hideEmptyMembersBox: true
 ---
 classDiagram
+namespace syrenka.classdiagram{
     class SyrenkaClass{
         +lang_class
         +indent
         +skip_underscores
         +\_\_init\_\_(self, cls, bool skip_underscores)
         +to_code(self, int indent_level, str indent_base)
+        +to_code_inheritance(self, int indent_level, str indent_base)
     }
-    SyrenkaGeneratorBase <|-- SyrenkaClass
     class SyrenkaClassDiagram{
         +title
         +unique_classes
-        +\_\_init\_\_(self, str title)
+        +config
+        +\_\_init\_\_(self, str title, bool hide_empty_box)
         +add_class(self, cls)
         +add_classes(self, classes)
         +to_code(self, int indent_level, str indent_base)
     }
-    SyrenkaGeneratorBase <|-- SyrenkaClassDiagram
+    class SyrenkaEnum{
+        +cls
+        +indent
+        +skip_underscores
+        +\_\_init\_\_(self, cls, bool skip_underscores)
+        +to_code(self, int indent_level, str indent_base)
+        +to_code_inheritance(self, int indent_level, str indent_base)
+    }
+}
+namespace syrenka.flowchart{
     class SyrenkaFlowchart{
         +\_\_init\_\_(self, str title, FlowchartDirection direction, MutableSequence nodes)
         +add(self, Node node)
@@ -219,43 +257,6 @@ classDiagram
         +remove(self, Node node, bool exception_if_not_exists)
         +to_code(self, int indent_level, str indent_base)
     }
-    Subgraph <|-- SyrenkaFlowchart
-    class LangClass{
-        +\_\_init\_\_(self)
-        +_parse(self, bool force)
-        +attributes(self)
-        +functions(self)
-        +name(self)
-    }
-    ABC <|-- LangClass
-    class LangFunction{
-        +\_\_init\_\_(self, LangVar ident, list args)
-    }
-    class LangVar{
-        +\_\_init\_\_(self, str name, str typee)
-    }
-    class PythonClass{
-        +cls
-        +parsed
-        +info
-        +skip_underscores
-        +\_\_init\_\_(self, cls)
-        +_parse(self, bool force)
-        +attributes(self)
-        +functions(self)
-    }
-    LangClass <|-- PythonClass
-    class PythonModuleAnalysis{
-        +_classes_in_module(module module, bool nested)
-        +classes_in_module(module_name, bool nested)
-        +generate_class_list_from_module(module_name, starts_with)
-        +get_assign_attributes(FunctionDef ast_function)
-        +get_ast(filename)
-        +get_ast_function(filename, firstlineno)
-        +get_ast_node(filename, firstlineno, ast_type)
-        +isbuiltin_module(module module)
-    }
-    ABC <|-- PythonModuleAnalysis
     class Edge{
         +id
         +edge_type
@@ -266,7 +267,6 @@ classDiagram
         +to_code(self, indent_level, indent_base)
         +valid(self)
     }
-    SyrenkaGeneratorBase <|-- Edge
     class EdgeType{
         <<enumeration>>
         ArrowEdge
@@ -294,7 +294,6 @@ classDiagram
         +\_\_init\_\_(self, str id, Optional text, NodeShape shape)
         +to_code(self, int indent_level, str indent_base)
     }
-    SyrenkaGeneratorBase <|-- Node
     class NodeShape{
         <<enumeration>>
         AssymetricShape
@@ -311,9 +310,6 @@ classDiagram
         Trapezoid
         TrapezoidAlt
     }
-    class StringHelper{
-        +indent(int level, int increment, str indent_base)
-    }
     class Subgraph{
         +edges
         +direction
@@ -325,20 +321,72 @@ classDiagram
         +remove(self, Node node, bool exception_if_not_exists)
         +to_code(self, int indent_level, str indent_base)
     }
-    Node <|-- Subgraph
+}
+namespace syrenka.lang.base{
+    class LangAccess{
+        <<enumeration>>
+        Private
+        Protected
+        Public
+    }
+    class LangAttr{
+        +\_\_init\_\_(self, str name, str typee, LangAccess access)
+    }
+    class LangClass{
+        +\_\_init\_\_(self)
+        -_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+        +namespace(self)
+    }
+    class LangFunction{
+        +\_\_init\_\_(self, LangVar ident, list args, LangAccess access)
+    }
+    class LangVar{
+        +\_\_init\_\_(self, str name, str typee)
+    }
+}
+namespace syrenka.lang.python{
+    class PythonClass{
+        +cls
+        +parsed
+        +info
+        +skip_underscores
+        +\_\_init\_\_(self, cls)
+        -_parse(self, bool force)
+        +attributes(self)
+        +functions(self)
+    }
+    class PythonModuleAnalysis{
+        -_classes_in_module(module module, bool nested)
+        +classes_in_module(module_name, bool nested)
+        +generate_class_list_from_module(module_name, starts_with)
+        +get_access_from_name(name)
+        +get_assign_attributes(FunctionDef ast_function)
+        +get_ast(filename)
+        +get_ast_function(filename, firstlineno)
+        +get_ast_node(filename, firstlineno, ast_type)
+        +isbuiltin_module(module module)
+    }
+}
+namespace syrenka.base{
+    class StringHelper{
+        +indent(int level, int increment, str indent_base)
+    }
     class SyrenkaGeneratorBase{
         +\_\_init\_\_(self)
         +to_code(self, int indent_level, str indent_base)
     }
-    ABC <|-- SyrenkaGeneratorBase
-    class SyrenkaEnum{
-        +cls
-        +indent
-        +skip_underscores
-        +\_\_init\_\_(self, cls, bool skip_underscores)
-        +to_code(self, int indent_level, str indent_base)
-    }
-    SyrenkaGeneratorBase <|-- SyrenkaEnum
+}
+%% inheritance
+SyrenkaGeneratorBase <|-- SyrenkaClass
+SyrenkaGeneratorBase <|-- SyrenkaClassDiagram
+SyrenkaGeneratorBase <|-- SyrenkaEnum
+Subgraph <|-- SyrenkaFlowchart
+SyrenkaGeneratorBase <|-- Edge
+SyrenkaGeneratorBase <|-- Node
+Node <|-- Subgraph
+LangClass <|-- PythonClass
 ```
 <!-- EX1_MERMAID_DIAGRAM_RAW_END -->
 
