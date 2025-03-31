@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Iterable
+from collections.abc import Iterable
 
 
 @dataclass

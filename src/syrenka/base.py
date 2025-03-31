@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 
-from typing import Iterable, Tuple
+from typing import Tuple
 
 
 class StringHelper:

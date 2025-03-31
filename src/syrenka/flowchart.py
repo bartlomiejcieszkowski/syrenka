@@ -2,8 +2,8 @@ from collections import OrderedDict
 from .base import SyrenkaGeneratorBase, StringHelper
 
 from enum import Enum
-from typing import Iterable, Self, Union
-from collections.abc import MutableSequence
+from typing import Self, Union
+from collections.abc import Iterable, MutableSequence
 
 
 def get_title(title: str):
