@@ -21,6 +21,14 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
         self.indent = 4 * " "
         self.skip_underscores = skip_underscores
 
+    @property
+    def name(self) -> str:
+        return self.cls.__name__
+
+    @property
+    def namespace(self) -> str:
+        return self.cls.__module__
+
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
     ) -> Iterable[str]:
@@ -52,6 +60,9 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
 
         return ret
 
+    def to_code_inheritance(self, indent_level: int = 0, indent_base: str = "    "):
+        return []
+
 
 # TODO: self variables.. how to get them
 # 1. Instantiate class, and see whats in the object - this is bad idea, as you need to call constructor of random classes
@@ -68,6 +79,14 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         self.lang_class = PythonClass(cls)
         self.indent = 4 * " "
         self.skip_underscores = skip_underscores
+
+    @property
+    def name(self) -> str:
+        return self.lang_class.name
+
+    @property
+    def namespace(self) -> str:
+        return self.lang_class.namespace
 
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
@@ -109,6 +128,15 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
         ret.append(f"{indent}{'}'}")
 
+        return ret
+
+    def to_code_inheritance(self, indent_level: int = 0, indent_base: str = "    "):
+        ret = []
+
+        indent_level, indent = StringHelper.indent(
+            indent_level, indent_base=indent_base
+        )
+
         # inheritence
         bases = getattr(self.lang_class.cls, "__bases__", None)
         if bases:
@@ -116,8 +144,6 @@ class SyrenkaClass(SyrenkaGeneratorBase):
                 if SKIP_OBJECT and base.__name__ == "object":
                     continue
                 ret.append(f"{indent}{base.__name__} <|-- {self.lang_class.name}")
-                # print(f"{t.__name__} base: {base.__name__}")
-
         return ret
 
 
@@ -135,9 +161,8 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
     def __init__(self, title: str = ""):
         super().__init__()
         self.title = title
+        self.namespaces_with_classes: dict[str, dict[str, SyrenkaGeneratorBase]] = {}
         self.unique_classes = {}
-        self.classes: Iterable[SyrenkaGeneratorBase] = []
-        pass
 
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
@@ -150,17 +175,41 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
             indent + "classDiagram",
         ]
 
-        for mclass in self.classes:
-            mcode.extend(mclass.to_code(indent_level + 1, indent_base))
+        # for mclass in self.classes:
+        #    mcode.extend(mclass.to_code(indent_level + 1, indent_base))
+
+        for namespace, classes in self.namespaces_with_classes.items():
+            mcode.append(indent + "namespace " + namespace + "{")
+            indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
+            for _, mclass in classes.items():
+                mcode.extend(mclass.to_code(indent_level, indent_base))
+            indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
+            mcode.append(indent + "}")
+
+        mcode.append("%% inheritance")
+        for classes in self.namespaces_with_classes.values():
+            for _, mclass in classes.items():
+                mcode.extend(mclass.to_code_inheritance(indent_level, indent_base))
 
         return mcode
 
     # TODO: check cls file origin
     def add_class(self, cls):
+        # TODO: There is a corner-case of same class name but different namespace, it will clash on diagram
         if cls not in self.unique_classes:
             syrenka_cls = get_syrenka_cls(cls)
             if syrenka_cls:
-                self.classes.append(syrenka_cls(cls=cls))
+                class_obj = syrenka_cls(cls=cls)
+                if class_obj.namespace not in self.namespaces_with_classes:
+                    self.namespaces_with_classes[class_obj.namespace] = {}
+
+                if (
+                    class_obj.name
+                    not in self.namespaces_with_classes[class_obj.namespace]
+                ):
+                    self.namespaces_with_classes[class_obj.namespace][
+                        class_obj.name
+                    ] = class_obj
             self.unique_classes[cls] = None
 
     def add_classes(self, classes):

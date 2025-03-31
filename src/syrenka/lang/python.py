@@ -103,6 +103,10 @@ class PythonClass(LangClass):
     def name(self):
         return self.cls.__name__
 
+    @property
+    def namespace(self):
+        return self.cls.__module__
+
     def functions(self):
         self._parse()
         return self.info["functions"]
