@@ -158,11 +158,14 @@ def get_syrenka_cls(cls):
 
 
 class SyrenkaClassDiagram(SyrenkaGeneratorBase):
-    def __init__(self, title: str = ""):
+    def __init__(self, title: str = "", hide_empty_box: bool = True):
         super().__init__()
         self.title = title
         self.namespaces_with_classes: dict[str, dict[str, SyrenkaGeneratorBase]] = {}
         self.unique_classes = {}
+        self.config = ""  # TODO Proper class
+        if hide_empty_box:
+            self.config = "config:\n  class:\n    hideEmptyMembersBox: true"
 
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
@@ -171,6 +174,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         mcode = [
             indent + "---",
             f"{indent}title: {self.title}",
+            self.config,
             indent + "---",
             indent + "classDiagram",
         ]
