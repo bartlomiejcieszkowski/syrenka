@@ -5,13 +5,11 @@ from typing import Self, Tuple
 from enum import StrEnum
 
 
-class StringHelper:
-    @staticmethod
-    def indent(
-        level: int, increment: int = 0, indent_base: str = "    "
-    ) -> Tuple[int, str]:
-        level += increment
-        return level, indent_base * level
+def get_indent(
+    level: int, increment: int = 0, indent_base: str = "    "
+) -> Tuple[int, str]:
+    level += increment
+    return level, indent_base * level
 
 
 class ThemeNames(StrEnum):

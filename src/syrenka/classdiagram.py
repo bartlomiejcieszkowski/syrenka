@@ -1,7 +1,7 @@
 from .base import (
     SyrenkaConfig,
     SyrenkaGeneratorBase,
-    StringHelper,
+    get_indent,
     dunder_name,
     under_name,
     neutralize_under,
@@ -38,13 +38,11 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
         ret = []
         t = self.cls
 
-        indent_level, indent = StringHelper.indent(
-            indent_level, indent_base=indent_base
-        )
+        indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # class <name> {
         ret.append(f"{indent}class {t.__name__}{'{'}")
-        indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
+        indent_level, indent = get_indent(indent_level, 1, indent_base)
 
         ret.append(indent + "<<enumeration>>")
 
@@ -58,7 +56,7 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
                 ret.append(indent + x)
 
         # TODO: what about methods in enum?
-        indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
+        indent_level, indent = get_indent(indent_level, -1, indent_base)
         ret.append(f"{indent}{'}'}")
 
         return ret
@@ -87,14 +85,12 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     ) -> Iterable[str]:
         ret = []
 
-        indent_level, indent = StringHelper.indent(
-            indent_level, indent_base=indent_base
-        )
+        indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # class <name> {
         ret.append(f"{indent}class {self.lang_class.name}{'{'}")
 
-        indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
+        indent_level, indent = get_indent(indent_level, 1, indent_base)
 
         for attr in self.lang_class.attributes():
             typee_str = f"{attr.typee} " if attr.typee else ""
@@ -118,7 +114,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
             ret.append(f"{indent}{lang_fun.access}{function_sanitized}({args_text})")
 
-        indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
+        indent_level, indent = get_indent(indent_level, -1, indent_base)
 
         ret.append(f"{indent}{'}'}")
 
@@ -127,9 +123,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     def to_code_inheritance(self, indent_level: int = 0, indent_base: str = "    "):
         ret = []
 
-        indent_level, indent = StringHelper.indent(
-            indent_level, indent_base=indent_base
-        )
+        indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # inheritence
         bases = getattr(self.lang_class.cls, "__bases__", None)
@@ -183,7 +177,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
     ) -> Iterable[str]:
-        indent_level, indent = StringHelper.indent(indent_level, 0, indent_base)
+        indent_level, indent = get_indent(indent_level, 0, indent_base)
         mcode = [
             indent + "---",
             f"{indent}title: {self.title}",
@@ -203,10 +197,10 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
 
         for namespace, classes in self.namespaces_with_classes.items():
             mcode.append(indent + "namespace " + namespace + "{")
-            indent_level, indent = StringHelper.indent(indent_level, 1, indent_base)
+            indent_level, indent = get_indent(indent_level, 1, indent_base)
             for _, mclass in classes.items():
                 mcode.extend(mclass.to_code(indent_level, indent_base))
-            indent_level, indent = StringHelper.indent(indent_level, -1, indent_base)
+            indent_level, indent = get_indent(indent_level, -1, indent_base)
             mcode.append(indent + "}")
 
         mcode.append("%% inheritance")
