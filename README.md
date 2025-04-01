@@ -18,6 +18,7 @@ Here are current classes in syrenka module:
 ---
 title: syrenka class diagram
 config:
+  theme: forest
   class:
     hideEmptyMembersBox: true
 ---
@@ -35,10 +36,17 @@ namespace syrenka.classdiagram{
         +title
         +unique_classes
         +config
-        +\_\_init\_\_(self, str title, bool hide_empty_box)
+        +\_\_init\_\_(self, str title, SyrenkaClassDiagramConfig config)
         +add_class(self, cls)
         +add_classes(self, classes)
         +to_code(self, int indent_level, str indent_base)
+    }
+    class SyrenkaClassDiagramConfig{
+        +class_config
+        +\_\_init\_\_(self)
+        +set(self, name, value)
+        +theme(self, theme_name)
+        +to_code(self)
     }
     class SyrenkaEnum{
         +cls
@@ -172,17 +180,30 @@ namespace syrenka.lang.python{
     }
 }
 namespace syrenka.base{
-    class StringHelper{
-        +indent(int level, int increment, str indent_base)
-    }
     class SyrenkaGeneratorBase{
         +\_\_init\_\_(self)
         +to_code(self, int indent_level, str indent_base)
+    }
+    class SyrenkaConfig{
+        +config
+        +\_\_init\_\_(self)
+        +set(self, name, value)
+        +theme(self, theme_name)
+        +to_code(self)
+    }
+    class ThemeNames{
+        <<enumeration>>
+        base
+        dark
+        default
+        forest
+        neutral
     }
 }
 %% inheritance
 SyrenkaGeneratorBase <|-- SyrenkaClass
 SyrenkaGeneratorBase <|-- SyrenkaClassDiagram
+SyrenkaConfig <|-- SyrenkaClassDiagramConfig
 SyrenkaGeneratorBase <|-- SyrenkaEnum
 Subgraph <|-- SyrenkaFlowchart
 SyrenkaGeneratorBase <|-- Edge
@@ -197,10 +218,13 @@ This is a code snippet that does it:
 
 <!-- EX1_SYRENKA_CODE_BEGIN -->
 ```python
-import syrenka
+from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
+from syrenka.base import ThemeNames
 from syrenka.lang.python import PythonModuleAnalysis
 
-class_diagram = syrenka.SyrenkaClassDiagram("syrenka class diagram")
+class_diagram = SyrenkaClassDiagram(
+    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.forest)
+)
 class_diagram.add_classes(
     PythonModuleAnalysis.classes_in_module(module_name="syrenka", nested=True)
 )
@@ -216,6 +240,7 @@ and the output:
 ---
 title: syrenka class diagram
 config:
+  theme: forest
   class:
     hideEmptyMembersBox: true
 ---
@@ -233,10 +258,17 @@ namespace syrenka.classdiagram{
         +title
         +unique_classes
         +config
-        +\_\_init\_\_(self, str title, bool hide_empty_box)
+        +\_\_init\_\_(self, str title, SyrenkaClassDiagramConfig config)
         +add_class(self, cls)
         +add_classes(self, classes)
         +to_code(self, int indent_level, str indent_base)
+    }
+    class SyrenkaClassDiagramConfig{
+        +class_config
+        +\_\_init\_\_(self)
+        +set(self, name, value)
+        +theme(self, theme_name)
+        +to_code(self)
     }
     class SyrenkaEnum{
         +cls
@@ -370,17 +402,30 @@ namespace syrenka.lang.python{
     }
 }
 namespace syrenka.base{
-    class StringHelper{
-        +indent(int level, int increment, str indent_base)
-    }
     class SyrenkaGeneratorBase{
         +\_\_init\_\_(self)
         +to_code(self, int indent_level, str indent_base)
+    }
+    class SyrenkaConfig{
+        +config
+        +\_\_init\_\_(self)
+        +set(self, name, value)
+        +theme(self, theme_name)
+        +to_code(self)
+    }
+    class ThemeNames{
+        <<enumeration>>
+        base
+        dark
+        default
+        forest
+        neutral
     }
 }
 %% inheritance
 SyrenkaGeneratorBase <|-- SyrenkaClass
 SyrenkaGeneratorBase <|-- SyrenkaClassDiagram
+SyrenkaConfig <|-- SyrenkaClassDiagramConfig
 SyrenkaGeneratorBase <|-- SyrenkaEnum
 Subgraph <|-- SyrenkaFlowchart
 SyrenkaGeneratorBase <|-- Edge
