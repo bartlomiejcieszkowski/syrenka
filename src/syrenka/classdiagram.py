@@ -67,15 +67,6 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
         return []
 
 
-# TODO: self variables.. how to get them
-# 1. Instantiate class, and see whats in the object - this is bad idea, as you need to call constructor of random classes
-# 2. class.__init__.__code__.co_names - you get all the names used.. but these are all, so you get also super and called method names..
-#    and they are pure strings
-# 3. ast - load file content into ast, find this class, find __init__
-# 3.1. Get first arg in __init__ - yes, it should be self, but it can be something else, cause why not
-# 3.1. go over __init__ body, find assignments with name same as first arg of init,  Attribute(value=Name(id='self', ctx=Load()), attr='cls', ctx=Store())]
-
-
 class SyrenkaClass(SyrenkaGeneratorBase):
     def __init__(self, cls, skip_underscores: bool = True):
         super().__init__()
