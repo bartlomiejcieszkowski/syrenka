@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 
-from typing import Tuple
+from typing import Self, Tuple
+from enum import StrEnum
 
 
 class StringHelper:
@@ -11,6 +12,15 @@ class StringHelper:
     ) -> Tuple[int, str]:
         level += increment
         return level, indent_base * level
+
+
+class ThemeNames(StrEnum):
+    # For actual list see: https://mermaid.js.org/config/theming.html
+    default = "default"
+    neutral = "neutral"
+    dark = "dark"
+    forest = "forest"
+    base = "base"
 
 
 class SyrenkaConfig(ABC):
@@ -23,6 +33,20 @@ class SyrenkaConfig(ABC):
         for key, val in self.config.items():
             ret.append(f"  {key}: {val}")
         return ret
+
+    def set(self, name, value) -> Self:
+        if type(name) is not str:
+            return self
+
+        if value:
+            self.config[name] = value
+        else:
+            self.config.pop(name, None)
+
+        return self
+
+    def theme(self, theme_name: ThemeNames | str) -> Self:
+        return self.set("theme", theme_name)
 
 
 class SyrenkaGeneratorBase(ABC):
