@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from .base import SyrenkaGeneratorBase, StringHelper
+from .base import SyrenkaGeneratorBase, get_indent
 
 from enum import Enum
 from typing import Self, Union
@@ -60,7 +60,7 @@ class Node(SyrenkaGeneratorBase):
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
     ) -> Iterable[str]:
-        indent_level, indent = StringHelper.indent(indent_level, 0, indent_base)
+        indent_level, indent = get_indent(indent_level, 0, indent_base)
         e_open, e_close = NodeShape.get_edges(self.shape)
         text = self.text
         if self.shape is not NodeShape.Default and not text:
@@ -108,7 +108,7 @@ class Edge(SyrenkaGeneratorBase):
         return self.source and self.target
 
     def to_code(self, indent_level=0, indent_base="    "):
-        indent_level, indent = StringHelper.indent(indent_level, 0, indent_base)
+        indent_level, indent = get_indent(indent_level, 0, indent_base)
         edge_id = f"{self.id}@" if self.id else ""
         return [
             f"{indent}{self.source.id} {edge_id}{self.edge_type.value} {self.target.id}"
@@ -163,7 +163,7 @@ class Subgraph(Node):
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
     ) -> Iterable[str]:
-        indent_level, indent = StringHelper.indent(indent_level, 0, indent_base)
+        indent_level, indent = get_indent(indent_level, 0, indent_base)
 
         mcode = [f"{indent}subgraph {self.id}"]
 
@@ -201,7 +201,7 @@ class SyrenkaFlowchart(Subgraph):
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
     ) -> Iterable[str]:
-        indent_level, indent = StringHelper.indent(indent_level, 0, indent_base)
+        indent_level, indent = get_indent(indent_level, 0, indent_base)
         mcode = [f"{indent}flowchart {self.direction.value}"]
 
         if self.id:
