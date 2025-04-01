@@ -1,4 +1,5 @@
 from .base import (
+    SyrenkaConfig,
     SyrenkaGeneratorBase,
     StringHelper,
     dunder_name,
@@ -10,6 +11,7 @@ from inspect import isclass
 from collections.abc import Iterable
 
 from syrenka.lang.python import PythonClass
+from copy import deepcopy
 
 SKIP_BASES = True
 SKIP_BASES_LIST = ["object", "ABC"]
@@ -158,15 +160,34 @@ def get_syrenka_cls(cls):
     return SyrenkaClass
 
 
+class SyrenkaClassDiagramConfig(SyrenkaConfig):
+    CLASS_CONFIG_DEFAULTS = {"hideEmptyMembersBox": "true"}
+
+    def __init__(self):
+        super().__init__()
+        class_config = deepcopy(SyrenkaClassDiagramConfig.CLASS_CONFIG_DEFAULTS)
+        self.class_config = {"class": class_config}
+
+    def to_code(self):
+        ret = super().to_code()
+        for key, val in self.class_config.items():
+            ret.append(f"  {key}:")
+            for subkey, subval in val.items():
+                ret.append(f"    {subkey}: {subval}")
+        return ret
+
+
 class SyrenkaClassDiagram(SyrenkaGeneratorBase):
-    def __init__(self, title: str = "", hide_empty_box: bool = True):
+    def __init__(
+        self,
+        title: str = "",
+        config: SyrenkaClassDiagramConfig = SyrenkaClassDiagramConfig(),
+    ):
         super().__init__()
         self.title = title
         self.namespaces_with_classes: dict[str, dict[str, SyrenkaGeneratorBase]] = {}
         self.unique_classes = {}
-        self.config = ""  # TODO Proper class
-        if hide_empty_box:
-            self.config = "config:\n  class:\n    hideEmptyMembersBox: true"
+        self.config = config
 
     def to_code(
         self, indent_level: int = 0, indent_base: str = "    "
@@ -175,10 +196,16 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         mcode = [
             indent + "---",
             f"{indent}title: {self.title}",
-            self.config,
-            indent + "---",
-            indent + "classDiagram",
         ]
+
+        mcode.extend(self.config.to_code())
+
+        mcode.extend(
+            [
+                indent + "---",
+                indent + "classDiagram",
+            ]
+        )
 
         # for mclass in self.classes:
         #    mcode.extend(mclass.to_code(indent_level + 1, indent_base))
