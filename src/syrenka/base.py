@@ -13,6 +13,18 @@ class StringHelper:
         return level, indent_base * level
 
 
+class SyrenkaConfig(ABC):
+    def __init__(self):
+        super().__init__()
+        self.config = {}
+
+    def to_code(self):
+        ret = ["config:"]
+        for key, val in self.config.items():
+            ret.append(f"  {key}: {val}")
+        return ret
+
+
 class SyrenkaGeneratorBase(ABC):
     def __init__(self):
         super().__init__()
