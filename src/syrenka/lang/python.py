@@ -237,9 +237,11 @@ class PythonModuleAnalysis(ABC):
                 continue
 
             for target in entry.targets:
-                if type(target) is not ast.Attribute:
-                    # TODO: is this possible?
-                    continue
+                if type(target) is ast.Attribute:
+                    break
+
+            if type(target) is not ast.Attribute:
+                continue
 
             attributes[target.attr] = LangAttr(
                 name=target.attr,
