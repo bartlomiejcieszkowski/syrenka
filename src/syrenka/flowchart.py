@@ -140,11 +140,10 @@ class Subgraph(Node):
         self.direction = direction
         self.nodes_dict = OrderedDict()
         self.subgraphs_dict = OrderedDict()
-        for node in nodes:
-            if isinstance(node, Subgraph):
-                self.subgraphs_dict[node.id] = node
-            self.nodes_dict[node.id] = node
-            # TODO: what if someone updates id in Node?
+        if nodes:
+            for node in nodes:
+                self.add(node)
+                # TODO: what if someone updates id in Node?
 
     def get_node_by_id(self, id: str) -> Node | None:
         node = self.nodes_dict.get(id, None)
@@ -161,6 +160,8 @@ class Subgraph(Node):
         raise KeyError(f"No node by id: {id}")
 
     def add(self, node: Node) -> Self:
+        if isinstance(node, Subgraph):
+            self.subgraphs_dict[node.id] = node
         self.nodes_dict[node.id] = node
         return self
 
@@ -176,11 +177,29 @@ class Subgraph(Node):
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
     ):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
+        e_open, e_close = NodeShape.get_edges(self.shape)
 
-        file.writelines([indent, "subgraph ", self.id, "\n"])
+        if self.text:
+            file.writelines(
+                [
+                    indent,
+                    "subgraph ",
+                    self.id,
+                    e_open,
+                    '"',
+                    self.text,
+                    '"',
+                    e_close,
+                    "\n",
+                ]
+            )
+        else:
+            file.writelines([indent, "subgraph ", self.id, "\n"])
 
         for node in self.nodes_dict.values():
-            node.to_code(file=file, indent_level=indent_level, indent_base=indent_base)
+            node.to_code(
+                file=file, indent_level=indent_level + 1, indent_base=indent_base
+            )
 
         file.writelines([indent, "end", "\n"])
 
