@@ -13,6 +13,8 @@ from collections.abc import Iterable
 from syrenka.lang.python import PythonClass
 from copy import deepcopy
 
+from io import TextIOBase
+
 SKIP_BASES = True
 SKIP_BASES_LIST = ["object", "ABC"]
 
@@ -33,18 +35,17 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
         return self.cls.__module__
 
     def to_code(
-        self, indent_level: int = 0, indent_base: str = "    "
-    ) -> Iterable[str]:
-        ret = []
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
         t = self.cls
 
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # class <name> {
-        ret.append(f"{indent}class {t.__name__}{'{'}")
+        file.writelines([indent, "class ", t.__name__, "{\n"])
         indent_level, indent = get_indent(indent_level, 1, indent_base)
 
-        ret.append(indent + "<<enumeration>>")
+        file.writelines([indent, "<<enumeration>>", "\n"])
 
         for x in dir(t):
             if dunder_name(x):
@@ -53,16 +54,16 @@ class SyrenkaEnum(SyrenkaGeneratorBase):
             attr = getattr(t, x)
             if type(attr) is t:
                 # enum values are instances of this enum
-                ret.append(indent + x)
+                file.writelines([indent, x, "\n"])
 
         # TODO: what about methods in enum?
         indent_level, indent = get_indent(indent_level, -1, indent_base)
-        ret.append(f"{indent}{'}'}")
+        file.writelines([indent, "}\n"])
 
-        return ret
-
-    def to_code_inheritance(self, indent_level: int = 0, indent_base: str = "    "):
-        return []
+    def to_code_inheritance(
+        self, file, indent_level: int = 0, indent_base: str = "    "
+    ):
+        pass
 
 
 class SyrenkaClass(SyrenkaGeneratorBase):
@@ -81,20 +82,18 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         return self.lang_class.namespace
 
     def to_code(
-        self, indent_level: int = 0, indent_base: str = "    "
-    ) -> Iterable[str]:
-        ret = []
-
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # class <name> {
-        ret.append(f"{indent}class {self.lang_class.name}{'{'}")
+        file.writelines([indent, "class ", self.lang_class.name, "{\n"])
 
         indent_level, indent = get_indent(indent_level, 1, indent_base)
 
         for attr in self.lang_class.attributes():
             typee_str = f"{attr.typee} " if attr.typee else ""
-            ret.append(f"{indent}{attr.access}{typee_str}{attr.name}")
+            file.writelines([indent, attr.access, typee_str, attr.name, "\n"])
 
         for lang_fun in self.lang_class.functions():
             args_text = ""
@@ -112,17 +111,17 @@ class SyrenkaClass(SyrenkaGeneratorBase):
             if under_name(function_sanitized):
                 function_sanitized = neutralize_under(function_sanitized)
 
-            ret.append(f"{indent}{lang_fun.access}{function_sanitized}({args_text})")
+            file.writelines(
+                [indent, lang_fun.access, function_sanitized, "(", args_text, ")\n"]
+            )
 
         indent_level, indent = get_indent(indent_level, -1, indent_base)
 
-        ret.append(f"{indent}{'}'}")
+        file.writelines([indent, "}\n"])
 
-        return ret
-
-    def to_code_inheritance(self, indent_level: int = 0, indent_base: str = "    "):
-        ret = []
-
+    def to_code_inheritance(
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # inheritence
@@ -131,8 +130,9 @@ class SyrenkaClass(SyrenkaGeneratorBase):
             for base in bases:
                 if SKIP_BASES and base.__name__ in SKIP_BASES_LIST:
                     continue
-                ret.append(f"{indent}{base.__name__} <|-- {self.lang_class.name}")
-        return ret
+                file.writelines(
+                    [indent, base.__name__, " <|-- ", self.lang_class.name, "\n"]
+                )
 
 
 def get_syrenka_cls(cls):
@@ -153,13 +153,12 @@ class SyrenkaClassDiagramConfig(SyrenkaConfig):
         class_config = deepcopy(SyrenkaClassDiagramConfig.CLASS_CONFIG_DEFAULTS)
         self.class_config = {"class": class_config}
 
-    def to_code(self):
-        ret = super().to_code()
+    def to_code(self, file: TextIOBase):
+        super().to_code(file)
         for key, val in self.class_config.items():
-            ret.append(f"  {key}:")
+            file.write(f"  {key}:\n")
             for subkey, subval in val.items():
-                ret.append(f"    {subkey}: {subval}")
-        return ret
+                file.write(f"    {subkey}: {subval}\n")
 
 
 class SyrenkaClassDiagram(SyrenkaGeneratorBase):
@@ -175,40 +174,42 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         self.config = config
 
     def to_code(
-        self, indent_level: int = 0, indent_base: str = "    "
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
     ) -> Iterable[str]:
         indent_level, indent = get_indent(indent_level, 0, indent_base)
-        mcode = [
-            indent + "---",
-            f"{indent}title: {self.title}",
-        ]
 
-        mcode.extend(self.config.to_code())
-
-        mcode.extend(
+        # Frontmatter
+        file.writelines(
             [
-                indent + "---",
-                indent + "classDiagram",
+                indent + "---\n",
+                f"{indent}title: {self.title}\n",
             ]
         )
+
+        self.config.to_code(file)
+
+        file.writelines([indent, "---", "\n"])
+        file.writelines([indent, "classDiagram", "\n"])
 
         # for mclass in self.classes:
         #    mcode.extend(mclass.to_code(indent_level + 1, indent_base))
 
         for namespace, classes in self.namespaces_with_classes.items():
-            mcode.append(indent + "namespace " + namespace + "{")
+            file.writelines([indent, "namespace ", namespace, "{\n"])
             indent_level, indent = get_indent(indent_level, 1, indent_base)
             for _, mclass in classes.items():
-                mcode.extend(mclass.to_code(indent_level, indent_base))
+                mclass.to_code(
+                    file=file, indent_level=indent_level, indent_base=indent_base
+                )
             indent_level, indent = get_indent(indent_level, -1, indent_base)
-            mcode.append(indent + "}")
+            file.writelines([indent, "}", "\n"])
 
-        mcode.append("%% inheritance")
+        file.write("%% inheritance\n")
         for classes in self.namespaces_with_classes.values():
             for _, mclass in classes.items():
-                mcode.extend(mclass.to_code_inheritance(indent_level, indent_base))
-
-        return mcode
+                mclass.to_code_inheritance(
+                    file=file, indent_level=indent_level, indent_base=indent_base
+                )
 
     # TODO: check cls file origin
     def add_class(self, cls):
