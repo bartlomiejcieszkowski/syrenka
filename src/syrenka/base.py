@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
 
+from io import TextIOBase
 from typing import Self, Tuple
 from enum import StrEnum
 
@@ -26,11 +26,11 @@ class SyrenkaConfig(ABC):
         super().__init__()
         self.config = {}
 
-    def to_code(self):
-        ret = ["config:"]
+    def to_code(self, file: TextIOBase):
+        # code for Frontmatter
+        file.write("config:\n")
         for key, val in self.config.items():
-            ret.append(f"  {key}: {val}")
-        return ret
+            file.write(f"  {key}: {val}\n")
 
     def set(self, name, value) -> Self:
         if type(name) is not str:
@@ -53,8 +53,8 @@ class SyrenkaGeneratorBase(ABC):
 
     @abstractmethod
     def to_code(
-        self, indent_level: int = 0, indent_base: str = "    "
-    ) -> Iterable[str]:
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
         pass
 
 

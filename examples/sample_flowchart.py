@@ -1,4 +1,5 @@
 import syrenka.flowchart as sf
+import sys
 
 # flowchart TB
 #     c1-->a2
@@ -52,8 +53,6 @@ flowchart.connect_by_id("one", "two").connect_by_id("three", "two").connect_by_i
     "two", "c2"
 )
 
-# oh great, if i declare edge c1 --> a2 before and after subgraphs, it gets drawn totally different
-mcode_lines = flowchart.to_code()
-
-for line in mcode_lines:
-    print(line)
+# beware, it looks like in mermaid order of the edge changes how its rendered
+# if i declare edge c1 --> a2 before and after subgraphs, it gets drawn totally different
+flowchart.to_code(file=sys.stdout)

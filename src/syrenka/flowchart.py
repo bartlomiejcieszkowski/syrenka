@@ -1,16 +1,17 @@
 from collections import OrderedDict
+from io import TextIOBase
 from .base import SyrenkaGeneratorBase, get_indent
 
 from enum import Enum
 from typing import Self, Union
-from collections.abc import Iterable, MutableSequence
+from collections.abc import MutableSequence
 
 
 def get_title(title: str):
     return [
-        "---",
-        f"title: {title}",
-        "---",
+        "---\n",
+        f"title: {title}\n",
+        "---\n",
     ]
 
 
@@ -58,8 +59,8 @@ class Node(SyrenkaGeneratorBase):
         self.shape = shape
 
     def to_code(
-        self, indent_level: int = 0, indent_base: str = "    "
-    ) -> Iterable[str]:
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
         e_open, e_close = NodeShape.get_edges(self.shape)
         text = self.text
@@ -67,9 +68,11 @@ class Node(SyrenkaGeneratorBase):
             text = self.id
 
         if self.text:
-            return [f'{indent}{self.id}{e_open}"{self.text}"{e_close}']
-
-        return [f"{indent}{self.id}"]
+            file.writelines(
+                [indent, self.id, e_open, '"', self.text, '"', e_close, "\n"]
+            )
+        else:
+            file.writelines([indent, self.id, "\n"])
 
 
 class EdgeType(Enum):
@@ -107,12 +110,21 @@ class Edge(SyrenkaGeneratorBase):
     def valid(self) -> bool:
         return self.source and self.target
 
-    def to_code(self, indent_level=0, indent_base="    "):
+    def to_code(self, file: TextIOBase, indent_level=0, indent_base="    "):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
         edge_id = f"{self.id}@" if self.id else ""
-        return [
-            f"{indent}{self.source.id} {edge_id}{self.edge_type.value} {self.target.id}"
-        ]
+        file.writelines(
+            [
+                indent,
+                self.source.id,
+                " ",
+                edge_id,
+                self.edge_type.value,
+                " ",
+                self.target.id,
+                "\n",
+            ]
+        )
 
 
 class Subgraph(Node):
@@ -161,17 +173,16 @@ class Subgraph(Node):
         return self
 
     def to_code(
-        self, indent_level: int = 0, indent_base: str = "    "
-    ) -> Iterable[str]:
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
 
-        mcode = [f"{indent}subgraph {self.id}"]
+        file.writelines([indent, "subgraph ", self.id, "\n"])
 
         for node in self.nodes_dict.values():
-            mcode.extend(node.to_code(indent_level, indent_base))
+            node.to_code(file=file, indent_level=indent_level, indent_base=indent_base)
 
-        mcode.append(indent + "end")
-        return mcode
+        file.writelines([indent, "end", "\n"])
 
 
 class SyrenkaFlowchart(Subgraph):
@@ -199,20 +210,23 @@ class SyrenkaFlowchart(Subgraph):
         return self.connect(source, target)
 
     def to_code(
-        self, indent_level: int = 0, indent_base: str = "    "
-    ) -> Iterable[str]:
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
-        mcode = [f"{indent}flowchart {self.direction.value}"]
 
         if self.id:
-            mcode = get_title(self.id) + mcode
+            file.writelines(get_title(self.id))
+
+        file.writelines([indent, "flowchart ", self.direction.value, "\n"])
 
         # easiest workaround for edges going BEHIND subgraphs
         # if i place edges AFTER subgraphs, some might get rendered under subgraph..
         for edge in self.edges:
-            mcode.extend(edge.to_code(indent_level + 1, indent_base))
+            edge.to_code(
+                file=file, indent_level=indent_level + 1, indent_base=indent_base
+            )
 
         for node in self.nodes_dict.values():
-            mcode.extend(node.to_code(indent_level + 1, indent_base))
-
-        return mcode
+            node.to_code(
+                file=file, indent_level=indent_level + 1, indent_base=indent_base
+            )
