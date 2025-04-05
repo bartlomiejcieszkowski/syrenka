@@ -15,9 +15,6 @@ from copy import deepcopy
 
 from io import TextIOBase
 
-SKIP_BASES = True
-SKIP_BASES_LIST = ["object", "ABC"]
-
 
 class SyrenkaEnum(SyrenkaGeneratorBase):
     def __init__(self, cls, skip_underscores: bool = True):
@@ -124,15 +121,8 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     ):
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
-        # inheritence
-        bases = getattr(self.lang_class.cls, "__bases__", None)
-        if bases:
-            for base in bases:
-                if SKIP_BASES and base.__name__ in SKIP_BASES_LIST:
-                    continue
-                file.writelines(
-                    [indent, base.__name__, " <|-- ", self.lang_class.name, "\n"]
-                )
+        for parent in self.lang_class.parents():
+            file.writelines([indent, parent, " <|-- ", self.lang_class.name, "\n"])
 
 
 def get_syrenka_cls(cls):
@@ -190,9 +180,6 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
 
         file.writelines([indent, "---", "\n"])
         file.writelines([indent, "classDiagram", "\n"])
-
-        # for mclass in self.classes:
-        #    mcode.extend(mclass.to_code(indent_level + 1, indent_base))
 
         for namespace, classes in self.namespaces_with_classes.items():
             file.writelines([indent, "namespace ", namespace, "{\n"])
