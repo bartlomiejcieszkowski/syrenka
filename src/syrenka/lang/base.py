@@ -58,3 +58,7 @@ class LangClass(ABC):
     @abstractmethod
     def attributes(self) -> Iterable[LangVar]:
         pass
+
+    @abstractmethod
+    def parents(self) -> Iterable[str]:
+        pass

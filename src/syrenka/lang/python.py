@@ -14,6 +14,10 @@ from syrenka.base import dunder_name
 from syrenka.lang.base import LangAccess, LangAttr, LangClass, LangVar, LangFunction
 
 
+SKIP_BASES = True
+SKIP_BASES_LIST = ["object", "ABC"]
+
+
 class PythonClass(LangClass):
     def __init__(self, cls):
         super().__init__()
@@ -114,6 +118,17 @@ class PythonClass(LangClass):
     def attributes(self):
         self._parse()
         return self.info["attributes"]
+
+    def parents(self) -> Iterable[str]:
+        parents = []
+        bases = getattr(self.cls, "__bases__", None)
+        if bases:
+            for base in bases:
+                if SKIP_BASES and base.__name__ in SKIP_BASES_LIST:
+                    continue
+                parents.append(base.__name__)
+
+        return parents
 
 
 class PythonModuleAnalysis(ABC):
