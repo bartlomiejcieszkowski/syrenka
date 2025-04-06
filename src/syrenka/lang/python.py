@@ -1,17 +1,25 @@
-from abc import ABC
 from collections.abc import Iterable
 from inspect import isclass, ismodule
 from pathlib import Path
 from types import ModuleType
 import importlib
 import ast
+from enum import Enum
 
 import sys
 from inspect import getfullargspec, isbuiltin, ismethoddescriptor
 
 from syrenka.base import dunder_name
 
-from syrenka.lang.base import LangAccess, LangAttr, LangClass, LangVar, LangFunction
+from syrenka.lang.base import (
+    LangAccess,
+    LangAnalysis,
+    LangAttr,
+    LangClass,
+    LangVar,
+    LangFunction,
+    register_lang_analysis,
+)
 
 
 SKIP_BASES = True
@@ -103,6 +111,9 @@ class PythonClass(LangClass):
         self.info["attributes"] = attributes
         self.parsed = True
 
+    def is_enum(self) -> bool:
+        return issubclass(self.cls, Enum)
+
     @property
     def name(self):
         return self.cls.__name__
@@ -131,8 +142,26 @@ class PythonClass(LangClass):
         return parents
 
 
-class PythonModuleAnalysis(ABC):
+class PythonModuleAnalysis(LangAnalysis):
     ast_cache: dict[Path, ast.Module] = {}
+
+    @staticmethod
+    def handles(obj) -> bool:
+        if type(obj) in [ast.ClassDef]:
+            return True
+
+        # special case for python import
+        if isinstance(obj, type):
+            return True
+
+        return False
+
+    @staticmethod
+    def create_lang_class(obj) -> LangClass:
+        if type(obj) in [ast.ClassDef]:
+            raise NotImplementedError("TODO")
+
+        return PythonClass(obj)
 
     @staticmethod
     def isbuiltin_module(module: ModuleType) -> bool:
@@ -148,6 +177,10 @@ class PythonModuleAnalysis(ABC):
 
         while len(stash):
             m = stash.pop()
+            if m.__name__ in module_names:
+                # circular?
+                continue
+
             module_names.append(m.__name__)
 
             # print(m)
@@ -184,6 +217,51 @@ class PythonModuleAnalysis(ABC):
     def classes_in_module(module_name, nested: bool = True):
         module = importlib.import_module(module_name)
         return PythonModuleAnalysis._classes_in_module(module, nested)
+
+    PYTHON_EXT = [".py"]
+
+    @staticmethod
+    def classes_in_path(path: Path, recursive: bool = True) -> Iterable[ast.ClassDef]:
+        ast_modules = []
+
+        paths = [path]
+
+        while paths:
+            p = paths.pop(0)
+            if p.is_dir():
+                for child in p.iterdir():
+                    if child.is_dir():
+                        paths.append(child)
+                        continue
+
+                    if (
+                        child.is_file()
+                        and child.suffix in PythonModuleAnalysis.PYTHON_EXT
+                    ):
+                        ast_modules.append(PythonModuleAnalysis.get_ast(child))
+                        # TODO: get classes and methods
+                    else:
+                        print(f"skipped: {child}", sys.stderr)
+            elif p.is_file() and p.suffix in PythonModuleAnalysis.PYTHON_EXT:
+                ast_modules.append(PythonModuleAnalysis.get_ast(child))
+            else:
+                print(f"skipped: {p}", sys.stderr)
+
+        return PythonModuleAnalysis.get_classes_from_ast(ast_modules)
+
+    @staticmethod
+    def get_classes_from_ast(
+        ast_modules: Iterable[ast.Module],
+    ) -> Iterable[ast.ClassDef]:
+        classes = []
+        # this is shallow, we dont take into account classes in classes
+        for ast_module in ast_modules:
+            for ast_node in ast_module.body:
+                if type(ast_node) is ast.ClassDef:
+                    classes.append(ast_node)
+                else:
+                    print(ast_node)
+        return classes
 
     @staticmethod
     def generate_class_list_from_module(module_name, starts_with=""):
@@ -265,3 +343,6 @@ class PythonModuleAnalysis(ABC):
             )
 
         return attributes.values()
+
+
+register_lang_analysis(PythonModuleAnalysis, last=True)
