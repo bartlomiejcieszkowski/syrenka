@@ -6,67 +6,18 @@ from .base import (
     under_name,
     neutralize_under,
 )
-from enum import Enum
-from inspect import isclass
 from collections.abc import Iterable
 
-from syrenka.lang.python import PythonClass
+from syrenka.lang import LangAnalyst
 from copy import deepcopy
 
 from io import TextIOBase
 
 
-class SyrenkaEnum(SyrenkaGeneratorBase):
-    def __init__(self, cls, skip_underscores: bool = True):
-        super().__init__()
-        self.cls = cls
-        self.indent = 4 * " "
-        self.skip_underscores = skip_underscores
-
-    @property
-    def name(self) -> str:
-        return self.cls.__name__
-
-    @property
-    def namespace(self) -> str:
-        return self.cls.__module__
-
-    def to_code(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ):
-        t = self.cls
-
-        indent_level, indent = get_indent(indent_level, indent_base=indent_base)
-
-        # class <name> {
-        file.writelines([indent, "class ", t.__name__, "{\n"])
-        indent_level, indent = get_indent(indent_level, 1, indent_base)
-
-        file.writelines([indent, "<<enumeration>>", "\n"])
-
-        for x in dir(t):
-            if dunder_name(x):
-                continue
-
-            attr = getattr(t, x)
-            if type(attr) is t:
-                # enum values are instances of this enum
-                file.writelines([indent, x, "\n"])
-
-        # TODO: what about methods in enum?
-        indent_level, indent = get_indent(indent_level, -1, indent_base)
-        file.writelines([indent, "}\n"])
-
-    def to_code_inheritance(
-        self, file, indent_level: int = 0, indent_base: str = "    "
-    ):
-        pass
-
-
 class SyrenkaClass(SyrenkaGeneratorBase):
     def __init__(self, cls, skip_underscores: bool = True):
         super().__init__()
-        self.lang_class = PythonClass(cls)
+        self.lang_class = LangAnalyst.create_lang_class(cls)
         self.indent = 4 * " "
         self.skip_underscores = skip_underscores
 
@@ -81,6 +32,10 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     def to_code(
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
     ):
+        if self.lang_class.is_enum():
+            self.to_code_enum(file, indent_level, indent_base)
+            return
+
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # class <name> {
@@ -119,20 +74,40 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     def to_code_inheritance(
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
     ):
+        if self.lang_class.is_enum():
+            return
+
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         for parent in self.lang_class.parents():
             file.writelines([indent, parent, " <|-- ", self.lang_class.name, "\n"])
 
+    def to_code_enum(
+        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+    ):
+        # TODO: move this code to PythonClass, we are using internals here
+        t = self.lang_class.cls
 
-def get_syrenka_cls(cls):
-    if not isclass(cls):
-        return None
+        indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
-    if issubclass(cls, Enum):
-        return SyrenkaEnum
+        # class <name> {
+        file.writelines([indent, "class ", t.__name__, "{\n"])
+        indent_level, indent = get_indent(indent_level, 1, indent_base)
 
-    return SyrenkaClass
+        file.writelines([indent, "<<enumeration>>", "\n"])
+
+        for x in dir(t):
+            if dunder_name(x):
+                continue
+
+            attr = getattr(t, x)
+            if type(attr) is t:
+                # enum values are instances of this enum
+                file.writelines([indent, x, "\n"])
+
+        # TODO: what about methods in enum?
+        indent_level, indent = get_indent(indent_level, -1, indent_base)
+        file.writelines([indent, "}\n"])
 
 
 class SyrenkaClassDiagramConfig(SyrenkaConfig):
@@ -202,19 +177,14 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
     def add_class(self, cls):
         # TODO: There is a corner-case of same class name but different namespace, it will clash on diagram
         if cls not in self.unique_classes:
-            syrenka_cls = get_syrenka_cls(cls)
-            if syrenka_cls:
-                class_obj = syrenka_cls(cls=cls)
-                if class_obj.namespace not in self.namespaces_with_classes:
-                    self.namespaces_with_classes[class_obj.namespace] = {}
+            class_obj = SyrenkaClass(cls=cls)
+            if class_obj.namespace not in self.namespaces_with_classes:
+                self.namespaces_with_classes[class_obj.namespace] = {}
 
-                if (
-                    class_obj.name
-                    not in self.namespaces_with_classes[class_obj.namespace]
-                ):
-                    self.namespaces_with_classes[class_obj.namespace][
-                        class_obj.name
-                    ] = class_obj
+            if class_obj.name not in self.namespaces_with_classes[class_obj.namespace]:
+                self.namespaces_with_classes[class_obj.namespace][class_obj.name] = (
+                    class_obj
+                )
             self.unique_classes[cls] = None
 
     def add_classes(self, classes):
