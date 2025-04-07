@@ -72,7 +72,11 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         file.writelines([indent, "}\n"])
 
     def to_code_inheritance(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
+        self,
+        file: TextIOBase,
+        indent_level: int = 0,
+        indent_base: str = "    ",
+        valid_classes: dict[str, None] = None,
     ):
         if self.lang_class.is_enum():
             return
@@ -80,6 +84,12 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         for parent in self.lang_class.parents():
+            if valid_classes:
+                if parent in valid_classes:
+                    file.writelines(
+                        [indent, parent, " <|-- ", self.lang_class.name, "\n"]
+                    )
+                continue
             file.writelines([indent, parent, " <|-- ", self.lang_class.name, "\n"])
 
     def to_code_enum(
@@ -131,12 +141,14 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         self,
         title: str = "",
         config: SyrenkaClassDiagramConfig = SyrenkaClassDiagramConfig(),
+        imported_classes: bool = False,
     ):
         super().__init__()
         self.title = title
         self.namespaces_with_classes: dict[str, dict[str, SyrenkaGeneratorBase]] = {}
         self.unique_classes = {}
         self.config = config
+        self.imported_classes = imported_classes
 
     def to_code(
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
@@ -169,25 +181,36 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
                 file.writelines([indent, "}", "\n"])
 
         file.write("%% inheritance\n")
+        valid_classes = None
+        if not self.imported_classes:
+            # if we don't want imported classes we pass current unique classes to filter inheritance
+            # this will make class diagram look cleaner, but might hide details
+            valid_classes = self.unique_classes
+
         for classes in self.namespaces_with_classes.values():
             for _, mclass in classes.items():
                 mclass.to_code_inheritance(
-                    file=file, indent_level=indent_level, indent_base=indent_base
+                    file=file,
+                    indent_level=indent_level,
+                    indent_base=indent_base,
+                    valid_classes=valid_classes,
                 )
 
     # TODO: check cls file origin
     def add_class(self, cls):
         # TODO: There is a corner-case of same class name but different namespace, it will clash on diagram
-        if cls not in self.unique_classes:
-            class_obj = SyrenkaClass(cls=cls)
-            if class_obj.namespace not in self.namespaces_with_classes:
-                self.namespaces_with_classes[class_obj.namespace] = {}
+        class_obj = SyrenkaClass(cls=cls)
+        if class_obj.name in self.unique_classes:
+            return
 
-            if class_obj.name not in self.namespaces_with_classes[class_obj.namespace]:
-                self.namespaces_with_classes[class_obj.namespace][class_obj.name] = (
-                    class_obj
-                )
-            self.unique_classes[cls] = None
+        if class_obj.namespace not in self.namespaces_with_classes:
+            self.namespaces_with_classes[class_obj.namespace] = {}
+
+        if class_obj.name not in self.namespaces_with_classes[class_obj.namespace]:
+            self.namespaces_with_classes[class_obj.namespace][class_obj.name] = (
+                class_obj
+            )
+        self.unique_classes[class_obj.name] = None
 
     def add_classes(self, classes):
         for cls in classes:
