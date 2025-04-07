@@ -32,7 +32,7 @@ class PythonClass(LangClass):
         self.cls = cls
         self.parsed = False
         self.info = {}
-        self.skip_underscores = True
+        self.skip_dunder_names = True
 
     def _parse(self, force: bool = False):
         if self.parsed and not force:
@@ -45,7 +45,7 @@ class PythonClass(LangClass):
 
         for x in dir(self.cls):
             is_init = False
-            if self.skip_underscores and dunder_name(x):
+            if self.skip_dunder_names and dunder_name(x):
                 is_init = x == "__init__"
                 if not is_init:
                     continue
