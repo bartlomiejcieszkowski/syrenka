@@ -47,7 +47,6 @@ class PythonAstClass(LangClass):
         self.filepath = params.filepath
         self.root = params.root
         self.info = {}
-        self.skip_dunder_names = True
         self.parsed = False
         self._namespace = None
 
@@ -60,53 +59,52 @@ class PythonAstClass(LangClass):
         attributes = {}
 
         for ast_node in self.cls.body:
-            if type(ast_node) is ast.FunctionDef:
-                args_list = []
-                for ast_arg in ast_node.args.args:
-                    if ast_arg.annotation:
-                        if type(ast_arg.annotation) is ast.BinOp:
-                            # theme_name: ThemeNames | str
-                            # TODO
-                            args_list.append(LangVar(ast_arg.arg))
-                            continue
-
-                        if type(ast_arg.annotation) is ast.Subscript:
-                            # text: Union[str, None] = None,
-                            # TODO
-                            args_list.append(LangVar(ast_arg.arg))
-                            continue
-
-                        if type(ast_arg.annotation) is ast.Name:
-                            args_list.append(
-                                LangVar(ast_arg.arg, ast_arg.annotation.id)
-                            )
-                            continue
-
-                        if type(ast_arg.annotation) is ast.Attribute:
-                            typee = (
-                                ast_arg.annotation.value.id
-                                + "."
-                                + ast_arg.annotation.attr
-                            )
-                            args_list.append(LangVar(ast_arg.arg, typee))
-                            continue
-
-                        raise Exception("TODO not handled")
-
-                    lv = LangVar(ast_arg.arg)
-
-                    args_list.append(lv)
-
-                functions.append(
-                    LangFunction(
-                        ident=LangVar(ast_node.name),
-                        args=args_list,
-                        access=PythonModuleAnalysis.get_access_from_name(ast_node.name),
-                    )
-                )
+            if type(ast_node) is not ast.FunctionDef:
+                # print(ast_node)
                 continue
 
-            # print(ast_node)
+            args_list = []
+            for ast_arg in ast_node.args.args:
+                if ast_arg.annotation:
+                    if type(ast_arg.annotation) is ast.BinOp:
+                        # theme_name: ThemeNames | str
+                        # TODO
+                        args_list.append(LangVar(ast_arg.arg))
+                        continue
+
+                    if type(ast_arg.annotation) is ast.Subscript:
+                        # text: Union[str, None] = None,
+                        # TODO
+                        args_list.append(LangVar(ast_arg.arg))
+                        continue
+
+                    if type(ast_arg.annotation) is ast.Name:
+                        args_list.append(LangVar(ast_arg.arg, ast_arg.annotation.id))
+                        continue
+
+                    if type(ast_arg.annotation) is ast.Attribute:
+                        typee = (
+                            ast_arg.annotation.value.id + "." + ast_arg.annotation.attr
+                        )
+                        args_list.append(LangVar(ast_arg.arg, typee))
+                        continue
+
+                    raise Exception("TODO not handled")
+
+                lv = LangVar(ast_arg.arg)
+
+                args_list.append(lv)
+
+            lf = LangFunction(
+                ident=LangVar(ast_node.name),
+                args=args_list,
+                access=PythonModuleAnalysis.get_access_from_name(ast_node.name),
+            )
+
+            functions.append(lf)
+
+            if ast_node.name == "__init__":
+                attributes = PythonModuleAnalysis.get_assign_attributes(ast_node)
 
         self.info["functions"] = functions
         self.info["attributes"] = attributes
@@ -168,7 +166,7 @@ class PythonClass(LangClass):
         self.cls = params.cls
         self.parsed = False
         self.info = {}
-        self.skip_dunder_names = True
+        self._skip_dunder_names = True
 
     def _parse(self, force: bool = False):
         if self.parsed and not force:
@@ -181,7 +179,7 @@ class PythonClass(LangClass):
 
         for x in dir(self.cls):
             is_init = False
-            if self.skip_dunder_names and dunder_name(x):
+            if self._skip_dunder_names and dunder_name(x):
                 is_init = x == "__init__"
                 if not is_init:
                     continue
@@ -374,22 +372,7 @@ class PythonModuleAnalysis(LangAnalysis):
             p = paths.pop(0)
             if p.is_dir():
                 for child in p.iterdir():
-                    if child.is_dir():
-                        paths.append(child)
-                        continue
-
-                    if (
-                        child.is_file()
-                        and child.suffix in PythonModuleAnalysis.PYTHON_EXT
-                    ):
-                        ast_modules.append(
-                            PythonAstModuleParams(
-                                ast_module=PythonModuleAnalysis.get_ast(child),
-                                filepath=child,
-                            )
-                        )
-                    else:
-                        print(f"skipped: {child}", sys.stderr)
+                    paths.append(child)
             elif p.is_file() and p.suffix in PythonModuleAnalysis.PYTHON_EXT:
                 ast_modules.append(
                     PythonAstModuleParams(
@@ -397,7 +380,8 @@ class PythonModuleAnalysis(LangAnalysis):
                     )
                 )
             else:
-                print(f"skipped: {p}", sys.stderr)
+                # print(f"skipped: {p}", sys.stderr)
+                pass
 
         return PythonModuleAnalysis.get_classes_from_ast(ast_modules, root)
 
@@ -417,23 +401,9 @@ class PythonModuleAnalysis(LangAnalysis):
                         )
                     )
                 else:
-                    print(ast_node)
+                    # print(ast_node)
+                    pass
         return class_params
-
-    @staticmethod
-    def generate_class_list_from_module(module_name, starts_with=""):
-        module = importlib.import_module(module_name)
-        classes = []
-        for name in dir(module):
-            if dunder_name(name):
-                continue
-            print(f"\t{name}")
-            if name.startswith(starts_with):
-                attr = getattr(module, name)
-                if isclass(attr):
-                    classes.append()
-
-        return classes
 
     @staticmethod
     def get_ast(filename: Path | str):
@@ -468,7 +438,7 @@ class PythonModuleAnalysis(LangAnalysis):
         return ast_node
 
     @staticmethod
-    def get_ast_function(filename: Path | str, firstlineno):
+    def get_ast_function(filename: Path | str, firstlineno) -> ast.FunctionDef:
         return PythonModuleAnalysis.get_ast_node(filename, firstlineno, ast.FunctionDef)
 
     @staticmethod
