@@ -90,7 +90,7 @@ class_diagram.to_code(file=out)
 This is example is using python `ast` approach for generating the class diagram.
 
 <!-- EX3_MERMAID_DIAGRAM_BEGIN -->
-![SyrenkaAstClassDiagram](https://raw.githubusercontent.com/bartlomiejcieszkowski/syrenka/refs/heads/main/syrenka_diagram-1.svg "SyrenkaAstClassDiagram")
+![SyrenkaAstClassDiagram](https://raw.githubusercontent.com/bartlomiejcieszkowski/syrenka/refs/heads/main/syrenka_diagram-3.svg "SyrenkaAstClassDiagram")
 <!-- EX3_MERMAID_DIAGRAM_END -->
 
 And the code snippet used to generate it:
