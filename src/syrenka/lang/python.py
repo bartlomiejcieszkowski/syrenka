@@ -5,6 +5,7 @@ from types import ModuleType
 import importlib
 import ast
 from enum import Enum
+from dataclasses import dataclass
 
 import sys
 from inspect import getfullargspec, isbuiltin, ismethoddescriptor
@@ -26,10 +27,145 @@ SKIP_BASES = True
 SKIP_BASES_LIST = ["object", "ABC"]
 
 
-class PythonClass(LangClass):
-    def __init__(self, cls):
+@dataclass(frozen=True)
+class PythonAstModuleParams:
+    ast_module: ast.Module
+    filepath: Path
+
+
+@dataclass(frozen=True)
+class PythonAstClassParams:
+    ast_class: ast.ClassDef
+    filepath: Path
+    root: Path
+
+
+class PythonAstClass(LangClass):
+    def __init__(self, params):
         super().__init__()
-        self.cls = cls
+        self.cls: ast.ClassDef = params.ast_class
+        self.filepath = params.filepath
+        self.root = params.root
+        self.info = {}
+        self.skip_dunder_names = True
+        self.parsed = False
+        self._namespace = None
+
+    def _parse(self, force: bool = True):
+        if self.parsed and not force:
+            return
+
+        self.info.clear()
+        functions = []
+        attributes = {}
+
+        for ast_node in self.cls.body:
+            if type(ast_node) is ast.FunctionDef:
+                args_list = []
+                for ast_arg in ast_node.args.args:
+                    if ast_arg.annotation:
+                        if type(ast_arg.annotation) is ast.BinOp:
+                            # theme_name: ThemeNames | str
+                            # TODO
+                            args_list.append(LangVar(ast_arg.arg))
+                            continue
+
+                        if type(ast_arg.annotation) is ast.Subscript:
+                            # text: Union[str, None] = None,
+                            # TODO
+                            args_list.append(LangVar(ast_arg.arg))
+                            continue
+
+                        if type(ast_arg.annotation) is ast.Name:
+                            args_list.append(
+                                LangVar(ast_arg.arg, ast_arg.annotation.id)
+                            )
+                            continue
+
+                        if type(ast_arg.annotation) is ast.Attribute:
+                            typee = (
+                                ast_arg.annotation.value.id
+                                + "."
+                                + ast_arg.annotation.attr
+                            )
+                            args_list.append(LangVar(ast_arg.arg, typee))
+                            continue
+
+                        raise Exception("TODO not handled")
+
+                    lv = LangVar(ast_arg.arg)
+
+                    args_list.append(lv)
+
+                functions.append(
+                    LangFunction(
+                        ident=LangVar(ast_node.name),
+                        args=args_list,
+                        access=PythonModuleAnalysis.get_access_from_name(ast_node.name),
+                    )
+                )
+                continue
+
+            # print(ast_node)
+
+        self.info["functions"] = functions
+        self.info["attributes"] = attributes
+
+    def is_enum(self) -> bool:
+        # TODO
+        return False
+
+    @property
+    def name(self):
+        return self.cls.name
+
+    @property
+    def namespace(self):
+        if self._namespace is not None:
+            return self._namespace
+
+        if self.filepath.is_relative_to(self.root):
+            relative = self.filepath.relative_to(self.root)
+
+            ns = []
+            # -1 to skip '.'
+            for i in range(0, len(relative.parts) - 1):
+                ns.append(relative.parts[i])
+
+            if not dunder_name(relative.stem):
+                ns.append(relative.stem)
+
+            self._namespace = ".".join(ns)
+        else:
+            self._namespace = ""
+
+        return self._namespace
+
+    def functions(self):
+        self._parse()
+        return self.info["functions"]
+
+    def attributes(self):
+        self._parse()
+        return self.info["attributes"]
+
+    def parents(self) -> Iterable[str]:
+        parents = []
+        for base in self.cls.bases:
+            parents.append(base.id)
+
+        return parents
+
+
+@dataclass(frozen=True)
+class PythonClassParams:
+    cls: object
+
+
+class PythonClass(LangClass):
+    def __init__(self, params: PythonClassParams):
+        super().__init__()
+        self.cls = params.cls
         self.parsed = False
         self.info = {}
         self.skip_dunder_names = True
@@ -147,28 +283,26 @@ class PythonModuleAnalysis(LangAnalysis):
 
     @staticmethod
     def handles(obj) -> bool:
-        if type(obj) in [ast.ClassDef]:
-            return True
-
-        # special case for python import
-        if isinstance(obj, type):
-            return True
-
-        return False
+        return type(obj) in [PythonAstClassParams, PythonClassParams]
 
     @staticmethod
     def create_lang_class(obj) -> LangClass:
-        if type(obj) in [ast.ClassDef]:
-            raise NotImplementedError("TODO")
+        if type(obj) is PythonAstClassParams:
+            return PythonAstClass(obj)
 
-        return PythonClass(obj)
+        if type(obj) is PythonClassParams:
+            return PythonClass(obj)
+
+        return None
 
     @staticmethod
     def isbuiltin_module(module: ModuleType) -> bool:
         return module.__name__ in sys.builtin_module_names
 
     @staticmethod
-    def _classes_in_module(module: ModuleType, nested: bool = True):
+    def _classes_in_module(
+        module: ModuleType, nested: bool = True
+    ) -> Iterable[PythonClassParams]:
         module_path = Path(module.__file__).parent
 
         classes = []
@@ -209,19 +343,29 @@ class PythonModuleAnalysis(LangAnalysis):
 
                 classes.append(attr)
 
-        classes[:] = [classe for classe in classes if classe.__module__ in module_names]
+        class_params = []
+        for cls in classes:
+            if cls.__module__ in module_names:
+                class_params.append(PythonClassParams(cls=cls))
 
-        return classes
+        return class_params
 
     @staticmethod
-    def classes_in_module(module_name, nested: bool = True):
+    def classes_in_module(
+        module_name, nested: bool = True
+    ) -> Iterable[PythonClassParams]:
         module = importlib.import_module(module_name)
         return PythonModuleAnalysis._classes_in_module(module, nested)
 
     PYTHON_EXT = [".py"]
 
     @staticmethod
-    def classes_in_path(path: Path, recursive: bool = True) -> Iterable[ast.ClassDef]:
+    def classes_in_path(
+        path: Path, root: Path | None = None, recursive: bool = True
+    ) -> Iterable[PythonAstClassParams]:
+        if root is None:
+            root = path
+
         ast_modules = []
 
         paths = [path]
@@ -238,30 +382,43 @@ class PythonModuleAnalysis(LangAnalysis):
                         child.is_file()
                         and child.suffix in PythonModuleAnalysis.PYTHON_EXT
                     ):
-                        ast_modules.append(PythonModuleAnalysis.get_ast(child))
-                        # TODO: get classes and methods
+                        ast_modules.append(
+                            PythonAstModuleParams(
+                                ast_module=PythonModuleAnalysis.get_ast(child),
+                                filepath=child,
+                            )
+                        )
                     else:
                         print(f"skipped: {child}", sys.stderr)
             elif p.is_file() and p.suffix in PythonModuleAnalysis.PYTHON_EXT:
-                ast_modules.append(PythonModuleAnalysis.get_ast(child))
+                ast_modules.append(
+                    PythonAstModuleParams(
+                        ast_module=PythonModuleAnalysis.get_ast(p), filepath=p
+                    )
+                )
             else:
                 print(f"skipped: {p}", sys.stderr)
 
-        return PythonModuleAnalysis.get_classes_from_ast(ast_modules)
+        return PythonModuleAnalysis.get_classes_from_ast(ast_modules, root)
 
     @staticmethod
     def get_classes_from_ast(
-        ast_modules: Iterable[ast.Module],
-    ) -> Iterable[ast.ClassDef]:
-        classes = []
+        ast_modules: Iterable[PythonAstModuleParams],
+        root: Path,
+    ) -> Iterable[PythonAstClassParams]:
+        class_params = []
         # this is shallow, we dont take into account classes in classes
-        for ast_module in ast_modules:
-            for ast_node in ast_module.body:
+        for params in ast_modules:
+            for ast_node in params.ast_module.body:
                 if type(ast_node) is ast.ClassDef:
-                    classes.append(ast_node)
+                    class_params.append(
+                        PythonAstClassParams(
+                            ast_class=ast_node, filepath=params.filepath, root=root
+                        )
+                    )
                 else:
                     print(ast_node)
-        return classes
+        return class_params
 
     @staticmethod
     def generate_class_list_from_module(module_name, starts_with=""):
