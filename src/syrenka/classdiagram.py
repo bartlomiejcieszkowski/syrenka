@@ -157,14 +157,16 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         file.writelines([indent, "classDiagram", "\n"])
 
         for namespace, classes in self.namespaces_with_classes.items():
-            file.writelines([indent, "namespace ", namespace, "{\n"])
-            indent_level, indent = get_indent(indent_level, 1, indent_base)
+            if namespace:
+                file.writelines([indent, "namespace ", namespace, "{\n"])
+                indent_level, indent = get_indent(indent_level, 1, indent_base)
             for _, mclass in classes.items():
                 mclass.to_code(
                     file=file, indent_level=indent_level, indent_base=indent_base
                 )
-            indent_level, indent = get_indent(indent_level, -1, indent_base)
-            file.writelines([indent, "}", "\n"])
+            if namespace:
+                indent_level, indent = get_indent(indent_level, -1, indent_base)
+                file.writelines([indent, "}", "\n"])
 
         file.write("%% inheritance\n")
         for classes in self.namespaces_with_classes.values():
