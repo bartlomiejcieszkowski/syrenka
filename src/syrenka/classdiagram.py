@@ -1,8 +1,7 @@
-from .base import (
+from syrenka.base import (
     SyrenkaConfig,
     SyrenkaGeneratorBase,
     get_indent,
-    dunder_name,
     under_name,
     neutralize_under,
 )
@@ -32,16 +31,18 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     def to_code(
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
     ):
-        if self.lang_class.is_enum():
-            self.to_code_enum(file, indent_level, indent_base)
-            return
-
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # class <name> {
         file.writelines([indent, "class ", self.lang_class.name, "{\n"])
 
         indent_level, indent = get_indent(indent_level, 1, indent_base)
+
+        if self.lang_class.is_enum():
+            file.writelines([indent, "<<enumeration>>", "\n"])
+            for enum_value in self.lang_class.info["enum"]:
+                file.writelines([indent, enum_value, "\n"])
+            file.write("\n")
 
         for attr in self.lang_class.attributes():
             typee_str = f"{attr.typee} " if attr.typee else ""
@@ -91,33 +92,6 @@ class SyrenkaClass(SyrenkaGeneratorBase):
                     )
                 continue
             file.writelines([indent, parent, " <|-- ", self.lang_class.name, "\n"])
-
-    def to_code_enum(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ):
-        # TODO: move this code to PythonClass, we are using internals here
-        t = self.lang_class.cls
-
-        indent_level, indent = get_indent(indent_level, indent_base=indent_base)
-
-        # class <name> {
-        file.writelines([indent, "class ", t.__name__, "{\n"])
-        indent_level, indent = get_indent(indent_level, 1, indent_base)
-
-        file.writelines([indent, "<<enumeration>>", "\n"])
-
-        for x in dir(t):
-            if dunder_name(x):
-                continue
-
-            attr = getattr(t, x)
-            if type(attr) is t:
-                # enum values are instances of this enum
-                file.writelines([indent, x, "\n"])
-
-        # TODO: what about methods in enum?
-        indent_level, indent = get_indent(indent_level, -1, indent_base)
-        file.writelines([indent, "}\n"])
 
 
 class SyrenkaClassDiagramConfig(SyrenkaConfig):

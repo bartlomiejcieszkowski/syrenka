@@ -50,15 +50,55 @@ class PythonAstClass(LangClass):
         self.parsed = False
         self._namespace = None
 
-    def _parse(self, force: bool = True):
+    def _parse(self, force: bool = False):
         if self.parsed and not force:
             return
 
         self.info.clear()
         functions = []
-        attributes = {}
+        attributes = []
+
+        enum_values = []
+
+        is_dataclass = False
+        if self.cls.decorator_list:
+            for decorator in self.cls.decorator_list:
+                # might be dataclass
+                if type(decorator) is ast.Call:
+                    if decorator.func.id == "dataclass":
+                        is_dataclass = True
+                elif type(decorator) is ast.Name:
+                    if decorator.id == "dataclass":
+                        is_dataclass = True
 
         for ast_node in self.cls.body:
+            if type(ast_node) is ast.Assign:
+                if type(ast_node.value) is not ast.Constant:
+                    continue
+
+                for target in ast_node.targets:
+                    if type(target) is ast.Name:
+                        break
+
+                if type(target) is not ast.Name:
+                    continue
+
+                enum_values.append(target.id)
+                continue
+
+            if is_dataclass and type(ast_node) is ast.AnnAssign:
+                # eg. name: str
+                # ast_node.annotation # ast.Name
+                attributes.append(
+                    LangAttr(
+                        name=ast_node.target.id,
+                        typee=None,  # todo from annotation
+                        access=PythonModuleAnalysis.get_access_from_name(
+                            ast_node.target.id
+                        ),
+                    )
+                )
+
             if type(ast_node) is not ast.FunctionDef:
                 # print(ast_node)
                 continue
@@ -104,14 +144,19 @@ class PythonAstClass(LangClass):
             functions.append(lf)
 
             if ast_node.name == "__init__":
-                attributes = PythonModuleAnalysis.get_assign_attributes(ast_node)
+                attributes.extend(PythonModuleAnalysis.get_assign_attributes(ast_node))
 
         self.info["functions"] = functions
         self.info["attributes"] = attributes
 
+        if enum_values:
+            self.info["enum"] = enum_values
+
+        self.parsed = True
+
     def is_enum(self) -> bool:
-        # TODO
-        return False
+        self._parse()
+        return "enum" in self.info
 
     @property
     def name(self):
@@ -175,7 +220,8 @@ class PythonClass(LangClass):
         self.info.clear()
 
         functions = []
-        attributes = {}
+        attributes = []
+        enum_values = []
 
         for x in dir(self.cls):
             is_init = False
@@ -227,9 +273,8 @@ class PythonClass(LangClass):
                         attr.__code__.co_filename, attr.__code__.co_firstlineno
                     )
                     if function_body:
-                        # TODO get self
-                        attributes = PythonModuleAnalysis.get_assign_attributes(
-                            function_body
+                        attributes.extend(
+                            PythonModuleAnalysis.get_assign_attributes(function_body)
                         )
 
                 # TODO: type hint for return type???
@@ -240,12 +285,18 @@ class PythonClass(LangClass):
                         PythonModuleAnalysis.get_access_from_name(x),
                     )
                 )
+            elif type(attr) is self.cls:
+                # enum values are instances of this enum
+                enum_values.append(x)
 
         self.info["functions"] = functions
         self.info["attributes"] = attributes
+        self.info["enum"] = enum_values
+
         self.parsed = True
 
     def is_enum(self) -> bool:
+        self._parse()
         return issubclass(self.cls, Enum)
 
     @property
