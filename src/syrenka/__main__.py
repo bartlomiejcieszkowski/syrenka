@@ -4,15 +4,23 @@ import argparse
 import syrenka
 from syrenka.lang.python import PythonModuleAnalysis
 
+from pathlib import Path
 
-def _class_diagram(args):
-    classes = PythonModuleAnalysis.classes_in_module(args.module, args.nested)
+
+def _import_module(args):
+    classes = PythonModuleAnalysis.classes_in_module(args.module, nested=True)
 
     class_diagram = syrenka.SyrenkaClassDiagram()
     class_diagram.add_classes(classes)
+    class_diagram.to_code(file=sys.stdout)
 
-    for line in class_diagram.to_code():
-        print(line)
+
+def _class_diagram(args):
+    classes = PythonModuleAnalysis.classes_in_path(Path(args.path), recursive=True)
+
+    class_diagram = syrenka.SyrenkaClassDiagram()
+    class_diagram.add_classes(classes)
+    class_diagram.to_code(file=sys.stdout)
 
 
 def _main():
@@ -26,9 +34,12 @@ def _main():
     class_diagram = subparsers.add_parser(
         "class", aliases=["c", "classdiagram", "class_diagram"]
     )
-    class_diagram.add_argument("module")
-    class_diagram.add_argument("-n", "--nested", action="store_true")
+    class_diagram.add_argument("path", help="folder/file with source")
     class_diagram.set_defaults(func=_class_diagram)
+
+    import_module = subparsers.add_parser("import_module")
+    import_module.add_argument("module", help="module name")
+    import_module.set_defaults(func=_import_module)
 
     args = ap.parse_args()
     if args.cmd is None:
