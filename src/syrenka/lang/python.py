@@ -22,6 +22,10 @@ from syrenka.lang.base import (
     register_lang_analysis,
 )
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 SKIP_BASES = True
 SKIP_BASES_LIST = ["object", "ABC"]
@@ -58,7 +62,7 @@ class PythonAstClass(LangClass):
         functions = []
         attributes = []
 
-        enum_values = []
+        attribute_assign = []
 
         is_dataclass = False
         if self.cls.decorator_list:
@@ -73,7 +77,10 @@ class PythonAstClass(LangClass):
 
         for ast_node in self.cls.body:
             if type(ast_node) is ast.Assign:
-                if type(ast_node.value) is not ast.Constant:
+                if type(ast_node.value) not in [ast.Constant, ast.Name]:
+                    logger.debug(
+                        f"ast.Asign - discarded ({type(ast_node.value)}) {ast_node.value = }"
+                    )
                     continue
 
                 for target in ast_node.targets:
@@ -81,9 +88,10 @@ class PythonAstClass(LangClass):
                         break
 
                 if type(target) is not ast.Name:
+                    logger.debug(f"ast.Asign - discarded ({type(target)}) {target = }")
                     continue
 
-                enum_values.append(target.id)
+                attribute_assign.append(target.id)
                 continue
 
             if is_dataclass and type(ast_node) is ast.AnnAssign:
@@ -149,8 +157,13 @@ class PythonAstClass(LangClass):
         self.info["functions"] = functions
         self.info["attributes"] = attributes
 
-        if enum_values:
-            self.info["enum"] = enum_values
+        is_enum = any(map(lambda x: "enum" in x.lower(), self.parents()))
+
+        if is_enum:
+            self.info["enum"] = attribute_assign
+        elif attribute_assign:
+            # ATM we dont care about class attributes
+            pass
 
         self.parsed = True
 
