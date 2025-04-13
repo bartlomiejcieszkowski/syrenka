@@ -3,8 +3,7 @@ from io import TextIOBase
 from .base import SyrenkaGeneratorBase, get_indent
 
 from enum import Enum
-from typing import Self, Union
-from collections.abc import MutableSequence
+from typing import Iterable, Self
 
 
 def get_title(title: str):
@@ -51,7 +50,7 @@ class Node(SyrenkaGeneratorBase):
     def __init__(
         self,
         id: str,
-        text: Union[str, None] = None,
+        text: str | None = None,
         shape: NodeShape = NodeShape.Default,
     ):
         self.id = id
@@ -120,11 +119,22 @@ class Edge(SyrenkaGeneratorBase):
                 " ",
                 edge_id,
                 self.edge_type.value,
+            ]
+        )
+
+        if self.text:
+            file.writelines(["|", self.text.replace("|", "`"), "|"])
+
+        file.writelines(
+            [
                 " ",
                 self.target.id,
                 "\n",
             ]
         )
+
+    def refs_id(self, id: str):
+        return self.source.id == id or self.target.id == id
 
 
 class Subgraph(Node):
@@ -133,43 +143,46 @@ class Subgraph(Node):
         id: str,
         text: str | None = None,
         direction: FlowchartDirection = FlowchartDirection.TopToBottom,
-        nodes: MutableSequence[Node] = [],
+        nodes: Iterable[Node] = None,
     ):
         super().__init__(id=id, text=text, shape=NodeShape.Default)
         self.edges = []
         self.direction = direction
-        self.nodes_dict = OrderedDict()
-        self.subgraphs_dict = OrderedDict()
+        self.nodes_dict: dict[str, Node] = OrderedDict()
         if nodes:
             for node in nodes:
                 self.add(node)
                 # TODO: what if someone updates id in Node?
 
-    def get_node_by_id(self, id: str) -> Node | None:
-        node = self.nodes_dict.get(id, None)
-        if node:
-            return node
+    def get_by_id(self, id: str) -> Node | None:
+        found = self.nodes_dict.get(id, None)
+        if found:
+            return found
 
         # search subgraphs
-        for subgraph in self.subgraphs_dict.values():
-            node = subgraph.get_node_by_id(id)
-            if node:
-                return node
+        for value in self.nodes_dict.values():
+            if type(value) is not Subgraph:
+                continue
+
+            found = value.get_by_id(id)
+            if found:
+                return found
 
         return None
-        raise KeyError(f"No node by id: {id}")
 
     def add(self, node: Node) -> Self:
-        if isinstance(node, Subgraph):
-            self.subgraphs_dict[node.id] = node
         self.nodes_dict[node.id] = node
         return self
 
-    def remove(self, node: Node, exception_if_not_exists: bool = False) -> Self:
-        if exception_if_not_exists:
-            self.nodes_dict.pop(node.id)
-        else:
-            self.nodes_dict.pop(node.id, None)
+    def remove(self, node: Node) -> Self:
+        found = self.nodes_dict.pop(node.id, None)
+        if not found:
+            for value in self.nodes_dict.values():
+                found = value.remove(node)
+                if found:
+                    break
+
+        self.edges[:] = [e for e in self.edges if not e.refs_id(node.id)]
 
         return self
 
@@ -209,24 +222,32 @@ class SyrenkaFlowchart(Subgraph):
         self,
         title: str,
         direction: FlowchartDirection,
-        nodes: MutableSequence[Node] = None,
+        nodes: Iterable[Node] = None,
     ):
         super().__init__(id=title, direction=direction, nodes=nodes)
 
     def connect(
-        self, source: Node, target: Node, edge_type: EdgeType = EdgeType.ArrowEdge
+        self,
+        source: Node,
+        target: Node,
+        edge_type: EdgeType = EdgeType.ArrowEdge,
+        text: str = None,
     ) -> Self:
-        self.edges.append(Edge(edge_type, "text opt", source=source, target=target))
+        self.edges.append(Edge(edge_type, text, source=source, target=target))
         # for method-chaining
         return self
 
     def connect_by_id(
-        self, source_id: str, target_id: str, edge_type: EdgeType = EdgeType.ArrowEdge
+        self,
+        source_id: str,
+        target_id: str,
+        edge_type: EdgeType = EdgeType.ArrowEdge,
+        text: str = None,
     ) -> Self:
-        source = self.get_node_by_id(source_id)
-        target = self.get_node_by_id(target_id)
+        source = self.get_by_id(source_id)
+        target = self.get_by_id(target_id)
 
-        return self.connect(source, target)
+        return self.connect(source, target, edge_type, text)
 
     def to_code(
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
