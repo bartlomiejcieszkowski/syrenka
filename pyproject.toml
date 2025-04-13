@@ -1,12 +1,12 @@
 [project]
 name = "syrenka"
-version = "0.4.4"
+version = "0.4.5"
 authors = [
     {name = "Bartlomiej Cieszkowski", email = "bartlomiej.cieszkowski@gmail.com"},
 ]
-description = "syrenka is mermaid markdown generator"
+description = "easily create mermaid diagrams with python, generate class diagrams from python ast, more languages support coming"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 keywords = ["mermaid", "markdown", "mermaid.js"]
 license = { file = "LICENSE" }
 classifiers = [
