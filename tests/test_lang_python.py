@@ -22,6 +22,52 @@ class ThisIsEnumClass(Enum):
 
     assert python_class.is_enum()
 
+    assert len(python_class.info["enum"]) == 3
+
+
+def test_python_ast_class_enum_with_members_assigned_names_should_be_enum2():
+    class_code = """
+class ThisIsEnumClass(IntEnum):
+    FIRST = auto()
+    SECOND = auto()
+    THIRD = auto()
+
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    assert python_class.is_enum()
+
+    assert len(python_class.info["enum"]) == 3
+
+
+def test_python_ast_class_enum_with_members_assigned_names_should_be_enum3():
+    class_code = """
+class ThisIsEnumClass(IntEnum):
+    FIRST = 1
+    SECOND = 2
+    THIRD = 3
+
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    assert python_class.is_enum()
+
+    assert len(python_class.info["enum"]) == 3
+
 
 def test_python_ast_class_with_members_assigned_names_should_not_be_enum():
     class_code = """

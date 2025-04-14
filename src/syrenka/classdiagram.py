@@ -41,7 +41,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         if self.lang_class.is_enum():
             file.writelines([indent, "<<enumeration>>", "\n"])
             for enum_value in self.lang_class.info["enum"]:
-                file.writelines([indent, enum_value, "\n"])
+                file.writelines([indent, enum_value.name, "\n"])
             file.write("\n")
 
         for attr in self.lang_class.attributes():
