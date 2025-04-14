@@ -77,22 +77,26 @@ class PythonAstClass(LangClass):
 
         for ast_node in self.cls.body:
             if type(ast_node) is ast.Assign:
-                if type(ast_node.value) not in [ast.Constant, ast.Name]:
-                    logger.debug(
-                        f"ast.Asign - discarded ({type(ast_node.value)}) {ast_node.value = }"
-                    )
-                    continue
+                # if type(ast_node.value) not in [ast.Constant, ast.Name, ast.Call]:
+                #     logger.debug(
+                #         f"ast.Asign - discarded ({type(ast_node.value)}) {ast_node.value = }"
+                #     )
+                #     continue
 
                 for target in ast_node.targets:
-                    if type(target) is ast.Name:
-                        break
+                    if type(target) is not ast.Name:
+                        logger.debug(
+                            f"ast.Assign - discarded ({type(target)}) {target = }"
+                        )
+                        continue
 
-                if type(target) is not ast.Name:
-                    logger.debug(f"ast.Asign - discarded ({type(target)}) {target = }")
-                    continue
-
-                attribute_assign.append(target.id)
-                continue
+                    attribute_assign.append(
+                        LangAttr(
+                            name=target.id,
+                            typee=None,
+                            access=PythonModuleAnalysis.get_access_from_name(target.id),
+                        ),
+                    )
 
             if is_dataclass and type(ast_node) is ast.AnnAssign:
                 # eg. name: str
