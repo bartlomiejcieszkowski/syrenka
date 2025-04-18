@@ -35,6 +35,7 @@ SKIP_BASES_LIST = ["object", "ABC"]
 class PythonAstModuleParams:
     ast_module: ast.Module
     filepath: Path
+    globals_as_class: bool = False
 
 
 @dataclass(frozen=True)
@@ -442,6 +443,7 @@ class PythonModuleAnalysis(LangAnalysis):
         detect_project_dir: bool = True,
         exclude: Iterable[str] | None = None,
         only: Iterable[str] | None = None,
+        globals_as_class: bool = False,
     ) -> Iterable[PythonAstClassParams]:
         root = path
 
@@ -474,7 +476,9 @@ class PythonModuleAnalysis(LangAnalysis):
                 if append:
                     ast_modules.append(
                         PythonAstModuleParams(
-                            ast_module=PythonModuleAnalysis.get_ast(p), filepath=p
+                            ast_module=PythonModuleAnalysis.get_ast(p),
+                            filepath=p,
+                            globals_as_class=globals_as_class,
                         )
                     )
             else:
@@ -502,7 +506,8 @@ class PythonModuleAnalysis(LangAnalysis):
                             module_name=module_name,
                         )
                     )
-                else:
+                elif params.globals_as_class:
+                    # TODO
                     # print(ast_node)
                     pass
         return class_params

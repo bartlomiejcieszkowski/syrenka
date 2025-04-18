@@ -28,6 +28,7 @@ def _class_diagram(args):
         detect_project_dir=args.detect_project_dir,
         exclude=args.exclude,
         only=args.only,
+        globals_as_class=args.module_globals_as_class,
     )
 
     class_diagram = syrenka.SyrenkaClassDiagram()
@@ -57,6 +58,11 @@ def _main():
         "--only",
         nargs="+",
         help="list of files/paths to only parse, checks if relative path startswith any of args",
+    )
+    class_diagram.add_argument(
+        "--module-globals-as-class",
+        action="store_true",
+        help="often there are methods/globals without encapsulating class in a module, pass this flag to wrap them in pseudo-class",
     )
     class_diagram.add_argument("--detect-project-dir", action="store_true")
     # class_diagram.add_argument("--filter", nargs="+", default=None)
