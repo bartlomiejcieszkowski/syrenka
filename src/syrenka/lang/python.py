@@ -307,7 +307,13 @@ class PythonClass(LangClass):
                 )
             elif type(attr) is self.cls:
                 # enum values are instances of this enum
-                enum_values.append(x)
+                enum_values.append(
+                    LangAttr(
+                        name=x,
+                        typee=None,
+                        access=PythonModuleAnalysis.get_access_from_name(x),
+                    )
+                )
 
         self.info["functions"] = functions
         self.info["attributes"] = attributes
