@@ -42,6 +42,7 @@ class PythonAstClassParams:
     ast_class: ast.ClassDef
     filepath: Path
     root: Path
+    module_name: str | None
 
 
 class PythonAstClass(LangClass):
@@ -50,6 +51,7 @@ class PythonAstClass(LangClass):
         self.cls: ast.ClassDef = params.ast_class
         self.filepath = params.filepath
         self.root = params.root
+        self.module_name = params.module_name
         self.info = {}
         self.parsed = False
         self._namespace = None
@@ -184,10 +186,13 @@ class PythonAstClass(LangClass):
         if self._namespace is not None:
             return self._namespace
 
+        ns = []
+        if self.module_name:
+            ns.append(self.module_name)
+
         if self.filepath.is_relative_to(self.root):
             relative = self.filepath.relative_to(self.root)
 
-            ns = []
             # -1 to skip '.'
             for i in range(0, len(relative.parts) - 1):
                 ns.append(relative.parts[i])
@@ -195,9 +200,7 @@ class PythonAstClass(LangClass):
             if not dunder_name(relative.stem):
                 ns.append(relative.stem)
 
-            self._namespace = ".".join(ns)
-        else:
-            self._namespace = ""
+        self._namespace = ".".join(ns)
 
         return self._namespace
 
@@ -427,10 +430,20 @@ class PythonModuleAnalysis(LangAnalysis):
 
     @staticmethod
     def classes_in_path(
-        path: Path, root: Path | None = None, recursive: bool = True
+        path: Path,
+        module_name: str | None = None,
+        recursive: bool = True,
+        detect_project_dir: bool = True,
+        exclude: Iterable[str] | None = None,
+        only: Iterable[str] | None = None,
     ) -> Iterable[PythonAstClassParams]:
-        if root is None:
-            root = path
+        root = path
+
+        if path.is_dir():
+            if detect_project_dir:
+                maybe_src = path / "src"
+                if maybe_src.exists() and maybe_src.is_dir():
+                    root = path = maybe_src
 
         ast_modules = []
 
@@ -442,21 +455,33 @@ class PythonModuleAnalysis(LangAnalysis):
                 for child in p.iterdir():
                     paths.append(child)
             elif p.is_file() and p.suffix in PythonModuleAnalysis.PYTHON_EXT:
-                ast_modules.append(
-                    PythonAstModuleParams(
-                        ast_module=PythonModuleAnalysis.get_ast(p), filepath=p
+                rel_path = p.relative_to(root).as_posix()
+                append = True
+
+                if only and any(map(lambda x: not rel_path.startswith(x), only)):
+                    append = False
+
+                if exclude and any(map(lambda x: rel_path.startswith(x), exclude)):
+                    append = False
+
+                logger.debug(f"{rel_path=}, {append=}")
+                if append:
+                    ast_modules.append(
+                        PythonAstModuleParams(
+                            ast_module=PythonModuleAnalysis.get_ast(p), filepath=p
+                        )
                     )
-                )
             else:
                 # print(f"skipped: {p}", sys.stderr)
                 pass
 
-        return PythonModuleAnalysis.get_classes_from_ast(ast_modules, root)
+        return PythonModuleAnalysis.get_classes_from_ast(ast_modules, root, module_name)
 
     @staticmethod
     def get_classes_from_ast(
         ast_modules: Iterable[PythonAstModuleParams],
         root: Path,
+        module_name: str | None,
     ) -> Iterable[PythonAstClassParams]:
         class_params = []
         # this is shallow, we dont take into account classes in classes
@@ -465,7 +490,10 @@ class PythonModuleAnalysis(LangAnalysis):
                 if type(ast_node) is ast.ClassDef:
                     class_params.append(
                         PythonAstClassParams(
-                            ast_class=ast_node, filepath=params.filepath, root=root
+                            ast_class=ast_node,
+                            filepath=params.filepath,
+                            root=root,
+                            module_name=module_name,
                         )
                     )
                 else:

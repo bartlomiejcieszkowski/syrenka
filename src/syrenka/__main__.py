@@ -16,7 +16,19 @@ def _import_module(args):
 
 
 def _class_diagram(args):
-    classes = PythonModuleAnalysis.classes_in_path(Path(args.path), recursive=True)
+    path = Path(args.path)
+    module_name = None
+    if args.module_name_from_path:
+        module_name = path.name
+
+    classes = PythonModuleAnalysis.classes_in_path(
+        Path(args.path),
+        module_name=module_name,
+        recursive=True,
+        detect_project_dir=args.detect_project_dir,
+        exclude=args.exclude,
+        only=args.only,
+    )
 
     class_diagram = syrenka.SyrenkaClassDiagram()
     class_diagram.add_classes(classes)
@@ -35,6 +47,19 @@ def _main():
         "class", aliases=["c", "classdiagram", "class_diagram"]
     )
     class_diagram.add_argument("path", help="folder/file with source")
+    class_diagram.add_argument("--module-name-from-path", action="store_true")
+    class_diagram.add_argument(
+        "--exclude",
+        nargs="+",
+        help="list of files/paths to exclude, checks if relative path startswith any of args",
+    )
+    class_diagram.add_argument(
+        "--only",
+        nargs="+",
+        help="list of files/paths to only parse, checks if relative path startswith any of args",
+    )
+    class_diagram.add_argument("--detect-project-dir", action="store_true")
+    # class_diagram.add_argument("--filter", nargs="+", default=None)
     class_diagram.set_defaults(func=_class_diagram)
 
     import_module = subparsers.add_parser("import_module")
