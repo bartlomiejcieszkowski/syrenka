@@ -18,6 +18,11 @@ repos:
     args: [ --fix ]
   # Run the formatter.
   - id: ruff-format
+- repo: https://github.com/repo-helper/pyproject-parser
+  rev: v0.13.0
+  hooks:
+  - id: check-pyproject
+  #- id: reformat-pyproject
 - repo: https://github.com/astral-sh/uv-pre-commit
   # uv version.
   rev: 0.6.6
