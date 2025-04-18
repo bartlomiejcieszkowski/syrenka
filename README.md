@@ -31,7 +31,8 @@ or
 python -m syrenka classdiagram <project_dir> --detect-project-dir
 ```
 
-there is also optio to filter files, see `python -m syrenka classdiagram -h` for more details
+- there is also option to filter files, see `python -m syrenka classdiagram -h` for more details
+- there is now an option to put global functions/assignments in pseudo-class _globals_ per module with flag `--globals-as-class`
 
 
 ## Example
