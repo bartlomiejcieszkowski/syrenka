@@ -60,7 +60,7 @@ def _main():
         help="list of files/paths to only parse, checks if relative path startswith any of args",
     )
     class_diagram.add_argument(
-        "--module-globals-as-class",
+        "--globals-as-class",
         action="store_true",
         help="often there are methods/globals without encapsulating class in a module, pass this flag to wrap them in pseudo-class",
     )

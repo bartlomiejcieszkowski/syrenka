@@ -57,6 +57,12 @@ class PythonAstClass(LangClass):
         self.parsed = False
         self._namespace = None
 
+        # TODO: Should be done properly as some PythonAstModule, but it works, refactor later
+        if type(self.cls) is ast.ClassDef:
+            self._name = self.cls.name
+        else:
+            self._name = "_globals_"
+
     def _parse(self, force: bool = False):
         if self.parsed and not force:
             return
@@ -68,7 +74,7 @@ class PythonAstClass(LangClass):
         attribute_assign = []
 
         is_dataclass = False
-        if self.cls.decorator_list:
+        if hasattr(self.cls, "decorator_list") and self.cls.decorator_list:
             for decorator in self.cls.decorator_list:
                 # might be dataclass
                 if type(decorator) is ast.Call:
@@ -180,7 +186,7 @@ class PythonAstClass(LangClass):
 
     @property
     def name(self):
-        return self.cls.name
+        return self._name
 
     @property
     def namespace(self):
@@ -215,8 +221,9 @@ class PythonAstClass(LangClass):
 
     def parents(self) -> Iterable[str]:
         parents = []
-        for base in self.cls.bases:
-            parents.append(base.id)
+        if hasattr(self.cls, "bases"):
+            for base in self.cls.bases:
+                parents.append(base.id)
 
         return parents
 
@@ -496,7 +503,9 @@ class PythonModuleAnalysis(LangAnalysis):
         class_params = []
         # this is shallow, we dont take into account classes in classes
         for params in ast_modules:
+            found_non_class = False
             for ast_node in params.ast_module.body:
+                logger.debug(f"{params.filepath.as_posix()}: {ast_node}")
                 if type(ast_node) is ast.ClassDef:
                     class_params.append(
                         PythonAstClassParams(
@@ -506,10 +515,23 @@ class PythonModuleAnalysis(LangAnalysis):
                             module_name=module_name,
                         )
                     )
-                elif params.globals_as_class:
+                elif params.globals_as_class and not found_non_class:
+                    if type(ast_node) not in [ast.Import, ast.ImportFrom]:
+                        found_non_class = True
                     # TODO
-                    # print(ast_node)
                     pass
+            if params.globals_as_class and found_non_class:
+                logger.debug(
+                    f"{params.filepath.as_posix()}: adding _globals_ pseudo-class"
+                )
+                class_params.append(
+                    PythonAstClassParams(
+                        ast_class=params.ast_module,
+                        filepath=params.filepath,
+                        root=root,
+                        module_name=module_name,
+                    )
+                )
         return class_params
 
     @staticmethod
