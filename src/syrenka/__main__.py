@@ -28,7 +28,7 @@ def _class_diagram(args):
         detect_project_dir=args.detect_project_dir,
         exclude=args.exclude,
         only=args.only,
-        globals_as_class=args.module_globals_as_class,
+        globals_as_class=args.globals_as_class,
     )
 
     class_diagram = syrenka.SyrenkaClassDiagram()
