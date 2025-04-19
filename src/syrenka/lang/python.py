@@ -516,9 +516,10 @@ class PythonModuleAnalysis(LangAnalysis):
                         )
                     )
                 elif params.globals_as_class and not found_non_class:
-                    if type(ast_node) not in [ast.Import, ast.ImportFrom]:
+                    if isinstance(ast_node, ast.FunctionDef):
+                        # not in [ast.Import, ast.ImportFrom]:
                         found_non_class = True
-                    # TODO
+                    # open: only function defs, do we want assigns
                     pass
             if params.globals_as_class and found_non_class:
                 logger.debug(
