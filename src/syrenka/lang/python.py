@@ -223,7 +223,15 @@ class PythonAstClass(LangClass):
         parents = []
         if hasattr(self.cls, "bases"):
             for base in self.cls.bases:
-                parents.append(base.id)
+                base_name = []
+                while not isinstance(base, ast.Name):
+                    base_name.append(base.attr)
+                    base = base.value
+
+                base_name.append(base.id)
+                base_name.reverse()
+
+                parents.append(".".join(base_name))
 
         return parents
 

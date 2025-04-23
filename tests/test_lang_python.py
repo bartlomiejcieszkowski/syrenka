@@ -108,3 +108,38 @@ class Whatever:
     python_class = PythonAstClass(params=params)
 
     assert not python_class.is_enum()
+
+
+def test_python_ast_class_with_base():
+    class_code = """
+class Sample(ABC):
+    sample = 0
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+
+
+def test_python_ast_class_with_base_dots():
+    class_code = """
+class Sample(abc.ABC):
+    sample = 0
+
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
