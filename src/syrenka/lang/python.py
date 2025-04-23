@@ -43,7 +43,7 @@ class PythonAstClassParams:
     ast_class: ast.ClassDef
     filepath: Path
     root: Path
-    module_name: str | None
+    module_name: str | None = None
 
 
 class PythonAstClass(LangClass):
