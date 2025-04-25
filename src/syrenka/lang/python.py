@@ -31,6 +31,22 @@ SKIP_BASES = True
 SKIP_BASES_LIST = ["object", "ABC"]
 
 
+def ast_to_text(node) -> str:
+    if isinstance(node, ast.Attribute):
+        return f"{ast_to_text(node.value)}.{node.attr}"
+    elif isinstance(node, ast.Call):
+        return f"{ast_to_text(node.func)}({ast_to_text(node.args)})"
+    elif isinstance(node, Iterable):
+        name = []
+        for arg in node:
+            name.append(ast_to_text(arg))
+        return ", ".join(name)
+    elif isinstance(node, ast.Name):
+        return node.id
+
+    raise Exception(f"Unsupported node to text: {node}")
+
+
 @dataclass(frozen=True)
 class PythonAstModuleParams:
     ast_module: ast.Module
@@ -170,7 +186,13 @@ class PythonAstClass(LangClass):
         self.info["functions"] = functions
         self.info["attributes"] = attributes
 
-        is_enum = any(map(lambda x: "enum" in x.lower(), self.parents()))
+        parents = []
+        if hasattr(self.cls, "bases"):
+            for base in self.cls.bases:
+                parents.append(ast_to_text(base))
+        self.info["parents"] = parents
+
+        is_enum = any(map(lambda x: "enum" in x.lower(), self.info["parents"]))
 
         if is_enum:
             self.info["enum"] = attribute_assign
@@ -220,20 +242,8 @@ class PythonAstClass(LangClass):
         return self.info["attributes"]
 
     def parents(self) -> Iterable[str]:
-        parents = []
-        if hasattr(self.cls, "bases"):
-            for base in self.cls.bases:
-                base_name = []
-                while not isinstance(base, ast.Name):
-                    base_name.append(base.attr)
-                    base = base.value
-
-                base_name.append(base.id)
-                base_name.reverse()
-
-                parents.append(".".join(base_name))
-
-        return parents
+        self._parse()
+        return self.info["parents"]
 
 
 @dataclass(frozen=True)
