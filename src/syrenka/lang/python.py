@@ -573,7 +573,11 @@ class PythonModuleAnalysis(LangAnalysis):
 
         ast_module = PythonModuleAnalysis.ast_cache.get(filename, None)
         if ast_module is None:
-            with filename.open("r", encoding="utf-8") as f:
+            # open file as binary and pass it to ast, it can handle different encodings
+            # if we open it as regular "r" we will possibly get decode errors in case of some files
+            # as it will be open with SOME encoding
+            with filename.open("rb") as f:
+                print(filename)
                 ast_module = ast.parse(f.read(), str(filename.name))
             PythonModuleAnalysis.ast_cache[filename] = ast_module
 
