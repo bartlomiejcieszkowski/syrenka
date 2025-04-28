@@ -577,7 +577,6 @@ class PythonModuleAnalysis(LangAnalysis):
             # if we open it as regular "r" we will possibly get decode errors in case of some files
             # as it will be open with SOME encoding
             with filename.open("rb") as f:
-                print(filename)
                 try:
                     ast_module = ast.parse(f.read(), str(filename.name))
                 except SyntaxError as ex:
