@@ -184,3 +184,23 @@ class Sample(something.function(Something)):
 
     python_class._parse()
     logger.info(vars(python_class))
+
+
+def test_python_ast_class_with_decorator_in_module():
+    class_code = """
+@dataclasses.dataclass
+class Sample:
+    sample = 0
+
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))

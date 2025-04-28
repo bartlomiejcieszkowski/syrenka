@@ -94,7 +94,17 @@ class PythonAstClass(LangClass):
             for decorator in self.cls.decorator_list:
                 # might be dataclass
                 if type(decorator) is ast.Call:
-                    if decorator.func.id == "dataclass":
+                    decorator_name = None
+
+                    # for @dataclasses.dataclass we will get Attribute dataclass with Name dataclasses
+                    # for @dataclass we will get ast.Name in func
+
+                    if isinstance(decorator.func, ast.Attribute):
+                        decorator_name = decorator.func.attr
+                    elif isinstance(decorator.func, ast.Name):
+                        decorator_name = decorator.func.id
+
+                    if decorator_name and decorator_name == "dataclass":
                         is_dataclass = True
                 elif type(decorator) is ast.Name:
                     if decorator.id == "dataclass":
