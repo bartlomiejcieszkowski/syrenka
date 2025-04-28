@@ -43,6 +43,11 @@ def ast_to_text(node) -> str:
         return ", ".join(name)
     elif isinstance(node, ast.Name):
         return node.id
+    elif isinstance(node, ast.Constant):
+        print(f"{node.value=}, {node.kind=}")
+        if isinstance(node.value, str):
+            return "'" + node.value + "'"
+        return str(node.value)
 
     raise Exception(f"Unsupported node to text: {node}")
 
@@ -166,13 +171,13 @@ class PythonAstClass(LangClass):
                         continue
 
                     if type(ast_arg.annotation) is ast.Name:
-                        args_list.append(LangVar(ast_arg.arg, ast_arg.annotation.id))
+                        args_list.append(
+                            LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation))
+                        )
                         continue
 
                     if type(ast_arg.annotation) is ast.Attribute:
-                        typee = (
-                            ast_arg.annotation.value.id + "." + ast_arg.annotation.attr
-                        )
+                        typee = ast_to_text(ast_arg.annotation)
                         args_list.append(LangVar(ast_arg.arg, typee))
                         continue
 
