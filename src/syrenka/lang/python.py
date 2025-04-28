@@ -578,7 +578,11 @@ class PythonModuleAnalysis(LangAnalysis):
             # as it will be open with SOME encoding
             with filename.open("rb") as f:
                 print(filename)
-                ast_module = ast.parse(f.read(), str(filename.name))
+                try:
+                    ast_module = ast.parse(f.read(), str(filename.name))
+                except SyntaxError as ex:
+                    print(f"FAIL: File doesn't parse correctly: {ex}", file=sys.stderr)
+                    raise ex
             PythonModuleAnalysis.ast_cache[filename] = ast_module
 
         return ast_module
