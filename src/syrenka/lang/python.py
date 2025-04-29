@@ -44,10 +44,26 @@ def ast_to_text(node) -> str:
     elif isinstance(node, ast.Name):
         return node.id
     elif isinstance(node, ast.Constant):
-        print(f"{node.value=}, {node.kind=}")
         if isinstance(node.value, str):
             return "'" + node.value + "'"
         return str(node.value)
+    elif isinstance(node, ast.Tuple):
+        name = []
+        for elt in node.elts:
+            name.append(ast_to_text(elt))
+        return "(" + ", ".join(name) + ")"
+    elif isinstance(node, ast.List):
+        name = []
+        for elt in node.elts:
+            name.append(ast_to_text(elt))
+        return "[" + ", ".join(name) + "]"
+    elif isinstance(node, ast.Dict):
+        name = []
+        for i in range(0, len(node.keys)):
+            key = node.keys[i]
+            value = node.values[i]
+            name.append(f"{ast_to_text(key)}: {ast_to_text(value)}")
+        return "{" + ", ".join(name) + "}"
 
     raise Exception(f"Unsupported node to text: {node}")
 
@@ -181,7 +197,13 @@ class PythonAstClass(LangClass):
                         args_list.append(LangVar(ast_arg.arg, typee))
                         continue
 
-                    raise Exception("TODO not handled")
+                    if type(ast_arg.annotation) is ast.Constant:
+                        args_list.append(
+                            LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation))
+                        )
+                        continue
+
+                    raise Exception(f"TODO - {ast_arg.annotation} not handled")
 
                 lv = LangVar(ast_arg.arg)
 
