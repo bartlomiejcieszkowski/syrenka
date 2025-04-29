@@ -223,3 +223,61 @@ class Sample(collections.namedtuple('Pair', 12)):
 
     python_class._parse()
     logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_params_tuple():
+    class_code = """
+# from cpython/tkinter/__init__.py
+class _VersionInfoType(collections.namedtuple('_VersionInfoType',
+        ('major', 'minor', 'micro', 'releaselevel', 'serial'))):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_params_list():
+    class_code = """
+class Sample(collections.namedtuple('_Sample',
+        [1, "2", 3.0, ])):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_params_dict():
+    class_code = """
+class Sample(collections.namedtuple('_Sample',
+        {"1": 2, "2": None, 3: 1, })):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
