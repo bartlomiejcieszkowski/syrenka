@@ -281,3 +281,113 @@ class Sample(collections.namedtuple('_Sample',
 
     python_class._parse()
     logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_class_subscript():
+    class_code = """
+# from cpython/Lib/test/test_typing.py
+class SimpleMapping(Generic[XK, XV]):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_class_slice():
+    class_code = """
+class SimpleMapping(Generic[0:1]):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_class_slice2():
+    class_code = """
+class SimpleMapping(Generic[:1]):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_class_slice3():
+    class_code = """
+class SimpleMapping(Generic[1:]):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_class_slice4():
+    class_code = """
+class SimpleMapping(Generic[:]):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
+
+
+def test_python_ast_class_base_with_class_ifexp():
+    class_code = """
+# from cpython/Lib/xmlrpc/client.py
+class GzipDecodedResponse(gzip.GzipFile if gzip else object):
+    pass
+    """
+
+    parsed_module = ast.parse(class_code)
+    print(f"{type(parsed_module)}, {parsed_module = }")
+    parsed_class = parsed_module.body[0]
+    params = PythonAstClassParams(
+        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
+    )
+    python_class = PythonAstClass(params=params)
+
+    python_class._parse()
+    logger.info(vars(python_class))
