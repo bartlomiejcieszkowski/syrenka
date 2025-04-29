@@ -32,6 +32,8 @@ SKIP_BASES_LIST = ["object", "ABC"]
 
 
 def ast_to_text(node) -> str:
+    if node is None:
+        return ""
     if isinstance(node, ast.Attribute):
         return f"{ast_to_text(node.value)}.{node.attr}"
     elif isinstance(node, ast.Call):
@@ -48,15 +50,12 @@ def ast_to_text(node) -> str:
             return "'" + node.value + "'"
         return str(node.value)
     elif isinstance(node, ast.Tuple):
-        name = []
-        for elt in node.elts:
-            name.append(ast_to_text(elt))
-        return "(" + ", ".join(name) + ")"
+        return "(" + ast_to_text(node.elts) + ")"
     elif isinstance(node, ast.List):
         name = []
         for elt in node.elts:
             name.append(ast_to_text(elt))
-        return "[" + ", ".join(name) + "]"
+        return "[" + ast_to_text(node.elts) + "]"
     elif isinstance(node, ast.Dict):
         name = []
         for i in range(0, len(node.keys)):
@@ -64,6 +63,29 @@ def ast_to_text(node) -> str:
             value = node.values[i]
             name.append(f"{ast_to_text(key)}: {ast_to_text(value)}")
         return "{" + ", ".join(name) + "}"
+    elif isinstance(node, ast.Subscript):
+        if node.slice:
+            # The slice can be other types:
+            # Tuple [A, B]
+            # Slice [1:2]
+            if isinstance(node.slice, ast.Tuple):
+                # for tuple we get (), but for case in subscript, we want brackets
+                slice_txt = ast_to_text(node.slice.elts)
+            else:
+                slice_txt = ast_to_text(node.slice)
+        else:
+            slice_txt = ""
+        return ast_to_text(node.value) + "[" + slice_txt + "]"
+    elif isinstance(node, ast.Slice):
+        return ast_to_text(node.lower) + ":" + ast_to_text(node.upper)
+    elif isinstance(node, ast.IfExp):
+        return (
+            ast_to_text(node.body)
+            + " if "
+            + ast_to_text(node.test)
+            + " else "
+            + ast_to_text(node.orelse)
+        )
 
     raise Exception(f"Unsupported node to text: {node}")
 
