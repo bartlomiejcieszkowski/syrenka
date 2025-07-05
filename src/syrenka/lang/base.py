@@ -1,7 +1,12 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from collections.abc import Iterable
-from enum import StrEnum
+
+try:
+    from enum import StrEnum
+except ImportError:
+    # backward compatibility for python <3.11
+    from strenum import StrEnum
 
 
 class LangAccess(StrEnum):

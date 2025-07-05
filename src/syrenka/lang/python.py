@@ -6,6 +6,7 @@ import importlib
 import ast
 from enum import Enum
 from dataclasses import dataclass
+from typing import Union
 
 import sys
 from inspect import getfullargspec, isbuiltin, ismethoddescriptor
@@ -102,7 +103,7 @@ class PythonAstClassParams:
     ast_class: ast.ClassDef
     filepath: Path
     root: Path
-    module_name: str | None = None
+    module_name: Union[str, None] = None
 
 
 class PythonAstClass(LangClass):
@@ -522,11 +523,11 @@ class PythonModuleAnalysis(LangAnalysis):
     @staticmethod
     def classes_in_path(
         path: Path,
-        module_name: str | None = None,
+        module_name: Union[str, None] = None,
         recursive: bool = True,
         detect_project_dir: bool = True,
-        exclude: Iterable[str] | None = None,
-        only: Iterable[str] | None = None,
+        exclude: Union[Iterable[str], None] = None,
+        only: Union[Iterable[str], None] = None,
         globals_as_class: bool = False,
     ) -> Iterable[PythonAstClassParams]:
         root = path
@@ -575,7 +576,7 @@ class PythonModuleAnalysis(LangAnalysis):
     def get_classes_from_ast(
         ast_modules: Iterable[PythonAstModuleParams],
         root: Path,
-        module_name: str | None,
+        module_name: Union[str, None],
     ) -> Iterable[PythonAstClassParams]:
         class_params = []
         # this is shallow, we dont take into account classes in classes
@@ -613,7 +614,7 @@ class PythonModuleAnalysis(LangAnalysis):
         return class_params
 
     @staticmethod
-    def get_ast(filename: Path | str):
+    def get_ast(filename: Union[Path, str]):
         if type(filename) is str:
             filename = Path(filename)
 
@@ -636,7 +637,7 @@ class PythonModuleAnalysis(LangAnalysis):
         return ast_module
 
     @staticmethod
-    def get_ast_node(filename: Path | str, firstlineno, ast_type):
+    def get_ast_node(filename: Union[Path, str], firstlineno, ast_type):
         ast_module = PythonModuleAnalysis.get_ast(filename)
 
         ast_nodes = [ast_module]
@@ -652,7 +653,7 @@ class PythonModuleAnalysis(LangAnalysis):
         return ast_node
 
     @staticmethod
-    def get_ast_function(filename: Path | str, firstlineno) -> ast.FunctionDef:
+    def get_ast_function(filename: Union[Path, str], firstlineno) -> ast.FunctionDef:
         return PythonModuleAnalysis.get_ast_node(filename, firstlineno, ast.FunctionDef)
 
     @staticmethod

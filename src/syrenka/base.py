@@ -1,8 +1,13 @@
 from abc import ABC, abstractmethod
 
 from io import TextIOBase
-from typing import Self, Tuple
-from enum import StrEnum
+from typing import Tuple, Union
+
+try:
+    from enum import StrEnum
+except ImportError:
+    # backward compatibility for python <3.11
+    from strenum import StrEnum
 
 
 def get_indent(
@@ -32,7 +37,7 @@ class SyrenkaConfig(ABC):
         for key, val in self.config.items():
             file.write(f"  {key}: {val}\n")
 
-    def set(self, name, value) -> Self:
+    def set(self, name, value):
         if type(name) is not str:
             return self
 
@@ -43,7 +48,7 @@ class SyrenkaConfig(ABC):
 
         return self
 
-    def theme(self, theme_name: ThemeNames | str) -> Self:
+    def theme(self, theme_name: Union[ThemeNames, str]):
         return self.set("theme", theme_name)
 
 
