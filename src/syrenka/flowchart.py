@@ -3,7 +3,7 @@ from io import TextIOBase
 from .base import SyrenkaGeneratorBase, get_indent
 
 from enum import Enum
-from typing import Iterable, Self
+from typing import Iterable, Union
 
 
 def get_title(title: str):
@@ -50,7 +50,7 @@ class Node(SyrenkaGeneratorBase):
     def __init__(
         self,
         id: str,
-        text: str | None = None,
+        text: Union[str, None] = None,
         shape: NodeShape = NodeShape.Default,
     ):
         self.id = id
@@ -96,9 +96,9 @@ class Edge(SyrenkaGeneratorBase):
     def __init__(
         self,
         edge_type: EdgeType = EdgeType.ArrowEdge,
-        text: str | None = None,
-        source: Node | None = None,
-        target: Node | None = None,
+        text: Union[str, None] = None,
+        source: Union[Node, None] = None,
+        target: Union[Node, None] = None,
     ):
         self.id = None
         self.edge_type = edge_type
@@ -141,7 +141,7 @@ class Subgraph(Node):
     def __init__(
         self,
         id: str,
-        text: str | None = None,
+        text: Union[str, None] = None,
         direction: FlowchartDirection = FlowchartDirection.TopToBottom,
         nodes: Iterable[Node] = None,
     ):
@@ -154,7 +154,7 @@ class Subgraph(Node):
                 self.add(node)
                 # TODO: what if someone updates id in Node?
 
-    def get_by_id(self, id: str) -> Node | None:
+    def get_by_id(self, id: str) -> Union[Node, None]:
         found = self.nodes_dict.get(id, None)
         if found:
             return found
@@ -170,11 +170,11 @@ class Subgraph(Node):
 
         return None
 
-    def add(self, node: Node) -> Self:
+    def add(self, node: Node):
         self.nodes_dict[node.id] = node
         return self
 
-    def remove(self, node: Node) -> Self:
+    def remove(self, node: Node):
         found = self.nodes_dict.pop(node.id, None)
         if not found:
             for value in self.nodes_dict.values():
@@ -232,7 +232,7 @@ class SyrenkaFlowchart(Subgraph):
         target: Node,
         edge_type: EdgeType = EdgeType.ArrowEdge,
         text: str = None,
-    ) -> Self:
+    ):
         self.edges.append(Edge(edge_type, text, source=source, target=target))
         # for method-chaining
         return self
@@ -243,7 +243,7 @@ class SyrenkaFlowchart(Subgraph):
         target_id: str,
         edge_type: EdgeType = EdgeType.ArrowEdge,
         text: str = None,
-    ) -> Self:
+    ):
         source = self.get_by_id(source_id)
         target = self.get_by_id(target_id)
 
