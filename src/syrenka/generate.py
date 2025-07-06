@@ -22,33 +22,30 @@ if not MMDC_SUPPORT:
         file=sys.stderr,
     )
 
-    def generate_diagram_image(
-        input: Union[str, Path], output_file: Path, overwrite: bool = False
-    ):
+
+def generate_diagram_image(
+    input: Union[str, Path], output_file: Path, overwrite: bool = False
+):
+    if not MMDC_SUPPORT:
         print(
             "For mermaid diagram generation install mmdc, check stderr", file=sys.stderr
         )
-else:
+        return
 
-    def generate_diagram_image(
-        input: Union[str, Path], output_file: Path, overwrite: bool = False
-    ):
-        of = output_file.resolve()
-        if of.exists() and not overwrite:
-            raise FileExistsError(
-                f"Output file: {of}, already exists and overwrite is {overwrite}"
-            )
+    of = output_file.resolve()
+    if of.exists() and not overwrite:
+        raise FileExistsError(
+            f"Output file: {of}, already exists and overwrite is {overwrite}"
+        )
 
-        if isinstance(input, Path):
-            input_str = None
-            input_arg = str(input)
-        elif isinstance(input, str):
-            input_str = input
-            input_arg = "-"
-        else:
-            raise ValueError(
-                f"unexpected input type: {type(input)} - expected Path or str"
-            )
+    if isinstance(input, Path):
+        input_str = None
+        input_arg = str(input)
+    elif isinstance(input, str):
+        input_str = input
+        input_arg = "-"
+    else:
+        raise ValueError(f"unexpected input type: {type(input)} - expected Path or str")
 
-        args = [MMDC_EXE, "-i", input_arg, "-o", str(of)]
-        subprocess.run(args, input=input_str, text=True, capture_output=True)
+    args = [MMDC_EXE, "-i", input_arg, "-o", str(of)]
+    subprocess.run(args, input=input_str, text=True, capture_output=True, check=False)

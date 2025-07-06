@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from dataclasses import dataclass, field
+from typing import Union
 
 try:
     from enum import StrEnum
@@ -10,9 +11,9 @@ except ImportError:
 
 
 class LangAccess(StrEnum):
-    Public = "+"
-    Protected = "#"
-    Private = "-"
+    PUBLIC = "+"
+    PROTECTED = "#"
+    PRIVATE = "-"
 
 
 @dataclass
@@ -20,14 +21,14 @@ class LangVar:
     """Variable identifier and type"""
 
     name: str
-    typee: str = None
+    typee: Union[str, None] = None
 
 
 @dataclass
 class LangAttr:
     name: str
-    typee: str = None
-    access: LangAccess = LangAccess.Public
+    typee: Union[str, None] = None
+    access: LangAccess = LangAccess.PUBLIC
 
 
 @dataclass
@@ -36,13 +37,10 @@ class LangFunction:
 
     ident: LangVar
     args: list[LangVar] = field(default_factory=list)
-    access: LangAccess = LangAccess.Public
+    access: LangAccess = LangAccess.PUBLIC
 
 
 class LangClass(ABC):
-    def __init__(self):
-        super().__init__()
-
     @abstractmethod
     def is_enum(self) -> bool:
         pass
@@ -56,6 +54,7 @@ class LangClass(ABC):
     def name(self) -> str:
         pass
 
+    @property
     @abstractmethod
     def namespace(self) -> str:
         pass
@@ -84,7 +83,7 @@ class LangAnalysis(ABC):
 
     @staticmethod
     @abstractmethod
-    def create_lang_class(obj) -> LangClass:
+    def create_lang_class(obj) -> Union[LangClass, None]:
         pass
 
 
@@ -92,9 +91,8 @@ LANG_ANALYSIS = []
 
 
 def register_lang_analysis(cls, last=False):
-    global LANG_ANALYSIS
     if cls in LANG_ANALYSIS:
-        raise Exception("Unexpected second register")
+        raise ValueError("Unexpected second register")
     if last:
         LANG_ANALYSIS.append(cls)
     else:

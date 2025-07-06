@@ -5,14 +5,14 @@ import sys
 import syrenka.flowchart as sf
 
 fl = sf.SyrenkaFlowchart(
-    title="Simple Flowchart", direction=sf.FlowchartDirection.TopToBottom
+    title="Simple Flowchart", direction=sf.FlowchartDirection.TOP_TO_BOTTOM
 )
-fl.add(sf.Node(id="1", text="First"))
+fl.add(sf.Node(identifier="1", text="First"))
 sub = sf.Subgraph(id="s", text="Subgraph")
-sub.add(sf.Node(id="2", text="Second"))
-sub.add(sf.Node(id="3", text="Third"))
+sub.add(sf.Node(identifier="2", text="Second"))
+sub.add(sf.Node(identifier="3", text="Third"))
 fl.add(sub)
-fl.add(sf.Node(id="4", text="Fourth"))
+fl.add(sf.Node(identifier="4", text="Fourth"))
 
 fl.connect_by_id("1", "2")
 fl.connect_by_id(source_id="2", target_id="3", edge_type=sf.EdgeType.DottedLink)

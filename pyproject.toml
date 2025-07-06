@@ -1,6 +1,6 @@
 [project]
 name = "syrenka"
-version = "0.5.1"
+version = "0.5.2"
 authors = [
     {name = "Bartlomiej Cieszkowski", email = "bartlomiej.cieszkowski@gmail.com"},
 ]
@@ -29,6 +29,7 @@ build-backend = "hatchling.build"
 dev = [
     "cyclonedx-bom>=6.1.2",
     "pre-commit>=4.1.0",
+    "pylint>=3.3.7",
     "pyproject-parser[all]>=0.13.0",
     "pytest>=8.3.5",
     "ruff>=0.11.0",

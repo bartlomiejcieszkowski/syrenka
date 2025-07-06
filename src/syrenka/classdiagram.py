@@ -97,11 +97,13 @@ class SyrenkaClassDiagramConfig(SyrenkaConfig):
     CLASS_CONFIG_DEFAULTS = {"hideEmptyMembersBox": "true"}
 
     def __init__(self):
+        """init"""
         super().__init__()
         class_config = deepcopy(SyrenkaClassDiagramConfig.CLASS_CONFIG_DEFAULTS)
         self.class_config = {"class": class_config}
 
     def to_code(self, file: TextIOBase):
+        """converts to mermaid diagram"""
         super().to_code(file)
         for key, val in self.class_config.items():
             file.write(f"  {key}:\n")
@@ -116,6 +118,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         config: SyrenkaClassDiagramConfig = SyrenkaClassDiagramConfig(),
         imported_classes: bool = False,
     ):
+        """init"""
         super().__init__()
         self.title = title
         self.namespaces_with_classes: dict[str, dict[str, SyrenkaGeneratorBase]] = {}
@@ -125,7 +128,8 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
 
     def to_code(
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ) -> Iterable[str]:
+    ) -> None:
+        """converts to mermaid diagram"""
         indent_level, indent = get_indent(indent_level, 0, indent_base)
 
         # Frontmatter
@@ -171,6 +175,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
 
     # TODO: check cls file origin
     def add_class(self, cls):
+        """adds class to class diagram"""
         # TODO: There is a corner-case of same class name but different namespace, it will clash on diagram
         class_obj = SyrenkaClass(cls=cls)
         if class_obj.name in self.unique_classes:
@@ -185,6 +190,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
             )
         self.unique_classes[class_obj.name] = None
 
-    def add_classes(self, classes):
+    def add_classes(self, classes: Iterable):
+        """adds classes to class diagram"""
         for cls in classes:
             self.add_class(cls)

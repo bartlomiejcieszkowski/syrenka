@@ -1,3 +1,5 @@
+"""syrenka __main__ implementation"""
+
 import argparse
 import os
 import sys

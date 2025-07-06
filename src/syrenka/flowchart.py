@@ -15,26 +15,26 @@ def get_title(title: str):
 
 
 class FlowchartDirection(Enum):
-    TopToBottom = "TB"
-    LeftToRight = "LR"
-    BottomToTop = "BT"
-    RightToLeft = "RL"
+    TOP_TO_BOTTOM = "TB"
+    LEFT_TO_RIGHT = "LR"
+    BOTTOM_TO_TOP = "BT"
+    RIGHT_TO_LEFT = "RL"
 
 
 class NodeShape(Enum):
-    Default = "[]"
-    RoundEdges = "()"
-    StadiumShapedNode = "([])"
-    SubroutineShape = "[[]]"
-    CylindricalShape = "[()]"
-    Circle = "(())"
-    AssymetricShape = ">]"
-    Rhombus = "{}"
-    HexagonNode = "{{}}"
-    Parallelogram = "[//]"
-    Trapezoid = "[/\\]"
-    TrapezoidAlt = "[\\/]"
-    DoubleCircle = "((()))"
+    DEFAULT = "[]"
+    ROUND_EDGES = "()"
+    STADIUM_SHAPED_NODE = "([])"
+    SUBROUTINE_SHAPE = "[[]]"
+    CYLINDRICAL_SHAPE = "[()]"
+    CIRCLE = "(())"
+    ASSYMETRIC_SHAPE = ">]"
+    RHOMBUS = "{}"
+    HEXAGON_NODE = "{{}}"
+    PARALLELOGRAM = "[//]"
+    TRAPEZOID = "[/\\]"
+    TRAPEZOID_ALT = "[\\/]"
+    DOUBLE_CIRCLE = "((()))"
 
     @staticmethod
     def get_edges(node_shape):
@@ -49,11 +49,11 @@ class NodeShape(Enum):
 class Node(SyrenkaGeneratorBase):
     def __init__(
         self,
-        id: str,
+        identifier: str,
         text: Union[str, None] = None,
-        shape: NodeShape = NodeShape.Default,
+        shape: NodeShape = NodeShape.DEFAULT,
     ):
-        self.id = id
+        self.identifier = identifier
         self.text = text
         self.shape = shape
 
@@ -63,15 +63,15 @@ class Node(SyrenkaGeneratorBase):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
         e_open, e_close = NodeShape.get_edges(self.shape)
         text = self.text
-        if self.shape is not NodeShape.Default and not text:
-            text = self.id
+        if self.shape is not NodeShape.DEFAULT and not text:
+            text = self.identifier
 
         if self.text:
             file.writelines(
-                [indent, self.id, e_open, '"', self.text, '"', e_close, "\n"]
+                [indent, self.identifier, e_open, '"', self.text, '"', e_close, "\n"]
             )
         else:
-            file.writelines([indent, self.id, "\n"])
+            file.writelines([indent, self.identifier, "\n"])
 
 
 class EdgeType(Enum):
@@ -100,7 +100,7 @@ class Edge(SyrenkaGeneratorBase):
         source: Union[Node, None] = None,
         target: Union[Node, None] = None,
     ):
-        self.id = None
+        self.identifier = None
         self.edge_type = edge_type
         self.text = text
         self.source = source
@@ -111,11 +111,11 @@ class Edge(SyrenkaGeneratorBase):
 
     def to_code(self, file: TextIOBase, indent_level=0, indent_base="    "):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
-        edge_id = f"{self.id}@" if self.id else ""
+        edge_id = f"{self.identifier}@" if self.identifier else ""
         file.writelines(
             [
                 indent,
-                self.source.id,
+                self.source.identifier,
                 " ",
                 edge_id,
                 self.edge_type.value,
@@ -128,13 +128,13 @@ class Edge(SyrenkaGeneratorBase):
         file.writelines(
             [
                 " ",
-                self.target.id,
+                self.target.identifier,
                 "\n",
             ]
         )
 
-    def refs_id(self, id: str):
-        return self.source.id == id or self.target.id == id
+    def refs_id(self, identifier: str):
+        return identifier in (self.source.identifier, self.target.identifier)
 
 
 class Subgraph(Node):
@@ -142,10 +142,10 @@ class Subgraph(Node):
         self,
         id: str,
         text: Union[str, None] = None,
-        direction: FlowchartDirection = FlowchartDirection.TopToBottom,
+        direction: FlowchartDirection = FlowchartDirection.TOP_TO_BOTTOM,
         nodes: Iterable[Node] = None,
     ):
-        super().__init__(id=id, text=text, shape=NodeShape.Default)
+        super().__init__(identifier=id, text=text, shape=NodeShape.DEFAULT)
         self.edges = []
         self.direction = direction
         self.nodes_dict: dict[str, Node] = OrderedDict()
@@ -154,35 +154,35 @@ class Subgraph(Node):
                 self.add(node)
                 # TODO: what if someone updates id in Node?
 
-    def get_by_id(self, id: str) -> Union[Node, None]:
-        found = self.nodes_dict.get(id, None)
+    def get_by_id(self, identifier: str) -> Union[Node, None]:
+        found = self.nodes_dict.get(identifier, None)
         if found:
             return found
 
         # search subgraphs
         for value in self.nodes_dict.values():
-            if type(value) is not Subgraph:
+            if not isinstance(value, Subgraph):
                 continue
 
-            found = value.get_by_id(id)
+            found = value.get_by_id(identifier)
             if found:
                 return found
 
         return None
 
     def add(self, node: Node):
-        self.nodes_dict[node.id] = node
+        self.nodes_dict[node.identifier] = node
         return self
 
     def remove(self, node: Node):
-        found = self.nodes_dict.pop(node.id, None)
+        found = self.nodes_dict.pop(node.identifier, None)
         if not found:
             for value in self.nodes_dict.values():
                 found = value.remove(node)
                 if found:
                     break
 
-        self.edges[:] = [e for e in self.edges if not e.refs_id(node.id)]
+        self.edges[:] = [e for e in self.edges if not e.refs_id(node.identifier)]
 
         return self
 
@@ -197,7 +197,7 @@ class Subgraph(Node):
                 [
                     indent,
                     "subgraph ",
-                    self.id,
+                    self.identifier,
                     e_open,
                     '"',
                     self.text,
@@ -207,7 +207,7 @@ class Subgraph(Node):
                 ]
             )
         else:
-            file.writelines([indent, "subgraph ", self.id, "\n"])
+            file.writelines([indent, "subgraph ", self.identifier, "\n"])
 
         for node in self.nodes_dict.values():
             node.to_code(
@@ -231,7 +231,7 @@ class SyrenkaFlowchart(Subgraph):
         source: Node,
         target: Node,
         edge_type: EdgeType = EdgeType.ArrowEdge,
-        text: str = None,
+        text: Union[str, None] = None,
     ):
         self.edges.append(Edge(edge_type, text, source=source, target=target))
         # for method-chaining
@@ -254,8 +254,8 @@ class SyrenkaFlowchart(Subgraph):
     ):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
 
-        if self.id:
-            file.writelines(get_title(self.id))
+        if self.identifier:
+            file.writelines(get_title(self.identifier))
 
         file.writelines([indent, "flowchart ", self.direction.value, "\n"])
 
