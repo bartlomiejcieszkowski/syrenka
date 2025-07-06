@@ -34,6 +34,9 @@ dev = [
     "ruff>=0.11.0",
 ]
 
+[tool.ruff.lint]
+select = ["I"]
+
 [tool.pytest.ini_options]
 log_cli = true
 log_level = "NOTSET"
