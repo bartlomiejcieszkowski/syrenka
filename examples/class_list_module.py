@@ -1,3 +1,5 @@
+"""Example SyrenkaClassDiagram."""
+
 # from io import StringIO
 import sys
 
@@ -6,7 +8,7 @@ from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
 from syrenka.lang.python import PythonModuleAnalysis
 
 class_diagram = SyrenkaClassDiagram(
-    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.neutral)
+    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL)
 )
 class_diagram.add_classes(
     PythonModuleAnalysis.classes_in_module(module_name="syrenka", nested=True)

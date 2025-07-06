@@ -1,9 +1,12 @@
+"""Provides function to replace content between two tags in a file."""
+
 import argparse
 import sys
 from pathlib import Path
 
 
 def replace(file_path: Path, tag_start: str, tag_end: str, replace_file_path: Path):
+    """Replaces text between two tags with the content from replace_file_path"""
     with file_path.open("r") as f:
         file_text = f.readlines()
 
@@ -37,14 +40,14 @@ if __name__ == "__main__":
     args = ap.parse_args()
     print(args)
 
-    file_path = Path(args.file)
-    replace_file_path = Path(args.replace_file)
+    fp = Path(args.file)
+    replace_fp = Path(args.replace_file)
 
-    if not file_path.exists():
+    if not fp.exists():
         print(f"--file is invalid - {args.file} doesn't exist", file=sys.stderr)
         sys.exit(1)
 
-    if not replace_file_path.exists():
+    if not replace_fp.exists():
         print(
             f"--replace-file is invalid - {args.replace_file} doesn't exist",
             file=sys.stderr,
@@ -52,9 +55,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     replace(
-        file_path=file_path,
+        file_path=fp,
         tag_start=args.start,
         tag_end=args.end,
-        replace_file_path=replace_file_path,
+        replace_file_path=replace_fp,
     )
     sys.exit(0)
