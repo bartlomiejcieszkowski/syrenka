@@ -1,5 +1,6 @@
-import syrenka.flowchart as sf
 import sys
+
+import syrenka.flowchart as sf
 
 fl = sf.SyrenkaFlowchart(
     title="Simple Flowchart", direction=sf.FlowchartDirection.TopToBottom

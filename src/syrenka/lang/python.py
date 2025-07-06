@@ -1,29 +1,25 @@
+import ast
+import importlib
+import logging
+import sys
 from collections.abc import Iterable
-from inspect import isclass, ismodule
+from dataclasses import dataclass
+from enum import Enum
+from inspect import getfullargspec, isbuiltin, isclass, ismethoddescriptor, ismodule
 from pathlib import Path
 from types import ModuleType
-import importlib
-import ast
-from enum import Enum
-from dataclasses import dataclass
 from typing import Union
 
-import sys
-from inspect import getfullargspec, isbuiltin, ismethoddescriptor
-
 from syrenka.base import dunder_name
-
 from syrenka.lang.base import (
     LangAccess,
     LangAnalysis,
     LangAttr,
     LangClass,
-    LangVar,
     LangFunction,
+    LangVar,
     register_lang_analysis,
 )
-
-import logging
 
 logger = logging.getLogger(__name__)
 

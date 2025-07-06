@@ -1,7 +1,8 @@
 import ast
-from syrenka.lang.python import PythonAstClass, PythonAstClassParams
-from pathlib import Path
 import logging
+from pathlib import Path
+
+from syrenka.lang.python import PythonAstClass, PythonAstClassParams
 
 logger = logging.getLogger(__name__)
 

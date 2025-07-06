@@ -1,8 +1,8 @@
-from pathlib import Path
-from replace_between_tags import replace
 import subprocess
-from syrenka.generate import generate_diagram_image
+from pathlib import Path
 
+from replace_between_tags import replace
+from syrenka.generate import generate_diagram_image
 
 outfile = Path("syrenka_diagram.md")
 temp_file = Path("mermaid.tmp")

@@ -1,10 +1,10 @@
+import argparse
 import os
 import sys
-import argparse
+from pathlib import Path
+
 import syrenka
 from syrenka.lang.python import PythonModuleAnalysis
-
-from pathlib import Path
 
 
 def _import_module(args):

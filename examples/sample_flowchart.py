@@ -1,8 +1,8 @@
 from io import StringIO
 from pathlib import Path
 
-from syrenka.generate import generate_diagram_image
 import syrenka.flowchart as sf
+from syrenka.generate import generate_diagram_image
 
 # flowchart TB
 #     c1-->a2
