@@ -1,3 +1,5 @@
+"""Example SyrenkaClassDiagram with ast backend."""
+
 # from io import StringIO
 import sys
 from pathlib import Path
@@ -7,7 +9,7 @@ from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
 from syrenka.lang.python import PythonModuleAnalysis
 
 class_diagram = SyrenkaClassDiagram(
-    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.neutral)
+    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL)
 )
 class_diagram.add_classes(
     PythonModuleAnalysis.classes_in_path(

@@ -1,3 +1,5 @@
+"""Example Simple SyrenkaFlowchart."""
+
 import sys
 
 import syrenka.flowchart as sf

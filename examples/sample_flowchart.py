@@ -1,3 +1,5 @@
+"""Example SyrenkaFlowchart usage."""
+
 from io import StringIO
 from pathlib import Path
 
@@ -19,8 +21,6 @@ from syrenka.generate import generate_diagram_image
 #     three --> two
 #     two --> c2
 # from https://mermaid.js.org/syntax/flowchart.html
-
-# TODO: Edges
 
 flowchart = sf.SyrenkaFlowchart(
     "",
