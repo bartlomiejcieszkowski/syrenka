@@ -29,37 +29,37 @@ SKIP_BASES_LIST = ["object", "ABC"]
 
 
 def ast_to_text(node) -> str:
+    text = None
     if node is None:
-        return ""
-    if isinstance(node, ast.Attribute):
-        return f"{ast_to_text(node.value)}.{node.attr}"
+        text = ""
+    elif isinstance(node, ast.Attribute):
+        text = f"{ast_to_text(node.value)}.{node.attr}"
     elif isinstance(node, ast.Call):
-        return f"{ast_to_text(node.func)}({ast_to_text(node.args)})"
+        text = f"{ast_to_text(node.func)}({ast_to_text(node.args)})"
     elif isinstance(node, Iterable):
         name = []
         for arg in node:
             name.append(ast_to_text(arg))
-        return ", ".join(name)
+        text = ", ".join(name)
     elif isinstance(node, ast.Name):
-        return node.id
+        text = node.id
     elif isinstance(node, ast.Constant):
         if isinstance(node.value, str):
-            return "'" + node.value + "'"
-        return str(node.value)
+            text = "'" + node.value + "'"
+        else:
+            text = str(node.value)
     elif isinstance(node, ast.Tuple):
-        return "(" + ast_to_text(node.elts) + ")"
+        text = "(" + ast_to_text(node.elts) + ")"
     elif isinstance(node, ast.List):
         name = []
         for elt in node.elts:
             name.append(ast_to_text(elt))
-        return "[" + ast_to_text(node.elts) + "]"
+        text = "[" + ast_to_text(node.elts) + "]"
     elif isinstance(node, ast.Dict):
         name = []
-        for i in range(0, len(node.keys)):
-            key = node.keys[i]
-            value = node.values[i]
-            name.append(f"{ast_to_text(key)}: {ast_to_text(value)}")
-        return "{" + ", ".join(name) + "}"
+        for i, key in enumerate(node.keys):
+            name.append(f"{ast_to_text(key)}: {ast_to_text(node.values[i])}")
+        text = "{" + ", ".join(name) + "}"
     elif isinstance(node, ast.Subscript):
         if node.slice:
             # The slice can be other types:
@@ -72,19 +72,21 @@ def ast_to_text(node) -> str:
                 slice_txt = ast_to_text(node.slice)
         else:
             slice_txt = ""
-        return ast_to_text(node.value) + "[" + slice_txt + "]"
+        text = ast_to_text(node.value) + "[" + slice_txt + "]"
     elif isinstance(node, ast.Slice):
-        return ast_to_text(node.lower) + ":" + ast_to_text(node.upper)
+        text = ast_to_text(node.lower) + ":" + ast_to_text(node.upper)
     elif isinstance(node, ast.IfExp):
-        return (
+        text = (
             ast_to_text(node.body)
             + " if "
             + ast_to_text(node.test)
             + " else "
             + ast_to_text(node.orelse)
         )
+    else:
+        raise NotImplementedError(f"Unsupported node to text: {node}")
 
-    raise Exception(f"Unsupported node to text: {node}")
+    return text
 
 
 @dataclass(frozen=True)
@@ -114,7 +116,7 @@ class PythonAstClass(LangClass):
         self._namespace = None
 
         # TODO: Should be done properly as some PythonAstModule, but it works, refactor later
-        if type(self.cls) is ast.ClassDef:
+        if isinstance(self.cls, ast.ClassDef):
             self._name = self.cls.name
         else:
             self._name = "_globals_"
@@ -133,7 +135,7 @@ class PythonAstClass(LangClass):
         if hasattr(self.cls, "decorator_list") and self.cls.decorator_list:
             for decorator in self.cls.decorator_list:
                 # might be dataclass
-                if type(decorator) is ast.Call:
+                if isinstance(decorator, ast.Call):
                     decorator_name = None
 
                     # for @dataclasses.dataclass we will get Attribute dataclass with Name dataclasses
@@ -146,12 +148,12 @@ class PythonAstClass(LangClass):
 
                     if decorator_name and decorator_name == "dataclass":
                         is_dataclass = True
-                elif type(decorator) is ast.Name:
+                elif isinstance(decorator, ast.Name):
                     if decorator.id == "dataclass":
                         is_dataclass = True
 
         for ast_node in self.cls.body:
-            if type(ast_node) is ast.Assign:
+            if isinstance(ast_node, ast.Assign):
                 # if type(ast_node.value) not in [ast.Constant, ast.Name, ast.Call]:
                 #     logger.debug(
                 #         f"ast.Asign - discarded ({type(ast_node.value)}) {ast_node.value = }"
@@ -159,9 +161,9 @@ class PythonAstClass(LangClass):
                 #     continue
 
                 for target in ast_node.targets:
-                    if type(target) is not ast.Name:
+                    if not isinstance(target, ast.Name):
                         logger.debug(
-                            f"ast.Assign - discarded ({type(target)}) {target = }"
+                            "ast.Assign target discard - %s, %s", type(target), target
                         )
                         continue
 
@@ -173,7 +175,7 @@ class PythonAstClass(LangClass):
                         ),
                     )
 
-            if is_dataclass and type(ast_node) is ast.AnnAssign:
+            if is_dataclass and isinstance(ast_node, ast.AnnAssign):
                 # eg. name: str
                 # ast_node.annotation # ast.Name
                 attributes.append(
@@ -186,43 +188,45 @@ class PythonAstClass(LangClass):
                     )
                 )
 
-            if type(ast_node) is not ast.FunctionDef:
+            if not isinstance(ast_node, ast.FunctionDef):
                 # print(ast_node)
                 continue
 
             args_list = []
             for ast_arg in ast_node.args.args:
                 if ast_arg.annotation:
-                    if type(ast_arg.annotation) is ast.BinOp:
+                    if isinstance(ast_arg.annotation, ast.BinOp):
                         # theme_name: ThemeNames | str
                         # TODO
                         args_list.append(LangVar(ast_arg.arg))
                         continue
 
-                    if type(ast_arg.annotation) is ast.Subscript:
+                    if isinstance(ast_arg.annotation, ast.Subscript):
                         # text: Union[str, None] = None,
                         # TODO
                         args_list.append(LangVar(ast_arg.arg))
                         continue
 
-                    if type(ast_arg.annotation) is ast.Name:
+                    if isinstance(ast_arg.annotation, ast.Name):
                         args_list.append(
                             LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation))
                         )
                         continue
 
-                    if type(ast_arg.annotation) is ast.Attribute:
+                    if isinstance(ast_arg.annotation, ast.Attribute):
                         typee = ast_to_text(ast_arg.annotation)
                         args_list.append(LangVar(ast_arg.arg, typee))
                         continue
 
-                    if type(ast_arg.annotation) is ast.Constant:
+                    if isinstance(ast_arg.annotation, ast.Constant):
                         args_list.append(
                             LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation))
                         )
                         continue
 
-                    raise Exception(f"TODO - {ast_arg.annotation} not handled")
+                    raise NotImplementedError(
+                        f"TODO - {ast_arg.annotation} not handled"
+                    )
 
                 lv = LangVar(ast_arg.arg)
 
@@ -387,7 +391,7 @@ class PythonClass(LangClass):
                         PythonModuleAnalysis.get_access_from_name(x),
                     )
                 )
-            elif type(attr) is self.cls:
+            elif isinstance(attr, self.cls):
                 # enum values are instances of this enum
                 enum_values.append(
                     LangAttr(
@@ -443,11 +447,11 @@ class PythonModuleAnalysis(LangAnalysis):
         return type(obj) in [PythonAstClassParams, PythonClassParams]
 
     @staticmethod
-    def create_lang_class(obj) -> LangClass:
-        if type(obj) is PythonAstClassParams:
+    def create_lang_class(obj) -> Union[LangClass, None]:
+        if isinstance(obj, PythonAstClassParams):
             return PythonAstClass(obj)
 
-        if type(obj) is PythonClassParams:
+        if isinstance(obj, PythonClassParams):
             return PythonClass(obj)
 
         return None
@@ -466,7 +470,7 @@ class PythonModuleAnalysis(LangAnalysis):
         module_names = []
         stash = [module]
 
-        while len(stash):
+        while stash:
             m = stash.pop()
             if m.__name__ in module_names:
                 # circular?
@@ -553,7 +557,7 @@ class PythonModuleAnalysis(LangAnalysis):
                 if exclude and any(map(lambda x: rel_path.startswith(x), exclude)):
                     append = False
 
-                logger.debug(f"{rel_path=}, {append=}")
+                logger.debug("rel_path=%s, append=%s", rel_path, append)
                 if append:
                     ast_modules.append(
                         PythonAstModuleParams(
@@ -579,8 +583,8 @@ class PythonModuleAnalysis(LangAnalysis):
         for params in ast_modules:
             found_non_class = False
             for ast_node in params.ast_module.body:
-                logger.debug(f"{params.filepath.as_posix()}: {ast_node}")
-                if type(ast_node) is ast.ClassDef:
+                logger.debug("%s: %s", params.filepath.as_posix(), ast_node)
+                if isinstance(ast_node, ast.ClassDef):
                     class_params.append(
                         PythonAstClassParams(
                             ast_class=ast_node,
@@ -594,10 +598,9 @@ class PythonModuleAnalysis(LangAnalysis):
                         # not in [ast.Import, ast.ImportFrom]:
                         found_non_class = True
                     # open: only function defs, do we want assigns
-                    pass
             if params.globals_as_class and found_non_class:
                 logger.debug(
-                    f"{params.filepath.as_posix()}: adding _globals_ pseudo-class"
+                    "%s: adding _globals_ pseudo-class", params.filepath.as_posix()
                 )
                 class_params.append(
                     PythonAstClassParams(
@@ -611,7 +614,7 @@ class PythonModuleAnalysis(LangAnalysis):
 
     @staticmethod
     def get_ast(filename: Union[Path, str]):
-        if type(filename) is str:
+        if isinstance(filename, str):
             filename = Path(filename)
 
         if not filename.exists():
@@ -638,11 +641,11 @@ class PythonModuleAnalysis(LangAnalysis):
 
         ast_nodes = [ast_module]
         while ast_node := ast_nodes.pop():
-            if type(ast_node) is ast_type and ast_node.lineno == firstlineno:
+            if isinstance(ast_node, ast_type) and ast_node.lineno == firstlineno:
                 break
 
             for child in ast_node.body:
-                if child.lineno <= firstlineno and child.end_lineno >= firstlineno:
+                if child.lineno <= firstlineno <= child.end_lineno:
                     ast_nodes.append(child)
                     break
 
@@ -656,28 +659,30 @@ class PythonModuleAnalysis(LangAnalysis):
     def get_access_from_name(name):
         if name[0] == "_":
             if not dunder_name(name):
-                return LangAccess.Private
+                return LangAccess.PRIVATE
 
-        return LangAccess.Public
+        return LangAccess.PUBLIC
 
     @staticmethod
     def get_assign_attributes(ast_function: ast.FunctionDef) -> Iterable[LangAttr]:
         attributes = {}
         for entry in ast_function.body:
-            if type(entry) is not ast.Assign:
+            if not isinstance(entry, ast.Assign):
                 continue
 
+            ast_attribute = None
             for target in entry.targets:
-                if type(target) is ast.Attribute:
+                if isinstance(target, ast.Attribute):
+                    ast_attribute = target
                     break
 
-            if type(target) is not ast.Attribute:
+            if ast_attribute is None:
                 continue
 
-            attributes[target.attr] = LangAttr(
-                name=target.attr,
+            attributes[ast_attribute.attr] = LangAttr(
+                name=ast_attribute.attr,
                 typee=None,
-                access=PythonModuleAnalysis.get_access_from_name(target.attr),
+                access=PythonModuleAnalysis.get_access_from_name(ast_attribute.attr),
             )
 
         return attributes.values()

@@ -24,7 +24,7 @@ from syrenka.generate import generate_diagram_image
 
 flowchart = sf.SyrenkaFlowchart(
     "",
-    sf.FlowchartDirection.TopToBottom,
+    sf.FlowchartDirection.TOP_TO_BOTTOM,
     nodes=[
         sf.Subgraph(
             "one",
