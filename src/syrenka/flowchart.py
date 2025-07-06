@@ -1,9 +1,9 @@
 from collections import OrderedDict
-from io import TextIOBase
-from .base import SyrenkaGeneratorBase, get_indent
-
 from enum import Enum
+from io import TextIOBase
 from typing import Iterable, Union
+
+from .base import SyrenkaGeneratorBase, get_indent
 
 
 def get_title(title: str):

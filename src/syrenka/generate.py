@@ -1,10 +1,9 @@
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 from typing import Union
-
 
 MMDC_DEFAULT = "mmdc"
 MMDC_EXE = os.environ.get("SYRENKA_MMDC", MMDC_DEFAULT)

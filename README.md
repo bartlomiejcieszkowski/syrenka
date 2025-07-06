@@ -50,14 +50,13 @@ And the code snippet used to generate it:
 
 <!-- EX3_SYRENKA_CODE_BEGIN -->
 ```python
-from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
-from syrenka.base import ThemeNames
-from syrenka.lang.python import PythonModuleAnalysis
-
-from pathlib import Path
-
 # from io import StringIO
 import sys
+from pathlib import Path
+
+from syrenka.base import ThemeNames
+from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
+from syrenka.lang.python import PythonModuleAnalysis
 
 class_diagram = SyrenkaClassDiagram(
     "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.neutral)
@@ -94,12 +93,12 @@ This is a code snippet that does it:
 
 <!-- EX1_SYRENKA_CODE_BEGIN -->
 ```python
-from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
-from syrenka.base import ThemeNames
-from syrenka.lang.python import PythonModuleAnalysis
-
 # from io import StringIO
 import sys
+
+from syrenka.base import ThemeNames
+from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
+from syrenka.lang.python import PythonModuleAnalysis
 
 class_diagram = SyrenkaClassDiagram(
     "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.neutral)
@@ -126,15 +125,31 @@ class_diagram.to_code(file=out)
 Here is the simple flowchart:
 
 <!-- EX2_MERMAID_DIAGRAM_BEGIN -->
-![SyrenkaFlowchart](https://raw.githubusercontent.com/bartlomiejcieszkowski/syrenka/refs/heads/main/syrenka_diagram-2.svg "SyrenkaFlowchart")
+```mermaid
+---
+title: Simple Flowchart
+---
+flowchart TB
+    1 --> 2
+    2 -.-> 3
+    3 --> 4
+    4 ==> s
+    1["First"]
+    subgraph s["Subgraph"]
+        2["Second"]
+        3["Third"]
+    end
+    4["Fourth"]
+```
 <!-- EX2_MERMAID_DIAGRAM_END -->
 
 and the code behind it:
 
 <!-- EX2_SYRENKA_CODE_BEGIN -->
 ```python
-import syrenka.flowchart as sf
 import sys
+
+import syrenka.flowchart as sf
 
 fl = sf.SyrenkaFlowchart(
     title="Simple Flowchart", direction=sf.FlowchartDirection.TopToBottom

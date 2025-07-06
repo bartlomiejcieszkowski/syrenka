@@ -1,16 +1,15 @@
+from collections.abc import Iterable
+from copy import deepcopy
+from io import TextIOBase
+
 from syrenka.base import (
     SyrenkaConfig,
     SyrenkaGeneratorBase,
     get_indent,
-    under_name,
     neutralize_under,
+    under_name,
 )
-from collections.abc import Iterable
-
 from syrenka.lang import LangAnalyst
-from copy import deepcopy
-
-from io import TextIOBase
 
 
 class SyrenkaClass(SyrenkaGeneratorBase):

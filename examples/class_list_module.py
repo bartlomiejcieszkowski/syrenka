@@ -1,9 +1,9 @@
-from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
-from syrenka.base import ThemeNames
-from syrenka.lang.python import PythonModuleAnalysis
-
 # from io import StringIO
 import sys
+
+from syrenka.base import ThemeNames
+from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
+from syrenka.lang.python import PythonModuleAnalysis
 
 class_diagram = SyrenkaClassDiagram(
     "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.neutral)
