@@ -1,10 +1,10 @@
+import os
+from pathlib import Path
+import shutil
 import subprocess
 import sys
+from typing import Union
 
-from pathlib import Path
-
-import os
-import shutil
 
 MMDC_DEFAULT = "mmdc"
 MMDC_EXE = os.environ.get("SYRENKA_MMDC", MMDC_DEFAULT)
@@ -23,18 +23,33 @@ if not MMDC_SUPPORT:
         file=sys.stderr,
     )
 
-    def generate_from_lines(mcode_lines, output_file: Path, overwrite: bool = False):
+    def generate_diagram_image(
+        input: Union[str, Path], output_file: Path, overwrite: bool = False
+    ):
         print(
             "For mermaid diagram generation install mmdc, check stderr", file=sys.stderr
         )
 else:
 
-    def generate_from_lines(mcode_lines, output_file: Path, overwrite: bool = False):
+    def generate_diagram_image(
+        input: Union[str, Path], output_file: Path, overwrite: bool = False
+    ):
         of = output_file.resolve()
         if of.exists() and not overwrite:
-            raise Exception()
+            raise FileExistsError(
+                f"Output file: {of}, already exists and overwrite is {overwrite}"
+            )
 
-        mcode = "\n".join(mcode_lines)
-        subprocess.run(
-            [MMDC_EXE, "-i", "-"], input=mcode, text=True, capture_output=True
-        )
+        if isinstance(input, Path):
+            input_str = None
+            input_arg = str(input)
+        elif isinstance(input, str):
+            input_str = input
+            input_arg = "-"
+        else:
+            raise ValueError(
+                f"unexpected input type: {type(input)} - expected Path or str"
+            )
+
+        args = [MMDC_EXE, "-i", input_arg, "-o", str(of)]
+        subprocess.run(args, input=input_str, text=True, capture_output=True)

@@ -1,7 +1,7 @@
 from pathlib import Path
 from replace_between_tags import replace
 import subprocess
-import sys
+from syrenka.generate import generate_diagram_image
 
 
 outfile = Path("syrenka_diagram.md")
@@ -135,8 +135,4 @@ with outfile.open("w") as o:
 
 temp_file.unlink(missing_ok=True)
 
-if sys.platform == "win32":
-    mmdc_name = "mmdc.cmd"
-else:
-    mmdc_name = "mmdc"
-subprocess.run([mmdc_name, "-i", str(outfile), "-o", "syrenka_diagram.svg"])
+generate_diagram_image(outfile, Path("syrenka_diagram.svg"), overwrite=True)
