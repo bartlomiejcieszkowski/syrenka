@@ -27,6 +27,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "cyclonedx-bom>=6.1.2",
     "pre-commit>=4.1.0",
     "pyproject-parser[all]>=0.13.0",
     "pytest>=8.3.5",
