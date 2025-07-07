@@ -62,7 +62,8 @@ def _main():
     class_diagram.add_argument(
         "--globals-as-class",
         action="store_true",
-        help="often there are methods/globals without encapsulating class in a module, pass this flag to wrap them in pseudo-class",
+        help="often there are methods/globals without encapsulating class in a module,"
+        " pass this flag to wrap them in pseudo-class",
     )
     class_diagram.add_argument("--detect-project-dir", action="store_true")
     # class_diagram.add_argument("--filter", nargs="+", default=None)

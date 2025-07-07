@@ -1,3 +1,5 @@
+"""syrenka.flowchart"""
+
 from collections import OrderedDict
 from enum import Enum
 from io import TextIOBase
@@ -7,6 +9,7 @@ from .base import DEFAULT_INDENT, SyrenkaGeneratorBase, get_indent
 
 
 def get_title(title: str):
+    """returns title for flowchart"""
     return [
         "---\n",
         f"title: {title}\n",
@@ -15,6 +18,11 @@ def get_title(title: str):
 
 
 class FlowchartDirection(Enum):
+    """
+    Enum for flowchart direction
+
+    for reference see: https://mermaid.js.org/syntax/flowchart.html#direction"""
+
     TOP_TO_BOTTOM = "TB"
     LEFT_TO_RIGHT = "LR"
     BOTTOM_TO_TOP = "BT"
@@ -22,6 +30,12 @@ class FlowchartDirection(Enum):
 
 
 class NodeShape(Enum):
+    """
+    Enum for node shapes
+
+    for reference see: https://mermaid.js.org/syntax/flowchart.html#node-shapes
+    """
+
     DEFAULT = "[]"
     ROUND_EDGES = "()"
     STADIUM_SHAPED_NODE = "([])"
@@ -38,6 +52,7 @@ class NodeShape(Enum):
 
     @staticmethod
     def get_edges(node_shape):
+        """returns tuple of open and close string for given edge"""
         v = node_shape.value
         half = len(v) // 2
         return node_shape.value[:half], node_shape.value[half:]
@@ -47,6 +62,8 @@ class NodeShape(Enum):
 
 
 class Node(SyrenkaGeneratorBase):
+    """class for mermaid flowchart node"""
+
     def __init__(
         self,
         identifier: str,
@@ -93,6 +110,8 @@ class EdgeType(Enum):
 
 
 class Edge(SyrenkaGeneratorBase):
+    """class for edge/link in mermaid flowchart"""
+
     def __init__(
         self,
         edge_type: EdgeType = EdgeType.ARROW_EDGE,
@@ -107,6 +126,7 @@ class Edge(SyrenkaGeneratorBase):
         self.target = target
 
     def valid(self) -> bool:
+        """checks if Edge is valid, valid edge has source and target set"""
         return isinstance(self.source, Node) and isinstance(self.target, Node)
 
     def to_code(self, file: TextIOBase, indent_level=0, indent_base="    "):
@@ -137,11 +157,14 @@ class Edge(SyrenkaGeneratorBase):
             ]
         )
 
-    def refs_id(self, identifier: str):
+    def refs_id(self, identifier: str) -> bool:
+        """checks if edge references given identifier of node"""
         return identifier in (self.source.identifier, self.target.identifier)
 
 
 class Subgraph(Node):
+    """class for mermaid subgraph"""
+
     def __init__(
         self,
         identifier: str,
@@ -159,6 +182,7 @@ class Subgraph(Node):
                 # TODO: what if someone updates id in Node?
 
     def get_by_id(self, identifier: str) -> Union[Node, None]:
+        """gets node by id, returns None if not found"""
         found = self.nodes_dict.get(identifier, None)
         if found:
             return found
@@ -175,10 +199,12 @@ class Subgraph(Node):
         return None
 
     def add(self, node: Node):
+        """adds node"""
         self.nodes_dict[node.identifier] = node
         return self
 
     def remove(self, node: Node):
+        """removes node"""
         found = self.nodes_dict.pop(node.identifier, None)
         if not found:
             for value in self.nodes_dict.values():
@@ -225,6 +251,8 @@ class Subgraph(Node):
 
 
 class SyrenkaFlowchart(Subgraph):
+    """Syrenka wrapper for mermaid flowchart"""
+
     def __init__(
         self,
         title: str,
@@ -240,6 +268,7 @@ class SyrenkaFlowchart(Subgraph):
         edge_type: EdgeType = EdgeType.ARROW_EDGE,
         text: Union[str, None] = None,
     ):
+        """connects two nodes"""
         self.edges.append(Edge(edge_type, text, source=source, target=target))
         # for method-chaining
         return self
@@ -251,6 +280,7 @@ class SyrenkaFlowchart(Subgraph):
         edge_type: EdgeType = EdgeType.ARROW_EDGE,
         text: Union[str, None] = None,
     ):
+        """connects two nodes by their id"""
         source = self.get_by_id(source_id)
         target = self.get_by_id(target_id)
 

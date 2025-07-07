@@ -79,11 +79,13 @@ class LangAnalysis(ABC):
     @staticmethod
     @abstractmethod
     def handles(obj) -> bool:
+        """this method should return True only if the class provides capabilities for language analysis of given obj"""
         pass
 
     @staticmethod
     @abstractmethod
     def create_lang_class(obj) -> LangClass:
+        """this method should create object that is instance of LangClass"""
         pass
 
 
@@ -91,6 +93,7 @@ LANG_ANALYSIS = []
 
 
 def register_lang_analysis(cls, last=False):
+    """registers globally lang analysis class"""
     if cls in LANG_ANALYSIS:
         raise ValueError("Unexpected second register")
     if last:
