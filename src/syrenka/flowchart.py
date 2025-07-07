@@ -111,9 +111,13 @@ class Edge(SyrenkaGeneratorBase):
         self.target = target
 
     def valid(self) -> bool:
-        return self.source and self.target
+        return isinstance(self.source, Node) and isinstance(self.target, Node)
 
     def to_code(self, file: TextIOBase, indent_level=0, indent_base="    "):
+        if not self.valid():
+            # Open: raise exception?
+            return
+
         indent_level, indent = get_indent(indent_level, 0, indent_base)
         edge_id = f"{self.identifier}@" if self.identifier else ""
         file.writelines(
@@ -146,8 +150,8 @@ class Subgraph(Node):
         self,
         identifier: str,
         text: Union[str, None] = None,
-        direction: FlowchartDirection = FlowchartDirection.TOP_TO_BOTTOM,
-        nodes: Iterable[Node] = None,
+        direction: Union[FlowchartDirection, None] = None,
+        nodes: Union[Iterable[Node], None] = None,
     ):
         super().__init__(identifier=identifier, text=text, shape=NodeShape.DEFAULT)
         self.edges = []
@@ -182,6 +186,8 @@ class Subgraph(Node):
         found = self.nodes_dict.pop(node.identifier, None)
         if not found:
             for value in self.nodes_dict.values():
+                if not isinstance(value, Subgraph):
+                    continue
                 found = value.remove(node)
                 if found:
                     break
@@ -196,7 +202,10 @@ class Subgraph(Node):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
         e_open, e_close = NodeShape.get_edges(self.shape)
 
-        if self.text:
+        if self.shape == NodeShape.DEFAULT and not self.text:
+            file.writelines([indent, "subgraph ", self.identifier, "\n"])
+        else:
+            text = self.text if self.text else self.identifier
             file.writelines(
                 [
                     indent,
@@ -204,14 +213,16 @@ class Subgraph(Node):
                     self.identifier,
                     e_open,
                     '"',
-                    self.text,
+                    text,
                     '"',
                     e_close,
                     "\n",
                 ]
             )
-        else:
-            file.writelines([indent, "subgraph ", self.identifier, "\n"])
+
+        if self.direction:
+            _, indent_dir = get_indent(indent_level, 1, indent_base)
+            file.writelines([indent_dir, "direction ", self.direction.value, "\n"])
 
         for node in self.nodes_dict.values():
             node.to_code(
@@ -226,7 +237,7 @@ class SyrenkaFlowchart(Subgraph):
         self,
         title: str,
         direction: FlowchartDirection,
-        nodes: Iterable[Node] = None,
+        nodes: Union[Iterable[Node], None] = None,
     ):
         super().__init__(identifier=title, direction=direction, nodes=nodes)
 
@@ -246,10 +257,15 @@ class SyrenkaFlowchart(Subgraph):
         source_id: str,
         target_id: str,
         edge_type: EdgeType = EdgeType.ARROW_EDGE,
-        text: str = None,
+        text: Union[str, None] = None,
     ):
         source = self.get_by_id(source_id)
         target = self.get_by_id(target_id)
+
+        if source is None or target is None:
+            raise ValueError(
+                f"one node not found - {source_id=} is {source}, {target_id=} is {target}"
+            )
 
         return self.connect(source, target, edge_type, text)
 
@@ -261,7 +277,10 @@ class SyrenkaFlowchart(Subgraph):
         if self.identifier:
             file.writelines(get_title(self.identifier))
 
-        file.writelines([indent, "flowchart ", self.direction.value, "\n"])
+        if self.direction:
+            file.writelines([indent, "flowchart ", self.direction.value, "\n"])
+        else:
+            file.writelines([indent, "flowchart\n"])
 
         # easiest workaround for edges going BEHIND subgraphs
         # if i place edges AFTER subgraphs, some might get rendered under subgraph..

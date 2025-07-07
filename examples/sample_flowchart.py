@@ -35,6 +35,7 @@ flowchart = sf.SyrenkaFlowchart(
         ),
         sf.Subgraph(
             "two",
+            direction=sf.FlowchartDirection.LEFT_TO_RIGHT,
             nodes=[
                 sf.Node("b1"),
                 sf.Node("b2"),
@@ -42,6 +43,7 @@ flowchart = sf.SyrenkaFlowchart(
         ),
         sf.Subgraph(
             "three",
+            direction=sf.FlowchartDirection.BOTTOM_TO_TOP,
             nodes=[
                 sf.Node("c1"),
                 sf.Node("c2"),
