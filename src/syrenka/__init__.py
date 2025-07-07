@@ -1,3 +1,5 @@
+"""syrenka module"""
+
 from .classdiagram import SyrenkaClass, SyrenkaClassDiagram
 from .flowchart import SyrenkaFlowchart
 

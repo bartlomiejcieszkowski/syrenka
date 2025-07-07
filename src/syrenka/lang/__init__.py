@@ -13,4 +13,4 @@ class LangAnalyst:
             if analysis_type.handles(obj):
                 return analysis_type.create_lang_class(obj)
 
-        return None
+        raise TypeError(f"Unsupported {obj=} of type={type(obj)}")
