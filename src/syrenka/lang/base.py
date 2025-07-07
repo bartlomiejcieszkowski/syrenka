@@ -73,9 +73,6 @@ class LangClass(ABC):
 
 
 class LangAnalysis(ABC):
-    def __call__(self, *args, **kwds):
-        super().__init__()
-
     @staticmethod
     @abstractmethod
     def handles(obj) -> bool:
