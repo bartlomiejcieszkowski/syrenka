@@ -1,3 +1,5 @@
+"""syrenka.lang.base"""
+
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -26,6 +28,8 @@ class LangVar:
 
 @dataclass
 class LangAttr:
+    """Attributes"""
+
     name: str
     typee: Union[str, None] = None
     access: LangAccess = LangAccess.PUBLIC
@@ -41,34 +45,43 @@ class LangFunction:
 
 
 class LangClass(ABC):
+    """base class for lang class parsing"""
+
     @abstractmethod
     def is_enum(self) -> bool:
+        """this method should return true if this class is an enum"""
         pass
 
     @abstractmethod
     def _parse(self, force: bool = True):
+        """this method should implement parsing of class"""
         pass
 
     @property
     @abstractmethod
     def name(self) -> str:
+        """this method should return name of class"""
         pass
 
     @property
     @abstractmethod
     def namespace(self) -> str:
+        """this method should return namespace of class"""
         pass
 
     @abstractmethod
     def functions(self) -> Iterable[LangFunction]:
+        """this method should return functions in class"""
         pass
 
     @abstractmethod
     def attributes(self) -> Iterable[LangVar]:
+        """this method should return attributes in class"""
         pass
 
     @abstractmethod
     def parents(self) -> Iterable[str]:
+        """this method should return parents of class"""
         pass
 
 
@@ -81,7 +94,7 @@ class LangAnalysis(ABC):
 
     @staticmethod
     @abstractmethod
-    def create_lang_class(obj) -> LangClass:
+    def create_lang_class(obj) -> Union[LangClass, None]:
         """this method should create object that is instance of LangClass"""
         pass
 
