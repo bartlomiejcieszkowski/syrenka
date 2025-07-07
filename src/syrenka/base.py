@@ -13,9 +13,7 @@ except ImportError:
 DEFAULT_INDENT = "    "
 
 
-def get_indent(
-    level: int, increment: int = 0, indent_base: str = "    "
-) -> Tuple[int, str]:
+def get_indent(level: int, increment: int = 0, indent_base: str = DEFAULT_INDENT) -> Tuple[int, str]:
     """returns indent string"""
     level += increment
     return level, indent_base * level
@@ -69,9 +67,7 @@ class SyrenkaGeneratorBase(ABC):
     """Base class for Syrenka code generators"""
 
     @abstractmethod
-    def to_code(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ):
+    def to_code(self, file: TextIOBase, indent_level: int = 0, indent_base: str = DEFAULT_INDENT):
         """This method implementation should write output to passed file."""
 
 

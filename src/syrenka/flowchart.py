@@ -3,7 +3,7 @@ from enum import Enum
 from io import TextIOBase
 from typing import Iterable, Union
 
-from .base import SyrenkaGeneratorBase, get_indent
+from .base import DEFAULT_INDENT, SyrenkaGeneratorBase, get_indent
 
 
 def get_title(title: str):
@@ -57,9 +57,7 @@ class Node(SyrenkaGeneratorBase):
         self.text = text
         self.shape = shape
 
-    def to_code(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ):
+    def to_code(self, file: TextIOBase, indent_level: int = 0, indent_base: str = DEFAULT_INDENT):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
         e_open, e_close = NodeShape.get_edges(self.shape)
         text = self.text
@@ -67,9 +65,7 @@ class Node(SyrenkaGeneratorBase):
             text = self.identifier
 
         if self.text:
-            file.writelines(
-                [indent, self.identifier, e_open, '"', self.text, '"', e_close, "\n"]
-            )
+            file.writelines([indent, self.identifier, e_open, '"', self.text, '"', e_close, "\n"])
         else:
             file.writelines([indent, self.identifier, "\n"])
 
@@ -196,9 +192,7 @@ class Subgraph(Node):
 
         return self
 
-    def to_code(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ):
+    def to_code(self, file: TextIOBase, indent_level: int = 0, indent_base: str = DEFAULT_INDENT):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
         e_open, e_close = NodeShape.get_edges(self.shape)
 
@@ -225,9 +219,7 @@ class Subgraph(Node):
             file.writelines([indent_dir, "direction ", self.direction.value, "\n"])
 
         for node in self.nodes_dict.values():
-            node.to_code(
-                file=file, indent_level=indent_level + 1, indent_base=indent_base
-            )
+            node.to_code(file=file, indent_level=indent_level + 1, indent_base=indent_base)
 
         file.writelines([indent, "end", "\n"])
 
@@ -263,15 +255,11 @@ class SyrenkaFlowchart(Subgraph):
         target = self.get_by_id(target_id)
 
         if source is None or target is None:
-            raise ValueError(
-                f"one node not found - {source_id=} is {source}, {target_id=} is {target}"
-            )
+            raise ValueError(f"one node not found - {source_id=} is {source}, {target_id=} is {target}")
 
         return self.connect(source, target, edge_type, text)
 
-    def to_code(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ):
+    def to_code(self, file: TextIOBase, indent_level: int = 0, indent_base: str = DEFAULT_INDENT):
         indent_level, indent = get_indent(indent_level, 0, indent_base)
 
         if self.identifier:
@@ -285,11 +273,7 @@ class SyrenkaFlowchart(Subgraph):
         # easiest workaround for edges going BEHIND subgraphs
         # if i place edges AFTER subgraphs, some might get rendered under subgraph..
         for edge in self.edges:
-            edge.to_code(
-                file=file, indent_level=indent_level + 1, indent_base=indent_base
-            )
+            edge.to_code(file=file, indent_level=indent_level + 1, indent_base=indent_base)
 
         for node in self.nodes_dict.values():
-            node.to_code(
-                file=file, indent_level=indent_level + 1, indent_base=indent_base
-            )
+            node.to_code(file=file, indent_level=indent_level + 1, indent_base=indent_base)

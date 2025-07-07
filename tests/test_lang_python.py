@@ -19,9 +19,7 @@ class ThisIsEnumClass(Enum):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     assert python_class.is_enum()
@@ -41,9 +39,7 @@ class ThisIsEnumClass(IntEnum):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     assert python_class.is_enum()
@@ -63,9 +59,7 @@ class ThisIsEnumClass(IntEnum):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     assert python_class.is_enum()
@@ -85,9 +79,7 @@ class ThisClassIsNotEnum:
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     assert not python_class.is_enum()
@@ -106,9 +98,7 @@ class Whatever:
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     assert not python_class.is_enum()
@@ -123,9 +113,7 @@ class Sample(ABC):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -141,9 +129,7 @@ class Sample(abc.ABC):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -159,9 +145,7 @@ class Sample(function(Something)):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -178,9 +162,7 @@ class Sample(something.function(Something)):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -198,9 +180,7 @@ class Sample:
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -217,9 +197,7 @@ class Sample(collections.namedtuple('Pair', 12)):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -237,9 +215,7 @@ class _VersionInfoType(collections.namedtuple('_VersionInfoType',
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -256,9 +232,7 @@ class Sample(collections.namedtuple('_Sample',
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -275,9 +249,7 @@ class Sample(collections.namedtuple('_Sample',
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -294,9 +266,7 @@ class SimpleMapping(Generic[XK, XV]):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -312,9 +282,7 @@ class SimpleMapping(Generic[0:1]):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -330,9 +298,7 @@ class SimpleMapping(Generic[:1]):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -348,9 +314,7 @@ class SimpleMapping(Generic[1:]):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -366,9 +330,7 @@ class SimpleMapping(Generic[:]):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()
@@ -385,9 +347,7 @@ class GzipDecodedResponse(gzip.GzipFile if gzip else object):
     parsed_module = ast.parse(class_code)
     print(f"{type(parsed_module)}, {parsed_module = }")
     parsed_class = parsed_module.body[0]
-    params = PythonAstClassParams(
-        ast_class=parsed_class, filepath=Path("unknown.py"), root=Path(".")
-    )
+    params = PythonAstClassParams(ast_class=parsed_class, filepath=Path("unknown.py"), root=Path("."))
     python_class = PythonAstClass(params=params)
 
     python_class._parse()

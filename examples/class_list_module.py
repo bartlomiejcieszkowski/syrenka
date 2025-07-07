@@ -7,12 +7,8 @@ from syrenka.base import ThemeNames
 from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
 from syrenka.lang.python import PythonModuleAnalysis
 
-class_diagram = SyrenkaClassDiagram(
-    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL)
-)
-class_diagram.add_classes(
-    PythonModuleAnalysis.classes_in_module(module_name="syrenka", nested=True)
-)
+class_diagram = SyrenkaClassDiagram("syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL))
+class_diagram.add_classes(PythonModuleAnalysis.classes_in_module(module_name="syrenka", nested=True))
 
 # file can be anything that implements TextIOBase
 # out = StringIO() # string buffer in memory

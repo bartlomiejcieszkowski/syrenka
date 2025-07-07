@@ -76,13 +76,7 @@ def ast_to_text(node) -> str:
     elif isinstance(node, ast.Slice):
         text = ast_to_text(node.lower) + ":" + ast_to_text(node.upper)
     elif isinstance(node, ast.IfExp):
-        text = (
-            ast_to_text(node.body)
-            + " if "
-            + ast_to_text(node.test)
-            + " else "
-            + ast_to_text(node.orelse)
-        )
+        text = ast_to_text(node.body) + " if " + ast_to_text(node.test) + " else " + ast_to_text(node.orelse)
     else:
         raise NotImplementedError(f"Unsupported node to text: {node}")
 
@@ -162,9 +156,7 @@ class PythonAstClass(LangClass):
 
                 for target in ast_node.targets:
                     if not isinstance(target, ast.Name):
-                        logger.debug(
-                            "ast.Assign target discard - %s, %s", type(target), target
-                        )
+                        logger.debug("ast.Assign target discard - %s, %s", type(target), target)
                         continue
 
                     attribute_assign.append(
@@ -182,9 +174,7 @@ class PythonAstClass(LangClass):
                     LangAttr(
                         name=ast_node.target.id,
                         typee=None,  # todo from annotation
-                        access=PythonModuleAnalysis.get_access_from_name(
-                            ast_node.target.id
-                        ),
+                        access=PythonModuleAnalysis.get_access_from_name(ast_node.target.id),
                     )
                 )
 
@@ -208,9 +198,7 @@ class PythonAstClass(LangClass):
                         continue
 
                     if isinstance(ast_arg.annotation, ast.Name):
-                        args_list.append(
-                            LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation))
-                        )
+                        args_list.append(LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation)))
                         continue
 
                     if isinstance(ast_arg.annotation, ast.Attribute):
@@ -219,14 +207,10 @@ class PythonAstClass(LangClass):
                         continue
 
                     if isinstance(ast_arg.annotation, ast.Constant):
-                        args_list.append(
-                            LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation))
-                        )
+                        args_list.append(LangVar(ast_arg.arg, ast_to_text(ast_arg.annotation)))
                         continue
 
-                    raise NotImplementedError(
-                        f"TODO - {ast_arg.annotation} not handled"
-                    )
+                    raise NotImplementedError(f"TODO - {ast_arg.annotation} not handled")
 
                 lv = LangVar(ast_arg.arg)
 
@@ -379,9 +363,7 @@ class PythonClass(LangClass):
                         attr.__code__.co_filename, attr.__code__.co_firstlineno
                     )
                     if function_body:
-                        attributes.extend(
-                            PythonModuleAnalysis.get_assign_attributes(function_body)
-                        )
+                        attributes.extend(PythonModuleAnalysis.get_assign_attributes(function_body))
 
                 # TODO: type hint for return type???
                 functions.append(
@@ -461,9 +443,7 @@ class PythonModuleAnalysis(LangAnalysis):
         return module.__name__ in sys.builtin_module_names
 
     @staticmethod
-    def _classes_in_module(
-        module: ModuleType, nested: bool = True
-    ) -> Iterable[PythonClassParams]:
+    def _classes_in_module(module: ModuleType, nested: bool = True) -> Iterable[PythonClassParams]:
         module_path = Path(module.__file__).parent
 
         classes = []
@@ -512,9 +492,7 @@ class PythonModuleAnalysis(LangAnalysis):
         return class_params
 
     @staticmethod
-    def classes_in_module(
-        module_name, nested: bool = True
-    ) -> Iterable[PythonClassParams]:
+    def classes_in_module(module_name, nested: bool = True) -> Iterable[PythonClassParams]:
         module = importlib.import_module(module_name)
         return PythonModuleAnalysis._classes_in_module(module, nested)
 
@@ -599,9 +577,7 @@ class PythonModuleAnalysis(LangAnalysis):
                         found_non_class = True
                     # open: only function defs, do we want assigns
             if params.globals_as_class and found_non_class:
-                logger.debug(
-                    "%s: adding _globals_ pseudo-class", params.filepath.as_posix()
-                )
+                logger.debug("%s: adding _globals_ pseudo-class", params.filepath.as_posix())
                 class_params.append(
                     PythonAstClassParams(
                         ast_class=params.ast_module,
