@@ -75,6 +75,27 @@ examples = [
             },
         ],
     },
+    {
+        "example_path": Path("examples/sample_flowchart.py"),
+        "temp_file": TEMP_FILE,
+        "target_path": README,
+        "replace_entries": [
+            {
+                "source": "code",
+                "begin": "<!-- EX4_SYRENKA_CODE_BEGIN -->",
+                "end": "<!-- EX4_SYRENKA_CODE_END -->",
+                "before": "```python\n",
+                "after": "```\n",
+            },
+            {
+                "source": "run",
+                "begin": "<!-- EX4_MERMAID_DIAGRAM_BEGIN -->",
+                "end": "<!-- EX4_MERMAID_DIAGRAM_END -->",
+                "before": "```mermaid\n",
+                "after": "```\n",
+            },
+        ],
+    },
 ]
 
 
