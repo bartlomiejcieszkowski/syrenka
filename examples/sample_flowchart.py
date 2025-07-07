@@ -54,9 +54,7 @@ flowchart = sf.SyrenkaFlowchart(
 
 flowchart.connect_by_id("c1", "a2").connect_by_id("a1", "a2")
 flowchart.connect_by_id("b1", "b2").connect_by_id("c1", "c2")
-flowchart.connect_by_id("one", "two").connect_by_id("three", "two").connect_by_id(
-    "two", "c2"
-)
+flowchart.connect_by_id("one", "two").connect_by_id("three", "two").connect_by_id("two", "c2")
 
 # beware, it looks like in mermaid order of the edge changes how its rendered
 # if i declare edge c1 --> a2 before and after subgraphs, it gets drawn totally different

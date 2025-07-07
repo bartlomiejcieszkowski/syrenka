@@ -60,14 +60,8 @@ from syrenka.base import ThemeNames
 from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
 from syrenka.lang.python import PythonModuleAnalysis
 
-class_diagram = SyrenkaClassDiagram(
-    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL)
-)
-class_diagram.add_classes(
-    PythonModuleAnalysis.classes_in_path(
-        Path(__file__).parent.parent / "src"
-    )  # , recursive==True)
-)
+class_diagram = SyrenkaClassDiagram("syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL))
+class_diagram.add_classes(PythonModuleAnalysis.classes_in_path(Path(__file__).parent.parent / "src"))
 
 # file can be anything that implements TextIOBase
 # out = StringIO() # string buffer in memory
@@ -104,12 +98,8 @@ from syrenka.base import ThemeNames
 from syrenka.classdiagram import SyrenkaClassDiagram, SyrenkaClassDiagramConfig
 from syrenka.lang.python import PythonModuleAnalysis
 
-class_diagram = SyrenkaClassDiagram(
-    "syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL)
-)
-class_diagram.add_classes(
-    PythonModuleAnalysis.classes_in_module(module_name="syrenka", nested=True)
-)
+class_diagram = SyrenkaClassDiagram("syrenka class diagram", SyrenkaClassDiagramConfig().theme(ThemeNames.NEUTRAL))
+class_diagram.add_classes(PythonModuleAnalysis.classes_in_module(module_name="syrenka", nested=True))
 
 # file can be anything that implements TextIOBase
 # out = StringIO() # string buffer in memory
@@ -157,9 +147,7 @@ import sys
 
 import syrenka.flowchart as sf
 
-fl = sf.SyrenkaFlowchart(
-    title="Simple Flowchart", direction=sf.FlowchartDirection.TOP_TO_BOTTOM
-)
+fl = sf.SyrenkaFlowchart(title="Simple Flowchart", direction=sf.FlowchartDirection.TOP_TO_BOTTOM)
 fl.add(sf.Node(identifier="1", text="First"))
 sub = sf.Subgraph(identifier="s", text="Subgraph")
 sub.add(sf.Node(identifier="2", text="Second"))

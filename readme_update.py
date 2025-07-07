@@ -78,9 +78,7 @@ examples = [
 ]
 
 
-def generate_and_replace(
-    example_path: Path, temp_file: Path, target_path: Path, replace_entries: list
-):
+def generate_and_replace(example_path: Path, temp_file: Path, target_path: Path, replace_entries: list):
     """Runs code and replaces text in given file with its output."""
     result = subprocess.run(
         ["uv", "run", "python", str(example_path)],
@@ -113,9 +111,7 @@ class Replacement:
     after: str
 
 
-def replace_in_file(
-    target_path: Path, example_path: Path, temp_file: Path, replacement: Replacement
-):
+def replace_in_file(target_path: Path, example_path: Path, temp_file: Path, replacement: Replacement):
     """replaces text between markers in given file"""
     if replacement.source == "run":
         with temp_file.open("w") as t:

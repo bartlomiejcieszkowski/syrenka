@@ -46,9 +46,7 @@ def _main():
     ap = argparse.ArgumentParser(prog=prog, allow_abbrev=False)
 
     subparsers = ap.add_subparsers(dest="cmd")
-    class_diagram = subparsers.add_parser(
-        "class", aliases=["c", "classdiagram", "class_diagram"]
-    )
+    class_diagram = subparsers.add_parser("class", aliases=["c", "classdiagram", "class_diagram"])
     class_diagram.add_argument("path", help="folder/file with source")
     class_diagram.add_argument("--module-name-from-path", action="store_true")
     class_diagram.add_argument(

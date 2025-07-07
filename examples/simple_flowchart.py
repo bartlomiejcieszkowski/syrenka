@@ -4,9 +4,7 @@ import sys
 
 import syrenka.flowchart as sf
 
-fl = sf.SyrenkaFlowchart(
-    title="Simple Flowchart", direction=sf.FlowchartDirection.TOP_TO_BOTTOM
-)
+fl = sf.SyrenkaFlowchart(title="Simple Flowchart", direction=sf.FlowchartDirection.TOP_TO_BOTTOM)
 fl.add(sf.Node(identifier="1", text="First"))
 sub = sf.Subgraph(identifier="s", text="Subgraph")
 sub.add(sf.Node(identifier="2", text="Second"))

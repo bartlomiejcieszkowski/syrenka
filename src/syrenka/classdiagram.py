@@ -33,9 +33,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     def namespace(self) -> str:
         return self.lang_class.namespace
 
-    def to_code(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ):
+    def to_code(self, file: TextIOBase, indent_level: int = 0, indent_base: str = DEFAULT_INDENT):
         """generates mermaid code"""
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
@@ -70,9 +68,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
             if under_name(function_sanitized):
                 function_sanitized = neutralize_under(function_sanitized)
 
-            file.writelines(
-                [indent, lang_fun.access, function_sanitized, "(", args_text, ")\n"]
-            )
+            file.writelines([indent, lang_fun.access, function_sanitized, "(", args_text, ")\n"])
 
         indent_level, indent = get_indent(indent_level, -1, indent_base)
 
@@ -82,7 +78,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         self,
         file: TextIOBase,
         indent_level: int = 0,
-        indent_base: str = "    ",
+        indent_base: str = DEFAULT_INDENT,
         valid_classes: Union[dict[str, None], None] = None,
     ):
         """generates mermaid code for inheritance"""
@@ -94,9 +90,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         for parent in self.lang_class.parents():
             if valid_classes:
                 if parent in valid_classes:
-                    file.writelines(
-                        [indent, parent, " <|-- ", self.lang_class.name, "\n"]
-                    )
+                    file.writelines([indent, parent, " <|-- ", self.lang_class.name, "\n"])
                 continue
             file.writelines([indent, parent, " <|-- ", self.lang_class.name, "\n"])
 
@@ -138,9 +132,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
         self.config = config
         self.imported_classes = imported_classes
 
-    def to_code(
-        self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
-    ) -> None:
+    def to_code(self, file: TextIOBase, indent_level: int = 0, indent_base: str = DEFAULT_INDENT) -> None:
         """converts to mermaid diagram"""
         indent_level, indent = get_indent(indent_level, 0, indent_base)
 
@@ -162,9 +154,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
                 file.writelines([indent, "namespace ", namespace, "{\n"])
                 indent_level, indent = get_indent(indent_level, 1, indent_base)
             for _, mclass in classes.items():
-                mclass.to_code(
-                    file=file, indent_level=indent_level, indent_base=indent_base
-                )
+                mclass.to_code(file=file, indent_level=indent_level, indent_base=indent_base)
             if namespace:
                 indent_level, indent = get_indent(indent_level, -1, indent_base)
                 file.writelines([indent, "}", "\n"])
@@ -197,9 +187,7 @@ class SyrenkaClassDiagram(SyrenkaGeneratorBase):
             self.namespaces_with_classes[class_obj.namespace] = {}
 
         if class_obj.name not in self.namespaces_with_classes[class_obj.namespace]:
-            self.namespaces_with_classes[class_obj.namespace][class_obj.name] = (
-                class_obj
-            )
+            self.namespaces_with_classes[class_obj.namespace][class_obj.name] = class_obj
         self.unique_classes[class_obj.name] = None
 
     def add_classes(self, classes: Iterable):
