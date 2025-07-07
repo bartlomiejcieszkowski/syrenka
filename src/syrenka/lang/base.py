@@ -83,7 +83,7 @@ class LangAnalysis(ABC):
 
     @staticmethod
     @abstractmethod
-    def create_lang_class(obj) -> Union[LangClass, None]:
+    def create_lang_class(obj) -> LangClass:
         pass
 
 

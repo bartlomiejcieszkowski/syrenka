@@ -10,6 +10,8 @@ except ImportError:
     # backward compatibility for python <3.11
     from strenum import StrEnum
 
+DEFAULT_INDENT = "    "
+
 
 def get_indent(
     level: int, increment: int = 0, indent_base: str = "    "

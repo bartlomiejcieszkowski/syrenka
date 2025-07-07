@@ -75,18 +75,22 @@ class Node(SyrenkaGeneratorBase):
 
 
 class EdgeType(Enum):
-    ArrowEdge = "-->"
-    OpenLink = "---"
-    DottedLink = "-.->"
-    ThickLink = "==>"
-    InvisibleLink = "~~~"
+    """Mermaid edge type (links between nodes)
+
+    For reference see: https://mermaid.js.org/syntax/flowchart.html#links-between-nodes"""
+
+    ARROW_EDGE = "-->"
+    OPEN_LINK = "---"
+    DOTTED_LINK = "-.->"
+    THICK_LINK = "==>"
+    INVISIBLE_LINK = "~~~"
     # New arrow types
-    CircleEdge = "--o"
-    CrossEdge = "--x"
+    CIRCLE_EDGE = "--o"
+    CROSS_EDGE = "--x"
     # Multi directional arrows
-    MultiCircleEdge = "o--o"
-    MultiArrowEdge = "<-->"
-    MultiCrossEdge = "x--x"
+    MULTI_CIRCLE_EDGE = "o--o"
+    MULTI_ARROW_EDGE = "<-->"
+    MULTI_CROSS_EDGE = "x--x"
 
 
 # Animation?
@@ -95,7 +99,7 @@ class EdgeType(Enum):
 class Edge(SyrenkaGeneratorBase):
     def __init__(
         self,
-        edge_type: EdgeType = EdgeType.ArrowEdge,
+        edge_type: EdgeType = EdgeType.ARROW_EDGE,
         text: Union[str, None] = None,
         source: Union[Node, None] = None,
         target: Union[Node, None] = None,
@@ -140,12 +144,12 @@ class Edge(SyrenkaGeneratorBase):
 class Subgraph(Node):
     def __init__(
         self,
-        id: str,
+        identifier: str,
         text: Union[str, None] = None,
         direction: FlowchartDirection = FlowchartDirection.TOP_TO_BOTTOM,
         nodes: Iterable[Node] = None,
     ):
-        super().__init__(identifier=id, text=text, shape=NodeShape.DEFAULT)
+        super().__init__(identifier=identifier, text=text, shape=NodeShape.DEFAULT)
         self.edges = []
         self.direction = direction
         self.nodes_dict: dict[str, Node] = OrderedDict()
@@ -224,13 +228,13 @@ class SyrenkaFlowchart(Subgraph):
         direction: FlowchartDirection,
         nodes: Iterable[Node] = None,
     ):
-        super().__init__(id=title, direction=direction, nodes=nodes)
+        super().__init__(identifier=title, direction=direction, nodes=nodes)
 
     def connect(
         self,
         source: Node,
         target: Node,
-        edge_type: EdgeType = EdgeType.ArrowEdge,
+        edge_type: EdgeType = EdgeType.ARROW_EDGE,
         text: Union[str, None] = None,
     ):
         self.edges.append(Edge(edge_type, text, source=source, target=target))
@@ -241,7 +245,7 @@ class SyrenkaFlowchart(Subgraph):
         self,
         source_id: str,
         target_id: str,
-        edge_type: EdgeType = EdgeType.ArrowEdge,
+        edge_type: EdgeType = EdgeType.ARROW_EDGE,
         text: str = None,
     ):
         source = self.get_by_id(source_id)

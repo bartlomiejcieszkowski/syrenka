@@ -1,8 +1,12 @@
+"""module for creating class diagrams"""
+
 from collections.abc import Iterable
 from copy import deepcopy
 from io import TextIOBase
+from typing import Union
 
 from syrenka.base import (
+    DEFAULT_INDENT,
     SyrenkaConfig,
     SyrenkaGeneratorBase,
     get_indent,
@@ -13,10 +17,12 @@ from syrenka.lang import LangAnalyst
 
 
 class SyrenkaClass(SyrenkaGeneratorBase):
+    """Syrenka wrapper for class"""
+
     def __init__(self, cls, skip_underscores: bool = True):
         super().__init__()
         self.lang_class = LangAnalyst.create_lang_class(cls)
-        self.indent = 4 * " "
+        self.indent = DEFAULT_INDENT
         self.skip_underscores = skip_underscores
 
     @property
@@ -30,6 +36,7 @@ class SyrenkaClass(SyrenkaGeneratorBase):
     def to_code(
         self, file: TextIOBase, indent_level: int = 0, indent_base: str = "    "
     ):
+        """generates mermaid code"""
         indent_level, indent = get_indent(indent_level, indent_base=indent_base)
 
         # class <name> {
@@ -76,8 +83,9 @@ class SyrenkaClass(SyrenkaGeneratorBase):
         file: TextIOBase,
         indent_level: int = 0,
         indent_base: str = "    ",
-        valid_classes: dict[str, None] = None,
+        valid_classes: Union[dict[str, None], None] = None,
     ):
+        """generates mermaid code for inheritance"""
         if self.lang_class.is_enum():
             return
 
@@ -94,6 +102,8 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
 
 class SyrenkaClassDiagramConfig(SyrenkaConfig):
+    """Config class for SyrenkaClassDiagram"""
+
     CLASS_CONFIG_DEFAULTS = {"hideEmptyMembersBox": "true"}
 
     def __init__(self):
@@ -112,6 +122,8 @@ class SyrenkaClassDiagramConfig(SyrenkaConfig):
 
 
 class SyrenkaClassDiagram(SyrenkaGeneratorBase):
+    """Class for creating class diagram"""
+
     def __init__(
         self,
         title: str = "",
