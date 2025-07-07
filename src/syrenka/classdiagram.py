@@ -27,10 +27,12 @@ class SyrenkaClass(SyrenkaGeneratorBase):
 
     @property
     def name(self) -> str:
+        """name"""
         return self.lang_class.name
 
     @property
     def namespace(self) -> str:
+        """namespace"""
         return self.lang_class.namespace
 
     def to_code(self, file: TextIOBase, indent_level: int = 0, indent_base: str = DEFAULT_INDENT):
