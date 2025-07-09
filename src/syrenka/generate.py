@@ -37,6 +37,22 @@ def generate_diagram_image(
     config_file: Union[str, Path, None] = None,
     css_file: Union[str, Path, None] = None,
 ):
+    print("`generate_diagram_image` is deprecated, use `render_mermaid` function", file=sys.stderr)
+    return render_mermaid(source, output_file, overwrite, theme, width, height, background_color, config_file, css_file)
+
+
+def render_mermaid(
+    source: Union[str, Path],
+    output_file: Path,
+    overwrite: bool = False,
+    # mmdc specific args
+    theme: Union[str, None] = None,
+    width: Union[int, None] = None,
+    height: Union[int, None] = None,
+    background_color: Union[str, None] = None,
+    config_file: Union[str, Path, None] = None,
+    css_file: Union[str, Path, None] = None,
+):
     """generates diagram image using mermaid-cli - mmdc"""
     if not MMDC_SUPPORT:
         print("For mermaid diagram generation install mmdc, check stderr", file=sys.stderr)

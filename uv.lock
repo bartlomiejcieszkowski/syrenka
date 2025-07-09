@@ -1232,7 +1232,7 @@ wheels = [
 
 [[package]]
 name = "syrenka"
-version = "0.5.5"
+version = "0.5.6"
 source = { editable = "." }
 dependencies = [
     { name = "strenum", marker = "python_full_version < '3.11'" },
