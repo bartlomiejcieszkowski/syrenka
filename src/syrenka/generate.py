@@ -25,7 +25,18 @@ if not MMDC_SUPPORT:
     )
 
 
-def generate_diagram_image(source: Union[str, Path], output_file: Path, overwrite: bool = False):
+def generate_diagram_image(
+    source: Union[str, Path],
+    output_file: Path,
+    overwrite: bool = False,
+    # mmdc specific args
+    theme: Union[str, None] = None,
+    width: Union[int, None] = None,
+    height: Union[int, None] = None,
+    background_color: Union[str, None] = None,
+    config_file: Union[str, Path, None] = None,
+    css_file: Union[str, Path, None] = None,
+):
     """generates diagram image using mermaid-cli - mmdc"""
     if not MMDC_SUPPORT:
         print("For mermaid diagram generation install mmdc, check stderr", file=sys.stderr)
@@ -45,4 +56,18 @@ def generate_diagram_image(source: Union[str, Path], output_file: Path, overwrit
         raise ValueError(f"unexpected input type: {type(source)} - expected Path or str")
 
     args = [MMDC_EXE, "-i", input_arg, "-o", str(of)]
+
+    if theme:
+        args.extend(["-t", theme])
+    if background_color:
+        args.extend(["-b", background_color])
+    if width:
+        args.extend(["-w", str(width)])
+    if height:
+        args.extend(["-H", str(height)])
+    if config_file:
+        args.extend(["-c", str(config_file)])
+    if css_file:
+        args.extend(["-C", str(css_file)])
+
     subprocess.run(args, input=input_str, text=True, capture_output=True, check=False)
