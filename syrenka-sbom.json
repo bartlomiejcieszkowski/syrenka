@@ -103,7 +103,7 @@
           ],
           "name": "cyclonedx-py",
           "type": "application",
-          "version": "6.1.2"
+          "version": "7.0.0"
         },
         {
           "description": "Python library for CycloneDX",
@@ -152,7 +152,7 @@
           ],
           "name": "cyclonedx-python-lib",
           "type": "library",
-          "version": "10.3.0"
+          "version": "10.4.1"
         }
       ]
     }
