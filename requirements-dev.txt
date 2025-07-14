@@ -159,9 +159,9 @@ consolekit==1.9.0 \
     --hash=sha256:2997e9d18995e024c5338d5f4b20394ec5f962ccefebce1b2a8ffa3bca507cf0 \
     --hash=sha256:81e3c514eaba8d0174400d2096cd7e72374d311bad65f3363a0ebf1693f4c374
     # via pyproject-parser
-cyclonedx-bom==6.1.2 \
-    --hash=sha256:1114dc68899eda9c280c40d242d6486089c0b661d8d0a0ab72a48134ea64f22c \
-    --hash=sha256:ff48712d79f05c79ade3023c9ffc39408aeac1163e369def84daccb35a1d0674
+cyclonedx-bom==6.1.3 \
+    --hash=sha256:10ac1d90eef5827b1d20f3fba007a6ce961d95f325e5cfd5d2f890edd3bf5d0b \
+    --hash=sha256:ceb37785edc6f729333c8f6044800230eb6d18cfaa93c7c1af6553944fbf4863
 cyclonedx-python-lib==10.3.0 \
     --hash=sha256:d9ae3a9bc545a34fb0d89b3740bbc16ab4ea7cad9350303a2b4025d78fab227a \
     --hash=sha256:d9f207bdddacbf5c22d50a0b4e0c878aee578e5452dae2b46f64729a438e9e05
