@@ -152,7 +152,7 @@
           ],
           "name": "cyclonedx-python-lib",
           "type": "library",
-          "version": "10.4.1"
+          "version": "10.5.0"
         }
       ]
     }
