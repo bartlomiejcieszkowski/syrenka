@@ -1,9 +1,25 @@
-# syrenka
-syrenka is mermaid markdown generator
+# syrenka Python Library
+
+[![shield_pypi-version]][link_pypi]
+[![shield_license]][license_file]
+
+----
+
+syrenka is mermaid markdown generator python library
 
 ## Description
 
 The aim of this project is to provide easy to use classes for generating mermaid charts and diagrams.
+
+## Features
+
+- Mermaid generation:
+  - Flowchart
+  - Classdiagram
+- Class diagram generation
+  - Languages supported:
+    - Python
+
 
 ## Installation
 
@@ -225,3 +241,9 @@ fl.connect_by_id("3", "4").connect_by_id("4", "s", sf.EdgeType.THICK_LINK)
 fl.to_code(file=sys.stdout)
 ```
 <!-- EX2_SYRENKA_CODE_END -->
+
+[shield_pypi-version]: https://img.shields.io/pypi/v/syrenka?logo=pypi&logoColor=white&label=PyPI%20%22PyPI%22
+[shield_license]: https://img.shields.io/github/license/bartlomiejcieszkowski/syrenka?logo=open%20source%20initiative&logoColor=white "license"
+
+[link_pypi]: https://pypi.org/project/syrenka/
+[license_file]: https://github.com/bartlomiejcieszkowski/syrenka/blob/main/LICENSE
