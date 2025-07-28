@@ -196,9 +196,9 @@ docutils==0.21.2 \
     # via
     #   pyproject-parser
     #   readme-renderer
-dom-toml==2.0.1 \
-    --hash=sha256:31c5874595c777f41cc191c34c66dbea215c8289a7b148b425fb7a10c3f4fbc8 \
-    --hash=sha256:6681a793c94a5d1fb7b59690009cc3b1dfb1bcaae108fb8054c712a8f128efc7
+dom-toml==2.1.0 \
+    --hash=sha256:5cc0dd10ce2566d35bc1d94a6ef16c062971ff0318c6f3705800d61d2075adac \
+    --hash=sha256:f5c4921940ad34b9e95d391f44000e001688b400fd21afb5cb430e8c29172da1
     # via
     #   pyproject-parser
     #   shippinglabel
