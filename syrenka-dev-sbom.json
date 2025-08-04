@@ -911,18 +911,18 @@
     },
     {
       "bom-ref": "requirements-L193",
-      "description": "requirements line 193: docutils==0.21.2     --hash=sha256:3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f     --hash=sha256:dafca5b9e384f0e419294eb4d2ff9fa826435bf15f15b7bd45723e8ad76811b2",
+      "description": "requirements line 193: docutils==0.22     --hash=sha256:4ed966a0e96a0477d852f7af31bdcb3adc049fbb35ccba358c2ea8a03287615e     --hash=sha256:ba9d57750e92331ebe7c08a1bbf7a7f8143b86c476acd51528b042216a6aad0f",
       "externalReferences": [
         {
           "comment": "implicit dist url",
           "hashes": [
             {
               "alg": "SHA-256",
-              "content": "3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f"
+              "content": "4ed966a0e96a0477d852f7af31bdcb3adc049fbb35ccba358c2ea8a03287615e"
             },
             {
               "alg": "SHA-256",
-              "content": "dafca5b9e384f0e419294eb4d2ff9fa826435bf15f15b7bd45723e8ad76811b2"
+              "content": "ba9d57750e92331ebe7c08a1bbf7a7f8143b86c476acd51528b042216a6aad0f"
             }
           ],
           "type": "distribution",
@@ -930,24 +930,24 @@
         }
       ],
       "name": "docutils",
-      "purl": "pkg:pypi/docutils@0.21.2",
+      "purl": "pkg:pypi/docutils@0.22",
       "type": "library",
-      "version": "0.21.2"
+      "version": "0.22"
     },
     {
       "bom-ref": "requirements-L199",
-      "description": "requirements line 199: dom-toml==2.0.1     --hash=sha256:31c5874595c777f41cc191c34c66dbea215c8289a7b148b425fb7a10c3f4fbc8     --hash=sha256:6681a793c94a5d1fb7b59690009cc3b1dfb1bcaae108fb8054c712a8f128efc7",
+      "description": "requirements line 199: dom-toml==2.1.0     --hash=sha256:5cc0dd10ce2566d35bc1d94a6ef16c062971ff0318c6f3705800d61d2075adac     --hash=sha256:f5c4921940ad34b9e95d391f44000e001688b400fd21afb5cb430e8c29172da1",
       "externalReferences": [
         {
           "comment": "implicit dist url",
           "hashes": [
             {
               "alg": "SHA-256",
-              "content": "31c5874595c777f41cc191c34c66dbea215c8289a7b148b425fb7a10c3f4fbc8"
+              "content": "5cc0dd10ce2566d35bc1d94a6ef16c062971ff0318c6f3705800d61d2075adac"
             },
             {
               "alg": "SHA-256",
-              "content": "6681a793c94a5d1fb7b59690009cc3b1dfb1bcaae108fb8054c712a8f128efc7"
+              "content": "f5c4921940ad34b9e95d391f44000e001688b400fd21afb5cb430e8c29172da1"
             }
           ],
           "type": "distribution",
@@ -955,9 +955,9 @@
         }
       ],
       "name": "dom-toml",
-      "purl": "pkg:pypi/dom-toml@2.0.1",
+      "purl": "pkg:pypi/dom-toml@2.1.0",
       "type": "library",
-      "version": "2.0.1"
+      "version": "2.1.0"
     },
     {
       "bom-ref": "requirements-L205",
@@ -1922,18 +1922,18 @@
     },
     {
       "bom-ref": "requirements-L409",
-      "description": "requirements line 409: packageurl-python==0.17.1     --hash=sha256:59b0862ae0b216994f847e05b4c6e870e0d16e1ddd706feefb19d79810f22cbd     --hash=sha256:5db592a990b60bc02446033c50fb1803a26c5124cd72c5a2cd1b8ea1ae741969",
+      "description": "requirements line 409: packageurl-python==0.17.3     --hash=sha256:719995f0c7f706890277ba57ec95afcaa9696c836a7675770a1279b01a41f7be     --hash=sha256:f51b5aab570159f07258c8e998e9972ff3bf060da16b7334a42bd9f9737777d9",
       "externalReferences": [
         {
           "comment": "implicit dist url",
           "hashes": [
             {
               "alg": "SHA-256",
-              "content": "59b0862ae0b216994f847e05b4c6e870e0d16e1ddd706feefb19d79810f22cbd"
+              "content": "719995f0c7f706890277ba57ec95afcaa9696c836a7675770a1279b01a41f7be"
             },
             {
               "alg": "SHA-256",
-              "content": "5db592a990b60bc02446033c50fb1803a26c5124cd72c5a2cd1b8ea1ae741969"
+              "content": "f51b5aab570159f07258c8e998e9972ff3bf060da16b7334a42bd9f9737777d9"
             }
           ],
           "type": "distribution",
@@ -1941,9 +1941,9 @@
         }
       ],
       "name": "packageurl-python",
-      "purl": "pkg:pypi/packageurl-python@0.17.1",
+      "purl": "pkg:pypi/packageurl-python@0.17.3",
       "type": "library",
-      "version": "0.17.1"
+      "version": "0.17.3"
     },
     {
       "bom-ref": "requirements-L415",
@@ -3191,82 +3191,82 @@
     },
     {
       "bom-ref": "requirements-L694",
-      "description": "requirements line 694: ruff==0.12.4     --hash=sha256:0618ec4442a83ab545e5b71202a5c0ed7791e8471435b94e655b570a5031a98e     --hash=sha256:0fc426bec2e4e5f4c4f182b9d2ce6a75c85ba9bcdbe5c6f2a74fcb8df437df4b     --hash=sha256:13efa16df6c6eeb7d0f091abae50f58e9522f3843edb40d56ad52a5a4a4b6873     --hash=sha256:2abc48f3d9667fdc74022380b5c745873499ff827393a636f7a59da1515e7c57     --hash=sha256:2b2449dc0c138d877d629bea151bee8c0ae3b8e9c43f5fcaafcd0c0d0726b184     --hash=sha256:478fccdb82ca148a98a9ff43658944f7ab5ec41c3c49d77cd99d44da019371a1     --hash=sha256:4de27977827893cdfb1211d42d84bc180fceb7b72471104671c59be37041cf93     --hash=sha256:55c0f4ca9769408d9b9bac530c30d3e66490bd2beb2d3dae3e4128a1f05c7442     --hash=sha256:56e45bb11f625db55f9b70477062e6a1a04d53628eda7784dce6e0f55fd549eb     --hash=sha256:a7dea966bcb55d4ecc4cc3270bccb6f87a337326c9dcd3c07d5b97000dbff41c     --hash=sha256:a8224cc3722c9ad9044da7f89c4c1ec452aef2cfe3904365025dd2f51daeae0e     --hash=sha256:afcfa3ab5ab5dd0e1c39bf286d829e042a15e966b3726eea79528e2e24d8371a     --hash=sha256:be0593c69df9ad1465e8a2d10e3defd111fdb62dcd5be23ae2c06da77e8fcffb     --hash=sha256:c057ce464b1413c926cdb203a0f858cd52f3e73dcb3270a3318d1630f6395bb3     --hash=sha256:cb0d261dac457ab939aeb247e804125a5d521b21adf27e721895b0d3f83a0d0a     --hash=sha256:e64b90d1122dc2713330350626b10d60818930819623abbb56535c6466cce045     --hash=sha256:e9949d01d64fa3672449a51ddb5d7548b33e130240ad418884ee6efa7a229586     --hash=sha256:fe0b9e9eb23736b453143d72d2ceca5db323963330d5b7859d60d101147d461a",
+      "description": "requirements line 694: ruff==0.12.7     --hash=sha256:06bfb01e1623bf7f59ea749a841da56f8f653d641bfd046edee32ede7ff6c606     --hash=sha256:1fc3193f238bc2d7968772c82831a4ff69252f673be371fb49663f0068b7ec71     --hash=sha256:2e1c2a3b8626339bb6369116e7030a4cf194ea48f49b64bb505732a7fce4f4e3     --hash=sha256:32dec41817623d388e645612ec70d5757a6d9c035f3744a52c7b195a57e03860     --hash=sha256:4000623300563c709458d0ce170c3d0d788c23a058912f28bbadc6f905d67afa     --hash=sha256:47ef751f722053a5df5fa48d412dbb54d41ab9b17875c6840a58ec63ff0c247c     --hash=sha256:5726f59b171111fa6a69d82aef48f00b56598b03a22f0f4170664ff4d8298efb     --hash=sha256:5d0bfe4e77fba61bf2ccadf8cf005d6133e3ce08793bbe870dd1c734f2699a3e     --hash=sha256:69ffe0e5f9b2cf2b8e289a3f8945b402a1b19eff24ec389f45f23c42a3dd6fb5     --hash=sha256:74e6f5c04c4dd4aba223f4fe6e7104f79e0eebf7d307e4f9b18c18362124bccd     --hash=sha256:76e4f31529899b8c434c3c1dede98c4483b89590e15fb49f2d46183801565303     --hash=sha256:789b7a03e72507c54fb3ba6209e4bb36517b90f1a3569ea17084e3fd295500fb     --hash=sha256:9c18f3d707ee9edf89da76131956aba1270c6348bfee8f6c647de841eac7194f     --hash=sha256:a07a5c8ffa2611a52732bdc67bf88e243abd84fe2d7f6daef3826b59abbfeda4     --hash=sha256:a828a5fc25a3efd3e1ff7b241fd392686c9386f20e5ac90aa9234a5faa12c423     --hash=sha256:c928f1b2ec59fb77dfdf70e0419408898b63998789cc98197e15f560b9e77f77     --hash=sha256:dfce05101dbd11833a0776716d5d1578641b7fddb537fe7fa956ab85d1769b69     --hash=sha256:e41df94a957d50083fd09b916d6e89e497246698c3f3d5c681c8b3e7b9bb4ac8",
       "externalReferences": [
         {
           "comment": "implicit dist url",
           "hashes": [
             {
               "alg": "SHA-256",
-              "content": "0618ec4442a83ab545e5b71202a5c0ed7791e8471435b94e655b570a5031a98e"
+              "content": "06bfb01e1623bf7f59ea749a841da56f8f653d641bfd046edee32ede7ff6c606"
             },
             {
               "alg": "SHA-256",
-              "content": "0fc426bec2e4e5f4c4f182b9d2ce6a75c85ba9bcdbe5c6f2a74fcb8df437df4b"
+              "content": "1fc3193f238bc2d7968772c82831a4ff69252f673be371fb49663f0068b7ec71"
             },
             {
               "alg": "SHA-256",
-              "content": "13efa16df6c6eeb7d0f091abae50f58e9522f3843edb40d56ad52a5a4a4b6873"
+              "content": "2e1c2a3b8626339bb6369116e7030a4cf194ea48f49b64bb505732a7fce4f4e3"
             },
             {
               "alg": "SHA-256",
-              "content": "2abc48f3d9667fdc74022380b5c745873499ff827393a636f7a59da1515e7c57"
+              "content": "32dec41817623d388e645612ec70d5757a6d9c035f3744a52c7b195a57e03860"
             },
             {
               "alg": "SHA-256",
-              "content": "2b2449dc0c138d877d629bea151bee8c0ae3b8e9c43f5fcaafcd0c0d0726b184"
+              "content": "4000623300563c709458d0ce170c3d0d788c23a058912f28bbadc6f905d67afa"
             },
             {
               "alg": "SHA-256",
-              "content": "478fccdb82ca148a98a9ff43658944f7ab5ec41c3c49d77cd99d44da019371a1"
+              "content": "47ef751f722053a5df5fa48d412dbb54d41ab9b17875c6840a58ec63ff0c247c"
             },
             {
               "alg": "SHA-256",
-              "content": "4de27977827893cdfb1211d42d84bc180fceb7b72471104671c59be37041cf93"
+              "content": "5726f59b171111fa6a69d82aef48f00b56598b03a22f0f4170664ff4d8298efb"
             },
             {
               "alg": "SHA-256",
-              "content": "55c0f4ca9769408d9b9bac530c30d3e66490bd2beb2d3dae3e4128a1f05c7442"
+              "content": "5d0bfe4e77fba61bf2ccadf8cf005d6133e3ce08793bbe870dd1c734f2699a3e"
             },
             {
               "alg": "SHA-256",
-              "content": "56e45bb11f625db55f9b70477062e6a1a04d53628eda7784dce6e0f55fd549eb"
+              "content": "69ffe0e5f9b2cf2b8e289a3f8945b402a1b19eff24ec389f45f23c42a3dd6fb5"
             },
             {
               "alg": "SHA-256",
-              "content": "a7dea966bcb55d4ecc4cc3270bccb6f87a337326c9dcd3c07d5b97000dbff41c"
+              "content": "74e6f5c04c4dd4aba223f4fe6e7104f79e0eebf7d307e4f9b18c18362124bccd"
             },
             {
               "alg": "SHA-256",
-              "content": "a8224cc3722c9ad9044da7f89c4c1ec452aef2cfe3904365025dd2f51daeae0e"
+              "content": "76e4f31529899b8c434c3c1dede98c4483b89590e15fb49f2d46183801565303"
             },
             {
               "alg": "SHA-256",
-              "content": "afcfa3ab5ab5dd0e1c39bf286d829e042a15e966b3726eea79528e2e24d8371a"
+              "content": "789b7a03e72507c54fb3ba6209e4bb36517b90f1a3569ea17084e3fd295500fb"
             },
             {
               "alg": "SHA-256",
-              "content": "be0593c69df9ad1465e8a2d10e3defd111fdb62dcd5be23ae2c06da77e8fcffb"
+              "content": "9c18f3d707ee9edf89da76131956aba1270c6348bfee8f6c647de841eac7194f"
             },
             {
               "alg": "SHA-256",
-              "content": "c057ce464b1413c926cdb203a0f858cd52f3e73dcb3270a3318d1630f6395bb3"
+              "content": "a07a5c8ffa2611a52732bdc67bf88e243abd84fe2d7f6daef3826b59abbfeda4"
             },
             {
               "alg": "SHA-256",
-              "content": "cb0d261dac457ab939aeb247e804125a5d521b21adf27e721895b0d3f83a0d0a"
+              "content": "a828a5fc25a3efd3e1ff7b241fd392686c9386f20e5ac90aa9234a5faa12c423"
             },
             {
               "alg": "SHA-256",
-              "content": "e64b90d1122dc2713330350626b10d60818930819623abbb56535c6466cce045"
+              "content": "c928f1b2ec59fb77dfdf70e0419408898b63998789cc98197e15f560b9e77f77"
             },
             {
               "alg": "SHA-256",
-              "content": "e9949d01d64fa3672449a51ddb5d7548b33e130240ad418884ee6efa7a229586"
+              "content": "dfce05101dbd11833a0776716d5d1578641b7fddb537fe7fa956ab85d1769b69"
             },
             {
               "alg": "SHA-256",
-              "content": "fe0b9e9eb23736b453143d72d2ceca5db323963330d5b7859d60d101147d461a"
+              "content": "e41df94a957d50083fd09b916d6e89e497246698c3f3d5c681c8b3e7b9bb4ac8"
             }
           ],
           "type": "distribution",
@@ -3274,9 +3274,9 @@
         }
       ],
       "name": "ruff",
-      "purl": "pkg:pypi/ruff@0.12.4",
+      "purl": "pkg:pypi/ruff@0.12.7",
       "type": "library",
-      "version": "0.12.4"
+      "version": "0.12.7"
     },
     {
       "bom-ref": "requirements-L713",
@@ -3380,7 +3380,7 @@
     },
     {
       "bom-ref": "requirements-L731",
-      "description": "requirements line 731: tomli==2.2.1     --hash=sha256:023aa114dd824ade0100497eb2318602af309e5a55595f76b626d6d9f3b7b0a6     --hash=sha256:02abe224de6ae62c19f090f68da4e27b10af2b93213d36cf44e6e1c5abd19fdd     --hash=sha256:286f0ca2ffeeb5b9bd4fcc8d6c330534323ec51b2f52da063b11c502da16f30c     --hash=sha256:2d0f2fdd22b02c6d81637a3c95f8cd77f995846af7414c5c4b8d0545afa1bc4b     --hash=sha256:33580bccab0338d00994d7f16f4c4ec25b776af3ffaac1ed74e0b3fc95e885a8     --hash=sha256:400e720fe168c0f8521520190686ef8ef033fb19fc493da09779e592861b78c6     --hash=sha256:40741994320b232529c802f8bc86da4e1aa9f413db394617b9a256ae0f9a7f77     --hash=sha256:465af0e0875402f1d226519c9904f37254b3045fc5084697cefb9bdde1ff99ff     --hash=sha256:4a8f6e44de52d5e6c657c9fe83b562f5f4256d8ebbfe4ff922c495620a7f6cea     --hash=sha256:4e340144ad7ae1533cb897d406382b4b6fede8890a03738ff1683af800d54192     --hash=sha256:678e4fa69e4575eb77d103de3df8a895e1591b48e740211bd1067378c69e8249     --hash=sha256:6972ca9c9cc9f0acaa56a8ca1ff51e7af152a9f87fb64623e31d5c83700080ee     --hash=sha256:7fc04e92e1d624a4a63c76474610238576942d6b8950a2d7f908a340494e67e4     --hash=sha256:889f80ef92701b9dbb224e49ec87c645ce5df3fa2cc548664eb8a25e03127a98     --hash=sha256:8d57ca8095a641b8237d5b079147646153d22552f1c637fd3ba7f4b0b29167a8     --hash=sha256:8dd28b3e155b80f4d54beb40a441d366adcfe740969820caf156c019fb5c7ec4     --hash=sha256:9316dc65bed1684c9a98ee68759ceaed29d229e985297003e494aa825ebb0281     --hash=sha256:a198f10c4d1b1375d7687bc25294306e551bf1abfa4eace6650070a5c1ae2744     --hash=sha256:a38aa0308e754b0e3c67e344754dff64999ff9b513e691d0e786265c93583c69     --hash=sha256:a92ef1a44547e894e2a17d24e7557a5e85a9e1d0048b0b5e7541f76c5032cb13     --hash=sha256:ac065718db92ca818f8d6141b5f66369833d4a80a9d74435a268c52bdfa73140     --hash=sha256:b82ebccc8c8a36f2094e969560a1b836758481f3dc360ce9a3277c65f374285e     --hash=sha256:c954d2250168d28797dd4e3ac5cf812a406cd5a92674ee4c8f123c889786aa8e     --hash=sha256:cb55c73c5f4408779d0cf3eef9f762b9c9f147a77de7b258bef0a5628adc85cc     --hash=sha256:cd45e1dc79c835ce60f7404ec8119f2eb06d38b1deba146f07ced3bbc44505ff     --hash=sha256:d3f5614314d758649ab2ab3a62d4f2004c825922f9e370b29416484086b264ec     --hash=sha256:d920f33822747519673ee656a4b6ac33e382eca9d331c87770faa3eef562aeb2     --hash=sha256:db2b95f9de79181805df90bedc5a5ab4c165e6ec3fe99f970d0e302f384ad222     --hash=sha256:e59e304978767a54663af13c07b3d1af22ddee3bb2fb0618ca1593e4f593a106     --hash=sha256:e85e99945e688e32d5a35c1ff38ed0b3f41f43fad8df0bdf79f72b2ba7bc5272     --hash=sha256:ece47d672db52ac607a3d9599a9d48dcb2f2f735c6c2d1f34130085bb12b112a     --hash=sha256:f4039b9cbc3048b2416cc57ab3bda989a6fcf9b36cf8937f01a6e731b64f80d7",
+      "description": "requirements line 731: tomli==2.2.1 ; python_full_version < '3.11'     --hash=sha256:023aa114dd824ade0100497eb2318602af309e5a55595f76b626d6d9f3b7b0a6     --hash=sha256:02abe224de6ae62c19f090f68da4e27b10af2b93213d36cf44e6e1c5abd19fdd     --hash=sha256:286f0ca2ffeeb5b9bd4fcc8d6c330534323ec51b2f52da063b11c502da16f30c     --hash=sha256:2d0f2fdd22b02c6d81637a3c95f8cd77f995846af7414c5c4b8d0545afa1bc4b     --hash=sha256:33580bccab0338d00994d7f16f4c4ec25b776af3ffaac1ed74e0b3fc95e885a8     --hash=sha256:400e720fe168c0f8521520190686ef8ef033fb19fc493da09779e592861b78c6     --hash=sha256:40741994320b232529c802f8bc86da4e1aa9f413db394617b9a256ae0f9a7f77     --hash=sha256:465af0e0875402f1d226519c9904f37254b3045fc5084697cefb9bdde1ff99ff     --hash=sha256:4a8f6e44de52d5e6c657c9fe83b562f5f4256d8ebbfe4ff922c495620a7f6cea     --hash=sha256:4e340144ad7ae1533cb897d406382b4b6fede8890a03738ff1683af800d54192     --hash=sha256:678e4fa69e4575eb77d103de3df8a895e1591b48e740211bd1067378c69e8249     --hash=sha256:6972ca9c9cc9f0acaa56a8ca1ff51e7af152a9f87fb64623e31d5c83700080ee     --hash=sha256:7fc04e92e1d624a4a63c76474610238576942d6b8950a2d7f908a340494e67e4     --hash=sha256:889f80ef92701b9dbb224e49ec87c645ce5df3fa2cc548664eb8a25e03127a98     --hash=sha256:8d57ca8095a641b8237d5b079147646153d22552f1c637fd3ba7f4b0b29167a8     --hash=sha256:8dd28b3e155b80f4d54beb40a441d366adcfe740969820caf156c019fb5c7ec4     --hash=sha256:9316dc65bed1684c9a98ee68759ceaed29d229e985297003e494aa825ebb0281     --hash=sha256:a198f10c4d1b1375d7687bc25294306e551bf1abfa4eace6650070a5c1ae2744     --hash=sha256:a38aa0308e754b0e3c67e344754dff64999ff9b513e691d0e786265c93583c69     --hash=sha256:a92ef1a44547e894e2a17d24e7557a5e85a9e1d0048b0b5e7541f76c5032cb13     --hash=sha256:ac065718db92ca818f8d6141b5f66369833d4a80a9d74435a268c52bdfa73140     --hash=sha256:b82ebccc8c8a36f2094e969560a1b836758481f3dc360ce9a3277c65f374285e     --hash=sha256:c954d2250168d28797dd4e3ac5cf812a406cd5a92674ee4c8f123c889786aa8e     --hash=sha256:cb55c73c5f4408779d0cf3eef9f762b9c9f147a77de7b258bef0a5628adc85cc     --hash=sha256:cd45e1dc79c835ce60f7404ec8119f2eb06d38b1deba146f07ced3bbc44505ff     --hash=sha256:d3f5614314d758649ab2ab3a62d4f2004c825922f9e370b29416484086b264ec     --hash=sha256:d920f33822747519673ee656a4b6ac33e382eca9d331c87770faa3eef562aeb2     --hash=sha256:db2b95f9de79181805df90bedc5a5ab4c165e6ec3fe99f970d0e302f384ad222     --hash=sha256:e59e304978767a54663af13c07b3d1af22ddee3bb2fb0618ca1593e4f593a106     --hash=sha256:e85e99945e688e32d5a35c1ff38ed0b3f41f43fad8df0bdf79f72b2ba7bc5272     --hash=sha256:ece47d672db52ac607a3d9599a9d48dcb2f2f735c6c2d1f34130085bb12b112a     --hash=sha256:f4039b9cbc3048b2416cc57ab3bda989a6fcf9b36cf8937f01a6e731b64f80d7",
       "externalReferences": [
         {
           "comment": "implicit dist url",
@@ -3625,18 +3625,18 @@
     },
     {
       "bom-ref": "requirements-L795",
-      "description": "requirements line 795: virtualenv==20.32.0     --hash=sha256:2c310aecb62e5aa1b06103ed7c2977b81e042695de2697d01017ff0f1034af56     --hash=sha256:886bf75cadfdc964674e6e33eb74d787dff31ca314ceace03ca5810620f4ecf0",
+      "description": "requirements line 795: virtualenv==20.33.0     --hash=sha256:106b6baa8ab1b526d5a9b71165c85c456fbd49b16976c88e2bc9352ee3bc5d3f     --hash=sha256:47e0c0d2ef1801fce721708ccdf2a28b9403fa2307c3268aebd03225976f61d2",
       "externalReferences": [
         {
           "comment": "implicit dist url",
           "hashes": [
             {
               "alg": "SHA-256",
-              "content": "2c310aecb62e5aa1b06103ed7c2977b81e042695de2697d01017ff0f1034af56"
+              "content": "106b6baa8ab1b526d5a9b71165c85c456fbd49b16976c88e2bc9352ee3bc5d3f"
             },
             {
               "alg": "SHA-256",
-              "content": "886bf75cadfdc964674e6e33eb74d787dff31ca314ceace03ca5810620f4ecf0"
+              "content": "47e0c0d2ef1801fce721708ccdf2a28b9403fa2307c3268aebd03225976f61d2"
             }
           ],
           "type": "distribution",
@@ -3644,9 +3644,9 @@
         }
       ],
       "name": "virtualenv",
-      "purl": "pkg:pypi/virtualenv@20.32.0",
+      "purl": "pkg:pypi/virtualenv@20.33.0",
       "type": "library",
-      "version": "20.32.0"
+      "version": "20.33.0"
     },
     {
       "bom-ref": "requirements-L799",
