@@ -406,9 +406,9 @@ nodeenv==1.9.1 \
     --hash=sha256:6ec12890a2dab7946721edbfbcd91f3319c6ccc9aec47be7c7e6b7011ee6645f \
     --hash=sha256:ba11c9782d29c27c70ffbdda2d7415098754709be8a7056d79a737cd901155c9
     # via pre-commit
-packageurl-python==0.17.1 \
-    --hash=sha256:59b0862ae0b216994f847e05b4c6e870e0d16e1ddd706feefb19d79810f22cbd \
-    --hash=sha256:5db592a990b60bc02446033c50fb1803a26c5124cd72c5a2cd1b8ea1ae741969
+packageurl-python==0.17.3 \
+    --hash=sha256:719995f0c7f706890277ba57ec95afcaa9696c836a7675770a1279b01a41f7be \
+    --hash=sha256:f51b5aab570159f07258c8e998e9972ff3bf060da16b7334a42bd9f9737777d9
     # via
     #   cyclonedx-bom
     #   cyclonedx-python-lib
