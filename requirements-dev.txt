@@ -162,9 +162,9 @@ consolekit==1.9.0 \
 cyclonedx-bom==7.0.0 \
     --hash=sha256:3efeec32c099a5b05cc0f73ebd70bbab66549950f046be07da6efc3eae8cdaed \
     --hash=sha256:43395dd779092087a1ddc132b0c2025741b60224932e5f3baab817b8ac8c55b7
-cyclonedx-python-lib==10.5.0 \
-    --hash=sha256:49b8bdeb4c7aeea66e3c83739523ba88a3440fed5fe2c57ac942a9e335cf410a \
-    --hash=sha256:e9531555b751a5cb940b334e510141813f37e774929562d2679dbc4868b56d02
+cyclonedx-python-lib==11.4.0 \
+    --hash=sha256:1de90231a600340cc6a7bacb35fbe97c75241b39788beaa33a0f49bf4afd4e6c \
+    --hash=sha256:98a2b05da0f203379bd169b8d369075db7b3b5d5c812c05c1b5ebe40ad0305bc
     # via cyclonedx-bom
 defusedxml==0.7.1 \
     --hash=sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69 \
