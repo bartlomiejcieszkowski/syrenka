@@ -98,9 +98,9 @@ click==8.1.8 ; python_full_version < '3.10' \
     # via
     #   consolekit
     #   pyproject-parser
-click==8.2.1 ; python_full_version >= '3.10' \
-    --hash=sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202 \
-    --hash=sha256:61a3265b914e850b85317d0b3109c7f8cd35a670f963866005d6ef1d5175a12b
+click==8.5.0 ; python_full_version >= '3.10' \
+    --hash=sha256:255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360 \
+    --hash=sha256:ba0d2089de75ea0310e2dde03160e6ca10009947fb95a182f9b54021bb272e34
     # via
     #   consolekit
     #   pyproject-parser
